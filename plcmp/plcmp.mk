@@ -1,4 +1,4 @@
-PL_BIN := $(BIN_DIR)/plcmp
+PLCMP_BIN := $(BIN_DIR)/plcmp
 
 PLCMP_INC_DIR := $(PLCMP_DIR)/inc
 PLCMP_SRC_DIR := $(PLCMP_DIR)/src

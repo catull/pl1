@@ -8,16 +8,17 @@ RM := rm -rf
 CC := gcc
 FLAGS := -Wall -O2
 
--include $(PLCMP_DIR)/pl.mk
--include $(ASMCMP_DIR)/asm.mk
+-include $(PLCMP_DIR)/plcmp.mk
+-include $(ASMCMP_DIR)/asmcmp.mk
 -include $(ABSLOAD_DIR)/absload.mk
 
 all: pl asm load
 
 pl: $(PLCMP_OBJS)
-	$(CC) $(PLCMP_OBJS) -o $(PL_BIN)
+	$(CC) $(PLCMP_OBJS) -o $(PLCMP_BIN)
 
-asm:
+asm: $(ASMCMP_OBJS)
+	$(CC) $(ASMCMP_OBJS) -o $(ASMCMP_BIN)
 
 load:
 
