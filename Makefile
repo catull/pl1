@@ -12,7 +12,7 @@ FLAGS := -Wall -O2
 -include $(ASMCMP_DIR)/asmcmp.mk
 -include $(ABSLOAD_DIR)/absload.mk
 
-all: pl asm load
+all: plcmp asmcmp absload
 
 plcmp: $(PLCMP_OBJS)
 	$(CC) $(PLCMP_OBJS) -o $(PLCMP_BIN)
