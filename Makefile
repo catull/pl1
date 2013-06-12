@@ -14,17 +14,17 @@ FLAGS := -Wall -O2
 
 all: pl asm load
 
-pl: $(PLCMP_OBJS)
+plcmp: $(PLCMP_OBJS)
 	$(CC) $(PLCMP_OBJS) -o $(PLCMP_BIN)
 
-asm: $(ASMCMP_OBJS)
+asmcmp: $(ASMCMP_OBJS)
 	$(CC) $(ASMCMP_OBJS) -o $(ASMCMP_BIN)
 
-load: $(ABSLOAD_OBJS)
+absload: $(ABSLOAD_OBJS)
 	$(CC) $(ABSLOAD_OBJS) -o $(ABSLOAD_BIN)
 
 .PHONY: clean clean_plcmp clean_asmcmp clean_absload clean_all
-	
+
 clean: clean_all
 clean_all: clean_plcmp clean_asmcmp clean_absload
 
