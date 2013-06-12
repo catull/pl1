@@ -20,8 +20,17 @@ pl: $(PLCMP_OBJS)
 asm: $(ASMCMP_OBJS)
 	$(CC) $(ASMCMP_OBJS) -o $(ASMCMP_BIN)
 
-load:
+load: $(ABSLOAD_OBJS)
+	$(CC) $(ABSLOAD_OBJS) -o $(ABSLOAD_BIN)
 
-.PHONY: clean
-clean:
-	-$(RM) $(PLCMP_OBJS) $(PLCMP_DEPS) $(ASMCMP_OBJ) $(ASMCMP_DEPS) $(ABSLOAD_OBJ) $(ABSLOAD_DEPS)
+.PHONY: clean clean_plcmp clean_asmcmp clean_absload clean_all
+	
+clean: clean_all
+clean_all: clean_plcmp clean_asmcmp clean_absload
+
+clean_plcmp:
+	-$(RM) $(PLCMP_OBJS) $(PLCMP_DEPS)
+clean_asmcmp:
+	-$(RM) $(ASMCMP_OBJ) $(ASMCMP_DEPS)
+clean_absload:
+	-$(RM) $(ABSLOAD_OBJ) $(ABSLOAD_DEPS)
