@@ -13,8 +13,6 @@
 
 /* cycles counters */
 int I4;
-/* Place of storage of compact source text */
-char compact_src_text[NSTROKA];
 
 int I; /* current index in compact text */
 int J; /* current index in the table of grammar rules */

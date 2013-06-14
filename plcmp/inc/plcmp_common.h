@@ -26,6 +26,9 @@
 
 
 
+#define TRUE 1
+#define FALSE 0
+
 
 #define PLCMP_COMMON_ASSERT(condition) assert(condition)
 

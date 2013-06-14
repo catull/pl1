@@ -17,6 +17,29 @@ static int NISXTXT;
 /* Content of the array of the source PL1-text */
 static char ISXTXT[MAXNISXTXT][80];
 
+static const char* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code)
+{
+    switch (err_code)
+    {
+        case PLCMP_MAIN_SUCCESS:
+            return "No error occured";
+        case PLCMP_MAIN_WRONG_NUM_CLI_PAR:
+            return "Wrong number of command line parameters";
+        case PLCMP_MAIN_WRONG_INPUT_FILE_PATH:
+            return "Wrong path to PL1-file with the source text";
+        case PLCMP_MAIN_WRONG_INPUT_FILE_EXTENSION:
+            return "Wrong input file extension with the source text";
+        case PLCMP_MAIN_NOT_FOUND_INPUT_FILE:
+            return "Couldn't find file with the source text";
+        case PLCMP_MAIN_ERROR_READING_FILE:
+            return "Error occured while reading file with the source text";
+        case PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW:
+            return "Overflow of the program buffer while reading file with the source text";
+        default:
+            return "Unknown error code for generating error message";
+    }
+}
+
 /* Построение таблицы  */
 /* преемников из матрицы  */
 /* смежности по алгоритму */
@@ -41,6 +64,49 @@ void build_TPR(void)
     }
 }
 
+/* Function of reading PL1-file of the source text with 'p_pl1_fp_name' file path name */
+static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_fp_name)
+{
+    FILE *p_pl1_f;
+    plcmp_main_error_code_t err_code = PLCMP_MAIN_SUCCESS;
+
+    p_pl1_f = fopen(p_pl1_fp_name , "rb");
+    if (NULL == p_pl1_f)
+    {
+        err_code = PLCMP_MAIN_NOT_FOUND_INPUT_FILE;
+    }
+    else
+    {
+        /* Write opened file to byte-array */
+        for (NISXTXT = 0; NISXTXT < MAXNISXTXT; NISXTXT++)
+        {
+            if (!fread(ISXTXT[NISXTXT], 80, 1, p_pl1_f))
+            {
+                if (feof(p_pl1_f))
+                {   
+                    /* Successful reading */
+                    break;
+                }
+            }
+            else
+            {
+                err_code = PLCMP_MAIN_ERROR_READING_FILE;
+                break;
+            }
+        }
+
+        if (MAXNISXTXT == NISXTXT)
+        {
+            /* Buffer is overflowed */
+            err_code = PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW;
+        }
+
+        fclose(p_pl1_f);
+    }
+
+    return err_code;
+}
+
 /* This program organizes the sequential processing of the source text:
  * - the lexical analyzer
  * - the syntax analyzer
@@ -54,65 +120,42 @@ int main(int const argc, char const *argv[])
 {
     char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;
     size_t pl1_fp_len, asm_fp_len;
-    FILE *p_pl1_f;
-    int err_code = 1;
+    int err_code = 0;
 
     /* Current program must contains one real parameter */
     if (argc != 2)
     {
-        printf("Wrong number of command line parameters\n");
+        err_code = PLCMP_MAIN_WRONG_NUM_CLI_PAR;
         goto error;
     }
 
-    /* Get name of translated program */
+    /* Copy name of translated program from input argument */
     PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_pl1_fp_name, argv[1]);
     pl1_fp_len = strlen(p_pl1_fp_name);
 
     if (pl1_fp_len < 4)
     {
-        printf("Wrong path to file with the source text\n");
+        err_code = PLCMP_MAIN_WRONG_INPUT_FILE_PATH;
         goto error;
     }
 
     /* Input file for translation must be with 'pli' extension */
     if (strcmp(&p_pl1_fp_name[pl1_fp_len - 4], ".pli"))
     {
-        printf("Wrong file type with the source text\n");
+        err_code = PLCMP_MAIN_WRONG_INPUT_FILE_EXTENSION;
         goto error;
     }
     else
     {
-        p_pl1_f = fopen(p_pl1_fp_name , "rb");
-        if (NULL == p_pl1_f)
+        err_code = plcmp_main_read_pl1_file(p_pl1_fp_name);
+        if (PLCMP_MAIN_SUCCESS == err_code)
         {
-            printf("Couldn't find file with the source text\n");
-            goto error;
+            /* After successfully reading file proceed to translating of the source text */
+            goto process_source_text;
         }
         else
         {
-            /* Write opened file to byte-array */
-            for (NISXTXT = 0; NISXTXT < MAXNISXTXT; NISXTXT++)
-            {
-                if (!fread(ISXTXT[NISXTXT], 80, 1, p_pl1_f))
-                {
-                    if (feof(p_pl1_f))
-                    {   
-                        fclose(p_pl1_f);
-                        /* After reading file proceed to translating of the source text */
-                        goto process_source_text;
-                    }
-                }
-                else
-                {
-                    printf("Error occured while reading file with the source text\n");
-                    fclose(p_pl1_f);
-                    goto error;
-                }
-            }
-
-            /* Buffer is overflowed */
-            printf("Overflow of the program buffer while reading file with the source text\n");
-            fclose(p_pl1_f);
+            /* Error occured while reading file */
             goto error;
         }
 
@@ -127,9 +170,6 @@ int main(int const argc, char const *argv[])
     strcat(p_asm_fp_name, ".ass");
 
     PLCMP_COMMON_DEALLOC_MEM(p_pl1_fp_name);
-
-    /* Clear buffer string of the assembler output file */
-    memset(&assembler_card, '\0', sizeof(assembler_card));
 
     /* Lexical analysis of the source text */
     plcmp_lex_analyzer_compress_src_text(compact_src_text, ISXTXT, NISXTXT);
@@ -151,11 +191,11 @@ int main(int const argc, char const *argv[])
     else
     {
         int dst_index = 0;
+
         switch (plcmp_sem_calc_gen_asm_code(p_asm_fp_name, &dst_index))
         {
             case 0:
-                printf("Translation is finished succesfully\n");
-                return 0;
+                break;
             case 1:
                 printf("Mismatch of the name of the procedure "
                        "in prologue-epilogue\n");
@@ -207,6 +247,14 @@ int main(int const argc, char const *argv[])
 
     error:
 
-    printf("Translation is interrupted\n");
+    if (PLCMP_MAIN_SUCCESSFUL_TRANSLATION == err_code)
+    {
+        printf("Translation is finished succesfully\n");
+    }
+    else
+    {
+        printf("Translation is interrupted\nReason: %s\n", plcmp_main_errmsg_by_errcode(err_code));
+    }
+
     return err_code;
 }

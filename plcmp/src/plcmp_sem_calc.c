@@ -8,8 +8,21 @@
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_sem_calc.h"
 
-/* Template to generate the output file record by IBM 370 assembler */
-union assembler_card_un assembler_card;
+/* This union is type of assembler card
+ * It is template to generate the output file record by IBM 370 assembler */
+union assembler_card_un {
+    char BUFCARD[80];
+    struct
+    {
+        char METKA[8];
+        char PROB1;
+        char OPERAC[5];
+        char PROB2;
+        char OPERAND[12];
+        char PROB3;
+        char COMM[52];
+    } _BUFCARD;
+} assembler_card;
 
 /* Array for formatted (a sequence of 9-th positional lines-tokens)
  * representation interpreted fragment for compact source text */
@@ -791,6 +804,11 @@ static int ZNK(int entry, void const *param)
 }
 
 
+static void plcmp_sem_calc_init_asm_card(void)
+{
+    /* Clear buffer string of the assembler output file */
+    memset(&assembler_card, 0, sizeof(assembler_card));
+}
 
 /*  п р о г р а м м а     */
 /* управления абстрактной */
@@ -833,6 +851,8 @@ int plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name, int *p_dst_index)
         /*   15  */ TEL,
         /*   16  */ ZNK
     };
+
+    plcmp_sem_calc_init_asm_card();
 
     /* организация первого и второго
      * проходов семантического вычисления */
