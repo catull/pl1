@@ -1,4 +1,4 @@
-ASMCMP_BIN := $(BIN_DIR)/plcmp
+ASMCMP_BIN := $(BIN_DIR)/asmcmp
 
 ASMCMP_INC_DIR := $(ASMCMP_DIR)/inc
 ASMCMP_SRC_DIR := $(ASMCMP_DIR)/src

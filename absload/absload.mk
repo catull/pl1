@@ -1,4 +1,4 @@
-ABSLOAD_BIN := $(BIN_DIR)/plcmp
+ABSLOAD_BIN := $(BIN_DIR)/absload
 
 ABSLOAD_INC_DIR := $(ABSLOAD_DIR)/inc
 ABSLOAD_SRC_DIR := $(ABSLOAD_DIR)/src

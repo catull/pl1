@@ -29,8 +29,8 @@ clean: clean_all
 clean_all: clean_plcmp clean_asmcmp clean_absload
 
 clean_plcmp:
-	-$(RM) $(PLCMP_OBJS) $(PLCMP_DEPS)
+	-$(RM) $(PLCMP_OBJS) $(PLCMP_DEPS) $(PLCMP_BIN)
 clean_asmcmp:
-	-$(RM) $(ASMCMP_OBJ) $(ASMCMP_DEPS)
+	-$(RM) $(ASMCMP_OBJ) $(ASMCMP_DEPS) $(ASMCMP_BIN)
 clean_absload:
-	-$(RM) $(ABSLOAD_OBJ) $(ABSLOAD_DEPS)
+	-$(RM) $(ABSLOAD_OBJ) $(ABSLOAD_DEPS) $(ABSLOAD_BIN)
