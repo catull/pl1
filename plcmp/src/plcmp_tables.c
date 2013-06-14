@@ -1,11 +1,13 @@
-#include "pl_common.h"
-#include "pl_tables.h"
+/* encoding: UTF-8 */
+
+#include "plcmp_common.h"
+#include "plcmp_tables.h"
 
 
 /* Table of the syntax rules that is written in the form 
  * of recognition, grouped in "bushes" and represented 
  * as bidirectional list with alternate branching */
-struct sint_s SINT[NSINT] = {
+sint_t SINT[NSINT] = {
     /*  __________ _________ _______ _______ ______
        |  NN      :    seq  : prev  :  дер  : alt |
        |__________:_________:_______:_______:______|                          */
@@ -247,7 +249,7 @@ struct sint_s SINT[NSINT] = {
 
 /* Table of inputs in "bushes" (roots) of the grammar rules.
  * This table contains root symbols type (terminal or non-terminal property) */
-struct vxod_s VXOD[NVXOD] = {
+vxod_t VXOD[NVXOD] = {
 /*    ___________ ___________ _____ ______
      |    NN     |    symbol |input| type |
      |___________|___________|_____|______|                                  */
@@ -375,3 +377,38 @@ char TPR[NVXOD][NNETRM] = {
     {/*  **/ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1  }
     /*|_______________________________________________________________________| */
 };
+
+dst_t DST[NDST];
+cel_t CEL[NCEL];
+sym_t SYM[NSYM];
+
+/* текущий индекс таблицы имен */
+int ISYM = 0;
+
+/* п р о г р а м м а      */
+/* вычисления порядкового */
+/* номера строки в табл.  */
+/* VXOD, соответствующей  */
+/* строке-параметру функц.*/
+int numb(char *T1, int T2)
+{
+    int i;
+    for (i = 0; i < NVXOD; i++)
+    {
+        int k;
+        for (k = 0; k < T2; k++)
+        {
+            if ((*(T1 + k) != VXOD[i].SYM[k]))
+            {
+                goto numb1;
+            }
+        }
+        if (VXOD[i].SYM[k] == '\0' || VXOD[i].SYM[k] == ' ')
+        {
+            return i;
+        }
+        numb1:
+        continue;
+    }
+    return -1;
+}

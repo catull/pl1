@@ -6,7 +6,7 @@ BIN_DIR := bin
 RM := rm -rf
 
 CC := gcc
-FLAGS := -Wall -O2
+FLAGS := -O2 -Wall
 
 -include $(PLCMP_DIR)/plcmp.mk
 -include $(ASMCMP_DIR)/asmcmp.mk
@@ -31,6 +31,6 @@ clean_all: clean_plcmp clean_asmcmp clean_absload
 clean_plcmp:
 	-$(RM) $(PLCMP_OBJS) $(PLCMP_DEPS) $(PLCMP_BIN)
 clean_asmcmp:
-	-$(RM) $(ASMCMP_OBJ) $(ASMCMP_DEPS) $(ASMCMP_BIN)
+	-$(RM) $(ASMCMP_OBJS) $(ASMCMP_DEPS) $(ASMCMP_BIN)
 clean_absload:
-	-$(RM) $(ABSLOAD_OBJ) $(ABSLOAD_DEPS) $(ABSLOAD_BIN)
+	-$(RM) $(ABSLOAD_OBJS) $(ABSLOAD_DEPS) $(ABSLOAD_BIN)
