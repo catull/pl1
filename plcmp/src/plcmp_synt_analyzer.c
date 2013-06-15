@@ -40,14 +40,14 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
 
     mcel("PRO", I, 999);
 
-    if (!TPR[numb(&compact_src_text[I], 1)][numb("PRO", 3)])
+    if (!TPR[numb(&compact_pl1_src_text[I], 1)][numb("PRO", 3)])
     {
         return 1;
     }
 
     L2:
 
-    J = VXOD[numb(&compact_src_text[I], 1 )].VX;
+    J = VXOD[numb(&compact_pl1_src_text[I], 1 )].VX;
 
     L3:
 
@@ -65,7 +65,7 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
     if (VXOD[numb(SINT[J].DER, 3)].TYP == 'T')
     {
 
-        if (compact_src_text[I] == SINT[J].DER[0])
+        if (compact_pl1_src_text[I] == SINT[J].DER[0])
         {
             goto L3;
         }
@@ -112,7 +112,7 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
         goto L3;
     }
 
-    if (!TPR[numb(&compact_src_text[I], 1)][numb(SINT[J].DER, 3)])
+    if (!TPR[numb(&compact_pl1_src_text[I], 1)][numb(SINT[J].DER, 3)])
     {
         goto L8;
     }

@@ -12,11 +12,6 @@
 #include "plcmp_synt_analyzer.h"
 #include "plcmp_sem_calc.h"
 
-/* Length of the array of the source PL1-text */
-static int NISXTXT;
-/* Content of the array of the source PL1-text */
-static char ISXTXT[MAXNISXTXT][80];
-
 static const char* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code)
 {
     switch (err_code)
@@ -25,13 +20,13 @@ static const char* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code
             return "No error occured";
         case PLCMP_MAIN_WRONG_NUM_CLI_PAR:
             return "Wrong number of command line parameters";
-        case PLCMP_MAIN_WRONG_INPUT_FILE_PATH:
+        case PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH:
             return "Wrong path to PL1-file with the source text";
-        case PLCMP_MAIN_WRONG_INPUT_FILE_EXTENSION:
+        case PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION:
             return "Wrong input file extension with the source text";
-        case PLCMP_MAIN_NOT_FOUND_INPUT_FILE:
+        case PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE:
             return "Couldn't find file with the source text";
-        case PLCMP_MAIN_ERROR_READING_FILE:
+        case PLCMP_MAIN_ERROR_READING_PL1_FILE:
             return "Error occured while reading file with the source text";
         case PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW:
             return "Overflow of the program buffer while reading file with the source text";
@@ -65,7 +60,9 @@ void build_TPR(void)
 }
 
 /* Function of reading PL1-file of the source text with 'p_pl1_fp_name' file path name */
-static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_fp_name)
+static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_fp_name,
+                                                             char pl1_src_text[MAXNISXTXT][80],
+                                                             size_t *p_pl1_src_text_len)
 {
     FILE *p_pl1_f;
     plcmp_main_error_code_t err_code = PLCMP_MAIN_SUCCESS;
@@ -73,14 +70,15 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
     p_pl1_f = fopen(p_pl1_fp_name , "rb");
     if (NULL == p_pl1_f)
     {
-        err_code = PLCMP_MAIN_NOT_FOUND_INPUT_FILE;
+        err_code = PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE;
     }
     else
     {
+        size_t pl1_src_text_len;
         /* Write opened file to byte-array */
-        for (NISXTXT = 0; NISXTXT < MAXNISXTXT; NISXTXT++)
+        for (pl1_src_text_len = 0; pl1_src_text_len < MAXNISXTXT; pl1_src_text_len++)
         {
-            if (!fread(ISXTXT[NISXTXT], 80, 1, p_pl1_f))
+            if (!fread(pl1_src_text[pl1_src_text_len], 80, 1, p_pl1_f))
             {
                 if (feof(p_pl1_f))
                 {   
@@ -90,17 +88,18 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
             }
             else
             {
-                err_code = PLCMP_MAIN_ERROR_READING_FILE;
+                err_code = PLCMP_MAIN_ERROR_READING_PL1_FILE;
                 break;
             }
         }
 
-        if (MAXNISXTXT == NISXTXT)
+        if (MAXNISXTXT == pl1_src_text_len)
         {
             /* Buffer is overflowed */
             err_code = PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW;
         }
 
+        *p_pl1_src_text_len = pl1_src_text_len;
         fclose(p_pl1_f);
     }
 
@@ -118,9 +117,15 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
  */
 int main(int const argc, char const *argv[])
 {
+    /* Content of the array of the source PL1-text */
+    char pl1_src_text[MAXNISXTXT][80];
+    /* Length of the array of the source PL1-text */
+    size_t pl1_src_text_len;
+
     char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;
     size_t pl1_fp_len, asm_fp_len;
-    int err_code = 0;
+
+    plcmp_main_error_code_t err_code = PLCMP_MAIN_SUCCESS;
 
     /* Current program must contains one real parameter */
     if (argc != 2)
@@ -135,22 +140,22 @@ int main(int const argc, char const *argv[])
 
     if (pl1_fp_len < 4)
     {
-        err_code = PLCMP_MAIN_WRONG_INPUT_FILE_PATH;
+        err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH;
         goto error;
     }
 
     /* Input file for translation must be with 'pli' extension */
     if (strcmp(&p_pl1_fp_name[pl1_fp_len - 4], ".pli"))
     {
-        err_code = PLCMP_MAIN_WRONG_INPUT_FILE_EXTENSION;
+        err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION;
         goto error;
     }
     else
     {
-        err_code = plcmp_main_read_pl1_file(p_pl1_fp_name);
+        err_code = plcmp_main_read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
         if (PLCMP_MAIN_SUCCESS == err_code)
         {
-            /* After successfully reading file proceed to translating of the source text */
+            /* After successfully reading file proceed to translation of the source text */
             goto process_source_text;
         }
         else
@@ -172,7 +177,7 @@ int main(int const argc, char const *argv[])
     PLCMP_COMMON_DEALLOC_MEM(p_pl1_fp_name);
 
     /* Lexical analysis of the source text */
-    plcmp_lex_analyzer_compress_src_text(compact_src_text, ISXTXT, NISXTXT);
+    plcmp_lex_analyzer_compress_src_text(compact_pl1_src_text, pl1_src_text, pl1_src_text_len);
     /* построение матрицы преемников */
     build_TPR();
 
@@ -180,10 +185,10 @@ int main(int const argc, char const *argv[])
     if (plcmp_synt_analyzer_syntax_analyzer())
     {
         /* Error in syntax */
-        compact_src_text[I4 + 20] = '\0';
+        compact_pl1_src_text[I4 + 20] = '\0';
         printf("Error in syntax of the source text: %s.\n"
                "Traslation is interrupted\n",
-               &compact_src_text[I4]);
+               &compact_pl1_src_text[I4]);
         PLCMP_COMMON_DEALLOC_MEM(p_asm_fp_name);
         goto error;
     }
@@ -201,44 +206,44 @@ int main(int const argc, char const *argv[])
                        "in prologue-epilogue\n");
                 break;
             case 2:
-                compact_src_text[DST[dst_index].DST2 + 20] = '\0';
+                compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
                 printf("Not allowed indentifier type '%s' "
                        "in the source text: %s.\n"
                        "Traslation is interrupted\n",
                        FORMT[1],
-                       &compact_src_text[DST[dst_index].DST2]);
+                       &compact_pl1_src_text[DST[dst_index].DST2]);
                 break;
             case 3:
-                compact_src_text[DST[dst_index].DST2 + 20] = '\0';
+                compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
                 printf("Not allowed indentifier type '%s' "
                        "in the source text: %s.\n"
                        "Traslation is interrupted\n",
                        FORMT[IFORMT - 1],
-                       &compact_src_text[DST[dst_index].DST2]);
+                       &compact_pl1_src_text[DST[dst_index].DST2]);
                 break;
             case 4:
-                compact_src_text[DST[dst_index].DST2 + 20] = '\0';
+                compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
                 printf("Not determined identifier '%s' "
                        "in the source text: %s.\n"
                        "Traslation is interrupted\n",
                        FORMT[IFORMT - 1],
-                       &compact_src_text[DST[dst_index].DST2]);
+                       &compact_pl1_src_text[DST[dst_index].DST2]);
                 break;
             case 5:
-                compact_src_text[DST[dst_index].DST2 + 20] = '\0';
+                compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
                 printf("Not allowed operation '%c' "
                        "in the source text: %s.\n"
                        "Traslation is interrupted\n",
-                       compact_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
-                       &compact_src_text[DST[dst_index].DST2]);
+                       compact_pl1_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
+                       &compact_pl1_src_text[DST[dst_index].DST2]);
                 break;
             case 6:
-                compact_src_text[DST[dst_index].DST2 + 20] = '\0';
+                compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
                 printf("Repeated declaration of the identifier '%c' "
                        "in the source text: %s.\n"
                        "Traslation is interrupted\n",
-                       compact_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
-                       &compact_src_text[DST[dst_index].DST2]);
+                       compact_pl1_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
+                       &compact_pl1_src_text[DST[dst_index].DST2]);
                 break;
             default:
                 break;

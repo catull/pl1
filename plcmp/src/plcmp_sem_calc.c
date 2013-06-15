@@ -90,11 +90,11 @@ static void FORM(int dst_index)
 
     for (i = j; i < DST[dst_index].DST4; i++)
     {
-        if (compact_src_text[i] == ':' || compact_src_text[i] == ' '
-                || compact_src_text[i] == '(' || compact_src_text[i] == ')'
-                || compact_src_text[i] == ';' || compact_src_text[i] == '+'
-                || compact_src_text[i] == '-' || compact_src_text[i] == '='
-                || compact_src_text[i] == '*')
+        if (compact_pl1_src_text[i] == ':' || compact_pl1_src_text[i] == ' '
+                || compact_pl1_src_text[i] == '(' || compact_pl1_src_text[i] == ')'
+                || compact_pl1_src_text[i] == ';' || compact_pl1_src_text[i] == '+'
+                || compact_pl1_src_text[i] == '-' || compact_pl1_src_text[i] == '='
+                || compact_pl1_src_text[i] == '*')
         {
             FORMT[IFORMT][i - j] = '\0';
             IFORMT++;
@@ -103,7 +103,7 @@ static void FORM(int dst_index)
         }
         else
         {
-            FORMT[IFORMT][i - j] = compact_src_text[i];
+            FORMT[IFORMT][i - j] = compact_pl1_src_text[i];
         }
     }
 
