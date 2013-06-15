@@ -26,6 +26,8 @@
 #define MAXFORMT 30
 /* The limited size of the tables of names and labels */
 #define NSYM 100
+/* The limited length of the line of the source text */
+#define LINELEN 80
 
 
 

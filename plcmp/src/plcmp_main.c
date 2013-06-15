@@ -63,7 +63,7 @@ static void plcmp_main_build_tpr(void)
 
 /* Function of reading PL1-file of the source text with 'p_pl1_fp_name' file path name */
 static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_fp_name,
-                                                             char pl1_src_text[MAXNISXTXT][80],
+                                                             char pl1_src_text[MAXNISXTXT][LINELEN],
                                                              size_t *p_pl1_src_text_len)
 {
     FILE *p_pl1_f;
@@ -80,18 +80,18 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
         /* Write opened file to byte-array */
         for (pl1_src_text_len = 0; pl1_src_text_len < MAXNISXTXT; pl1_src_text_len++)
         {
-            if (!fread(pl1_src_text[pl1_src_text_len], 80, 1, p_pl1_f))
+            if (!fread(pl1_src_text[pl1_src_text_len], 1, LINELEN, p_pl1_f))
             {
                 if (feof(p_pl1_f))
                 {   
                     /* Successful reading */
                     break;
                 }
-            }
-            else
-            {
-                err_code = PLCMP_MAIN_ERROR_READING_PL1_FILE;
-                break;
+                else
+                {
+                    err_code = PLCMP_MAIN_ERROR_READING_PL1_FILE;
+                    break;
+                }
             }
         }
 
@@ -108,7 +108,7 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
     return err_code;
 }
 
-static enum plcmp_main_error_code_e plcmp_main_process_src_text(char pl1_src_text[MAXNISXTXT][80],
+static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_src_text[MAXNISXTXT][LINELEN],
                                                                 size_t pl1_src_text_len,
                                                                 char const *p_asm_fp_name)
 {
@@ -199,7 +199,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char pl1_src_tex
  */
 int main(int const argc, char const *argv[])
 {
-    char pl1_src_text[MAXNISXTXT][80]; /* Content of the array of the source PL1-text */
+    char pl1_src_text[MAXNISXTXT][LINELEN]; /* Content of the array of the source PL1-text */
     size_t pl1_src_text_len = 0; /* Length of the array of the source PL1-text */
     char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;
     size_t pl1_fp_len, asm_fp_len;
@@ -231,7 +231,7 @@ int main(int const argc, char const *argv[])
     else
     {
         /* Clear array for source PL1-text before getting text from the file */
-        memset(pl1_src_text, '\0', sizeof(char)*MAXNISXTXT*80);
+        memset(&pl1_src_text[0][0], '\0', sizeof(char)*MAXNISXTXT*80);            
         err_code = plcmp_main_read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
         if (PLCMP_MAIN_SUCCESS == err_code)
         {
@@ -248,14 +248,14 @@ int main(int const argc, char const *argv[])
         }
     }
 
-    error:
-
     if (PLCMP_MAIN_SUCCESSFUL_TRANSLATION == err_code)
     {
         printf("Translation is finished succesfully\n");
     }
     else
     {
+        error:
+
         printf("Translation is interrupted\nReason: %s\n", plcmp_main_errmsg_by_errcode(err_code));
         if (PLCMP_MAIN_SYNT_ANALYZER_ERROR == err_code)
         {
