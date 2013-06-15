@@ -10,7 +10,7 @@
 
 /* This union is type of assembler card
  * It is template to generate the output file record by IBM 370 assembler */
-union assembler_card_un {
+static union assembler_card_un {
     char BUFCARD[80];
     struct
     {

@@ -39,7 +39,7 @@ static const char* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code
 /* преемников из матрицы  */
 /* смежности по алгоритму */
 /* Варшалла */
-void build_TPR(void)
+static void plcmp_main_build_tpr(void)
 {
     int i1;
     for (i1 = 0; i1 < NNETRM; i1++)
@@ -117,14 +117,11 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
  */
 int main(int const argc, char const *argv[])
 {
-    /* Content of the array of the source PL1-text */
-    char pl1_src_text[MAXNISXTXT][80];
-    /* Length of the array of the source PL1-text */
-    size_t pl1_src_text_len;
-
+    
+    char pl1_src_text[MAXNISXTXT][80]; /* Content of the array of the source PL1-text */
+    size_t pl1_src_text_len = 0; /* Length of the array of the source PL1-text */
     char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;
     size_t pl1_fp_len, asm_fp_len;
-
     plcmp_main_error_code_t err_code = PLCMP_MAIN_SUCCESS;
 
     /* Current program must contains one real parameter */
@@ -135,7 +132,7 @@ int main(int const argc, char const *argv[])
     }
 
     /* Copy name of translated program from input argument */
-    PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_pl1_fp_name, argv[1]);
+    PLCMP_MAIN_ALLOC_MEM_AND_COPY_FP_STR(p_pl1_fp_name, argv[1]);
     pl1_fp_len = strlen(p_pl1_fp_name);
 
     if (pl1_fp_len < 4)
@@ -152,6 +149,8 @@ int main(int const argc, char const *argv[])
     }
     else
     {
+        /* Clear array for source PL1-text before getting text from the file */
+        memset(pl1_src_text, '\0', sizeof(char)*MAXNISXTXT*80);
         err_code = plcmp_main_read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
         if (PLCMP_MAIN_SUCCESS == err_code)
         {
@@ -168,18 +167,14 @@ int main(int const argc, char const *argv[])
 
     process_source_text:
 
-    /* Make file path name for assembler */
-    PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_asm_fp_name, p_pl1_fp_name);
-    asm_fp_len = strlen(p_asm_fp_name);
-    p_asm_fp_name[asm_fp_len - 4] = '\0';
-    strcat(p_asm_fp_name, ".ass");
+    PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name, p_pl1_fp_name);
 
     PLCMP_COMMON_DEALLOC_MEM(p_pl1_fp_name);
 
     /* Lexical analysis of the source text */
     plcmp_lex_analyzer_compress_src_text(compact_pl1_src_text, pl1_src_text, pl1_src_text_len);
     /* построение матрицы преемников */
-    build_TPR();
+    plcmp_main_build_tpr();
 
     /* Syntax analysis of the source text */
     if (plcmp_synt_analyzer_syntax_analyzer())
@@ -196,8 +191,9 @@ int main(int const argc, char const *argv[])
     else
     {
         int dst_index = 0;
-
-        switch (plcmp_sem_calc_gen_asm_code(p_asm_fp_name, &dst_index))
+        int sem_calc_err_code = plcmp_sem_calc_gen_asm_code(p_asm_fp_name, &dst_index);
+        PLCMP_COMMON_DEALLOC_MEM(p_asm_fp_name);
+        switch (sem_calc_err_code)
         {
             case 0:
                 break;
