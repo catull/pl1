@@ -11,6 +11,7 @@ typedef enum plcmp_main_error_code_e {
     PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE,
     PLCMP_MAIN_ERROR_READING_PL1_FILE,
     PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW,
+    PLCMP_MAIN_SYNT_ANALYZER_ERROR
 
 } plcmp_main_error_code_t;
 

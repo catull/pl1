@@ -42,7 +42,8 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
 
     if (!TPR[numb(&compact_pl1_src_text[I], 1)][numb("PRO", 3)])
     {
-        return 1;
+        compact_pl1_src_text[I4 + 20] = '\0';
+        return PLCMP_SYNT_ANALYZER_FAILURE;
     }
 
     L2:
@@ -86,7 +87,7 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
 
             if (!strcmp(CEL[K - 1].CEL1, "PRO"))
             {
-                return 0;
+                return PLCMP_SYNT_ANALYZER_SUCCESS;
             }
 
             if (TPR[numb(CEL[K - 1].CEL1, 3)][numb(CEL[K - 1].CEL1, 3)])
@@ -169,7 +170,8 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
 
     if (999 == J)
     {
-        return 2;
+        compact_pl1_src_text[I4 + 20] = '\0';
+        return PLCMP_SYNT_ANALYZER_FAILURE;
     }
     else
     {

@@ -2,6 +2,9 @@
 #define PLCMP_COMMON_H
 
 #include <assert.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /* The limited size of the source text */
 #define MAXNISXTXT 50
@@ -47,7 +50,7 @@
     do {                                                                        \
         size_t __str_length = (str_length);                                     \
                                                                                 \
-        p_str_for = malloc(sizeof(char) * (__str_length + 1));                  \
+        p_str_for = malloc(sizeof(char)*(__str_length + 1));                    \
         if (NULL == p_str_for)                                                  \
         {                                                                       \
             printf("Error of allocating memory for new string. Assert\n");      \
