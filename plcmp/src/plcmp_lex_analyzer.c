@@ -12,13 +12,14 @@ void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
                                           char p_pl1_src_text[MAXNISXTXT][80],
                                           size_t pl1_src_text_len)
 {
-    int i1, i2, i3 = 0;
+    int i1, i3 = 0;
 
     /* Last processed symbol in the compact source PL1-text */
-    char prev_processed_symb = '\0';
+    char prev_processed_symb = ' ';
 
     for (i1 = 0; i1 < pl1_src_text_len; i1++)
     {
+        int i2;
         for (i2 = 0; i2 < 80; i2++)
         {
             if ('\0' != p_pl1_src_text[i1][i2])
