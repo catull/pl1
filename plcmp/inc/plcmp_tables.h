@@ -71,8 +71,16 @@ extern sym_t SYM[NSYM];
 /* текущий индекс таблицы имен */
 extern int ISYM;
 
-
-int numb(char *T1, int T2);
+/* Function finds necessary string with sought-for symbol in the VXOD-table 
+ * and returns string-index of VXOD-table.
+ * 
+ * @param1: const char *p_str_symbol
+ * C-string containing name of sought-for symbol
+ *
+ * @param2: unsigned int symbol_str_len
+ * Length of the string of sought-for symbol
+ */
+unsigned int numb(const char *p_str_symbol, unsigned int symbol_str_len);
 
 #endif /* PLCMP_TABLES_H */
 

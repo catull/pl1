@@ -9,8 +9,8 @@
  * as bidirectional list with alternate branching */
 sint_t SINT[NSINT] = {
     /*  __________ _________ _______ _______ ______
-       |  NN      :    seq  : prev  :  дер  : alt |
-       |__________:_________:_______:_______:______|                          */
+       |  NN      :    next : prev  :  node : alt  |
+       |__________:_________:_______:_______:______| */
     {/*.    0     .*/    -1 ,    -1 , "***" ,   -1 },
      /*                                               input with the symbol - 0      */
     {/*.    1     .*/     2 ,     0 , "0  " ,    0 },
@@ -385,30 +385,26 @@ sym_t SYM[NSYM];
 /* текущий индекс таблицы имен */
 int ISYM = 0;
 
-/* п р о г р а м м а      */
-/* вычисления порядкового */
-/* номера строки в табл.  */
-/* VXOD, соответствующей  */
-/* строке-параметру функц.*/
-int numb(char *T1, int T2)
+unsigned int numb(const char *p_str_symbol, unsigned int symbol_str_len)
 {
-    int i;
+    unsigned int i;
     for (i = 0; i < NVXOD; i++)
     {
-        int k;
-        for (k = 0; k < T2; k++)
+        unsigned int k = 0;
+        /* Comparing each symbol each other */
+        while((k != symbol_str_len) && 
+              (p_str_symbol[k] == VXOD[i].SYM[k]))
         {
-            if ((*(T1 + k) != VXOD[i].SYM[k]))
-            {
-                goto numb1;
-            }
+            ++k;
         }
-        if (VXOD[i].SYM[k] == '\0' || VXOD[i].SYM[k] == ' ')
+        if ((k == symbol_str_len) &&
+            (VXOD[i].SYM[k] == '\0' || VXOD[i].SYM[k] == ' '))
         {
-            return i;
+            /* We found necessary string with sought-for symbol in the VXOD-table */
+            break;
         }
-        numb1:
         continue;
     }
-    return -1;
+
+    return NVXOD == i ? -1 : i;
 }

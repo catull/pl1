@@ -25,9 +25,8 @@ static void mdst(char *T1, int T2, int T3, int T4, int T5)
     L++;
 }
 
-/*   п р о г р а м м а    */
-/*   построения  дерева   */
-/* синтаксического разбора, выполняющая роль синтаксического анализатора */
+/* Subroutine of syntax analyzer
+ * It constructs parse tree */
 int plcmp_synt_analyzer_syntax_analyzer(void)
 {
     I4 = 0;

@@ -68,7 +68,7 @@
  * @param1:
  * 'pointer' has any pointer type except 'void*' or 'void const *'
  */
-#define PLCMP_COMMON_DEALLOC_MEM(pointer)       \
+#define PLCMP_COMMON_RELEASE_MEM(pointer)       \
     do {                                        \
         if (pointer)                            \
         {                                       \

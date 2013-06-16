@@ -36,6 +36,8 @@ static const char* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code
             return "Unknown error code for generating error message";
     }
 }
+
+
 /* Subroutine constructs table of the
  * successors of the adjacency matrix
  * of the Varshall's algorithm
@@ -48,7 +50,7 @@ static void plcmp_main_build_tpr(void)
         int i2;
         for (i2 = 0; i2 < NVXOD; i2++)
         {
-            if (TPR[i2][i1] & (i1 != i2))
+            if (TPR[i2][i1] && (i1 != i2))
             {
                 int i3;
                 for (i3 = 0; i3 < NNETRM; i3++)
@@ -116,7 +118,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
 
     /* Lexical analysis of the source text */
     plcmp_lex_analyzer_compress_src_text(compact_pl1_src_text, pl1_src_text, pl1_src_text_len);
-    /* построение матрицы преемников */
+    /* Construct adjacency matrix */
     plcmp_main_build_tpr();
 
     /* Syntax analysis of the source text */
@@ -142,7 +144,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
             case 2:
                 compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
                 printf("Not allowed indentifier type '%s' "
-                       "in the source text: %s.\n"
+                       "in the source text: %s\n"
                        "Traslation is interrupted\n",
                        FORMT[1],
                        &compact_pl1_src_text[DST[dst_index].DST2]);
@@ -150,7 +152,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
             case 3:
                 compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
                 printf("Not allowed indentifier type '%s' "
-                       "in the source text: %s.\n"
+                       "in the source text: %s\n"
                        "Traslation is interrupted\n",
                        FORMT[IFORMT - 1],
                        &compact_pl1_src_text[DST[dst_index].DST2]);
@@ -158,7 +160,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
             case 4:
                 compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
                 printf("Not determined identifier '%s' "
-                       "in the source text: %s.\n"
+                       "in the source text: %s\n"
                        "Traslation is interrupted\n",
                        FORMT[IFORMT - 1],
                        &compact_pl1_src_text[DST[dst_index].DST2]);
@@ -166,7 +168,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
             case 5:
                 compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
                 printf("Not allowed operation '%c' "
-                       "in the source text: %s.\n"
+                       "in the source text: %s\n"
                        "Traslation is interrupted\n",
                        compact_pl1_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
                        &compact_pl1_src_text[DST[dst_index].DST2]);
@@ -174,7 +176,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
             case 6:
                 compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
                 printf("Repeated declaration of the identifier '%c' "
-                       "in the source text: %s.\n"
+                       "in the source text: %s\n"
                        "Traslation is interrupted\n",
                        compact_pl1_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
                        &compact_pl1_src_text[DST[dst_index].DST2]);
@@ -213,8 +215,8 @@ int main(int const argc, char const *argv[])
 
     /* Copy name of translated program from input argument */
     PLCMP_MAIN_ALLOC_MEM_AND_COPY_FP_STR(p_pl1_fp_name, argv[1]);
-    pl1_fp_len = strlen(p_pl1_fp_name);
 
+    pl1_fp_len = strlen(p_pl1_fp_name);
     if (pl1_fp_len < 4)
     {
         err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH;
@@ -229,21 +231,22 @@ int main(int const argc, char const *argv[])
     }
     else
     {
-        /* Clear array for source PL1-text before getting text from the file */
-        memset(&pl1_src_text[0][0], '\0', sizeof(char)*MAXNISXTXT*80);            
+        /* Clear array for the source PL1-text before getting text from the PL1-file */
+        memset(pl1_src_text, '\0', sizeof(char)*MAXNISXTXT*80);
+
         err_code = plcmp_main_read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
         if (PLCMP_MAIN_SUCCESS == err_code)
         {
             /* After successfully reading file proceed to translation of the source text */
             PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name, p_pl1_fp_name);
-            PLCMP_COMMON_DEALLOC_MEM(p_pl1_fp_name);
+            PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name);
             err_code = plcmp_main_process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
-            PLCMP_COMMON_DEALLOC_MEM(p_asm_fp_name);
+            PLCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
         }
         else
         {
             /* Error occured while reading file */
-            ; 
+            PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name); 
         }
     }
 

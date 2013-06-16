@@ -7,7 +7,7 @@
 char compact_pl1_src_text[NSTROKA];
 
 /* Subroutine of primitive lexical analyzer 
- * It compresses the source text by removing all excess spaces */
+ * It compresses the source text by removing all excess spaces and newline-symbols */
 void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
                                           char const pl1_src_text[MAXNISXTXT][LINELEN],
                                           size_t pl1_src_text_len)
@@ -24,6 +24,12 @@ void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
         {
             if ('\0' != pl1_src_text[i1][i2])
             {
+                if ('\n' == pl1_src_text[i1][i2])
+                {
+                    /* Remove newline-symbol from the source text */
+                    continue;
+                }
+
                 if (' ' == pl1_src_text[i1][i2] &&
                     (' ' == prev_processed_symb ||
                      ';' == prev_processed_symb ||
@@ -41,11 +47,11 @@ void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
                      * from the source text.
                      * Compressed text will not contain this space-symbol
                      * after 'prev_processed_symb' which already 
-                     * contained in compressed source text
+                     * contained in compact source text
                      * For example:
-                     * - "TEXT    TEXT2" source text will be processed to "TEXT TEXT2" compressed source text
-                     * - "TEXT: TEXT2" source text will be processed to "TEXT:TEXT2" compressed source text
-                     * - "TEXT(    TEXT2" source text will be processed to "TEXT(TEXT2" compressed source text
+                     * - "TEXT    TEXT2" source text will be processed to "TEXT TEXT2" compact source text
+                     * - "TEXT: TEXT2" source text will be processed to "TEXT:TEXT2" compact source text
+                     * - "TEXT(    TEXT2" source text will be processed to "TEXT(TEXT2" compact source text
                      *
                      * In this way accordance with this condition we remove excess
                      * space-symbol after 'prev_processed_symb' symbol
@@ -63,11 +69,11 @@ void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
                 {
                     /* In accordance with this condition 'prev_processed_symb'
                      * which contains space-symbol will be removed
-                     * from the compressed source text, which already contains this space-symbol.
+                     * from the compact source text, which already contains this space-symbol.
                      * For example:
-                     * - "TEXT    TEXT2" source text will be processed to "TEXT TEXT2" compressed source text
-                     * - "TEXT + TEXT2" source text will be processed to "TEXT+ TEXT2" compressed source text
-                     * - "TEXT  (TEXT2" source text will be processed to "TEXT(TEXT2" compressed source text
+                     * - "TEXT    TEXT2" source text will be processed to "TEXT TEXT2" compact source text
+                     * - "TEXT + TEXT2" source text will be processed to "TEXT+ TEXT2" compact source text
+                     * - "TEXT  (TEXT2" source text will be processed to "TEXT(TEXT2" compact source text
                      *
                      * In this way in accordance with this condition we remove excess
                      * space-symbol before 'pl1_src_text[i1][i2]' symbol
@@ -78,7 +84,6 @@ void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
                 prev_processed_symb = pl1_src_text[i1][i2];
                 p_compact_pl1_src_text[i3] = prev_processed_symb;
                 i3++;
-
             }
             else
             {
@@ -90,6 +95,5 @@ void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
     p_compact_pl1_src_text[i3] = '\0';
     #if 0
     printf("%s\n", p_compact_pl1_src_text);
-    exit(0);
     #endif
 }
