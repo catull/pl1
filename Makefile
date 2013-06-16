@@ -8,11 +8,11 @@ RM := rm -rf
 CC := gcc
 FLAGS := -O2 -Wall
 
+all: plcmp asmcmp absload
+
 -include $(PLCMP_DIR)/plcmp.mk
 -include $(ASMCMP_DIR)/asmcmp.mk
 -include $(ABSLOAD_DIR)/absload.mk
-
-all: plcmp asmcmp absload
 
 plcmp: $(PLCMP_OBJS)
 	$(CC) $(PLCMP_OBJS) -o $(PLCMP_BIN)
