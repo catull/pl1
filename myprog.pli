@@ -1,6 +1,0 @@
-EX05:   PROC  OPTIONS  ( MAIN );
-        DCL A   CHAR  ( 5 )  INIT  ( ‘PL’ );
-        DCL B   CHAR  ( 4 )  INIT  ( ‘1’ );
-        DCL C   CHAR  ( 4 );
-        C = A !! B;
-END  EX05;
