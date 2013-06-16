@@ -4,5 +4,3 @@ EX05:   PROC  OPTIONS  ( MAIN );
         DCL C   CHAR  ( 4 );
         C = A !! B;
 END  EX05;
-
-*)

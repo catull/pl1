@@ -36,11 +36,10 @@ static const char* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code
             return "Unknown error code for generating error message";
     }
 }
-
-/* Построение таблицы  */
-/* преемников из матрицы  */
-/* смежности по алгоритму */
-/* Варшалла */
+/* Subroutine constructs table of the
+ * successors of the adjacency matrix
+ * of the Varshall's algorithm
+ */
 static void plcmp_main_build_tpr(void)
 {
     int i1;
