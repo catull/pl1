@@ -73,8 +73,8 @@
         if (pointer)                            \
         {                                       \
             free(pointer);                      \
+            pointer = NULL;                     \
         }                                       \
-        pointer = NULL;                         \
     } while(0)
 
 /* Cycles counters */

@@ -32,7 +32,7 @@ int IFORMT;
 
 /* Array for storage of output text written in IBM 370 ASSEMBLER */
 static char ASSTXT[MAXLTXT][80];
-/* output array index */
+/* Output array index */
 static int IASSTXT;
 
 static void plcmp_sem_calc_clear_assembler_card(void)
