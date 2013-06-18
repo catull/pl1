@@ -9,7 +9,7 @@
 /* The limited size of the source text */
 #define MAXNISXTXT 50
 /* The limited size of the table of the syntax rules */
-#define NSINT 221
+#define NSINT 225
 /* The limited size of the stack of the goals */
 #define NCEL 20
 /* The limited size of the stack of the goals achieved */

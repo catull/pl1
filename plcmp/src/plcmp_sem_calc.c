@@ -92,15 +92,16 @@ static void FORM(int dst_index)
 
     for (i = j; i <= DST[dst_index].DST4 + 1; i++)
     {
-        if (compact_pl1_src_text[i] == ':' ||
-            compact_pl1_src_text[i] == ' ' ||
-            compact_pl1_src_text[i] == '(' ||
-            compact_pl1_src_text[i] == ')' ||
-            compact_pl1_src_text[i] == ';' ||
-            compact_pl1_src_text[i] == '+' ||
-            compact_pl1_src_text[i] == '-' ||
-            compact_pl1_src_text[i] == '=' ||
-            compact_pl1_src_text[i] == '*')
+        if ('\'' == compact_pl1_src_text[i] ||
+            ':'  == compact_pl1_src_text[i] ||
+            ' '  == compact_pl1_src_text[i] ||
+            '('  == compact_pl1_src_text[i] ||
+            ')'  == compact_pl1_src_text[i] ||
+            ';'  == compact_pl1_src_text[i] ||
+            '+'  == compact_pl1_src_text[i] ||
+            '-'  == compact_pl1_src_text[i] ||
+            '='  == compact_pl1_src_text[i] ||
+            '*'  == compact_pl1_src_text[i])
         {
             FORMT[IFORMT][i - j] = '\0';
             IFORMT++;
@@ -109,6 +110,7 @@ static void FORM(int dst_index)
         }
         else
         {
+
             FORMT[IFORMT][i - j] = compact_pl1_src_text[i];
         }
     }
@@ -437,6 +439,7 @@ static int ODC(int entry, void const *param)
         case 1:
         {
             int i;
+            int init_pos;
             int dst_index = *((int *)param);
 
             FORM(dst_index);
@@ -451,17 +454,16 @@ static int ODC(int entry, void const *param)
             }
 
             strcpy(SYM[ISYM].NAME, FORMT[1]);
-            strcpy(SYM[ISYM].RAZR, FORMT[4]);
 
             if (!(strcmp(FORMT[2], "BIN") || strcmp(FORMT[3], "FIXED")))
             {
+                init_pos = 5;
                 SYM[ISYM].TYPE = 'B';
-                goto ODC11;
             }
             else if (!strcmp(FORMT[2], "CHAR"))
             {
+                init_pos = 4;
                 SYM[ISYM].TYPE = 'C';
-                goto ODC12;
             }
             else
             {
@@ -469,25 +471,46 @@ static int ODC(int entry, void const *param)
                 return 2;
             }
 
-        ODC11:
-            if (!strcmp(FORMT[5], "INIT"))
-            {
-                strcpy(SYM[ISYM].INIT, FORMT[6]);
-            }
-            else
-            {
-                strcpy(SYM[ISYM].INIT, "0B");
-            }
+            strcpy(SYM[ISYM].RAZR, FORMT[init_pos - 1]);
 
-        ODC12:
-            if (!strcmp(FORMT[5], "INIT"))
+            if (!strcmp(FORMT[init_pos], "INIT"))
             {
-                strcpy(SYM[ISYM].INIT, FORMT[6]);
-                memset(&(SYM[ISYM].INIT + strlen(FORMT[6]))[0], ' ', atoi(SYM[ISYM].RAZR) - strlen(FORMT[6]));
+                switch(SYM[ISYM].TYPE)
+                {
+                    case 'B':
+                        strcpy(SYM[ISYM].INIT, FORMT[init_pos + 1]);           
+
+                        break;
+                    case 'C':
+                    {
+                        #define init_value_pos (init_pos + 2)
+                        #define init_value_len strlen(FORMT[init_value_pos])
+
+                        strcpy(SYM[ISYM].INIT, FORMT[init_value_pos]);
+                        memset(SYM[ISYM].INIT, ' ', atoi(SYM[ISYM].RAZR) - init_value_len);
+
+                        #undef init_value_pos
+                        #undef init_value_len
+
+                        break;
+                    }
+                    default:
+                        return 2;
+                }
             }
             else
             {
-                memset(SYM[ISYM].INIT, ' ', atoi(SYM[ISYM].RAZR));
+                switch(SYM[ISYM].TYPE)
+                {
+                    case 'B':
+                        strcpy(SYM[ISYM].INIT, "0B");
+                        break;
+                    case 'C':
+                        memset(SYM[ISYM].INIT, ' ', atoi(SYM[ISYM].RAZR));
+                        break;
+                    default:
+                        return 2;
+                }
             }
 
             ++ISYM;
@@ -980,7 +1003,7 @@ int plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name, int *p_dst_index)
         /*   14  */ RZR,
         /*   15  */ TEL,
         /*   16  */ ZNK,
-        /*   16  */ STC
+        /*   17  */ STC
     };
 
     /* Clear buffer string of the assembler output file */

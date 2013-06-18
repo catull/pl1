@@ -40,7 +40,8 @@ void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
                      '-' == prev_processed_symb ||
                      '=' == prev_processed_symb ||
                      '*' == prev_processed_symb ||
-                     '!' == prev_processed_symb))
+                     '!' == prev_processed_symb ||
+                     '\''== prev_processed_symb))
                 {
                     /* In accordance with this condition 'pl1_src_text[i1][i2]'
                      * which contains space-symbol will be removed
@@ -58,14 +59,15 @@ void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
                      */
                      continue; 
                 }
-                else if (('+' == pl1_src_text[i1][i2] ||
-                          '-' == pl1_src_text[i1][i2] ||
-                          '=' == pl1_src_text[i1][i2] ||
-                          '(' == pl1_src_text[i1][i2] ||
-                          ')' == pl1_src_text[i1][i2] ||
-                          '*' == pl1_src_text[i1][i2] ||
-                          '!' == pl1_src_text[i1][i2]) && 
-                           ' ' == prev_processed_symb)
+                else if (('+'   == pl1_src_text[i1][i2] ||
+                          '-'   == pl1_src_text[i1][i2] ||
+                          '='   == pl1_src_text[i1][i2] ||
+                          '('   == pl1_src_text[i1][i2] ||
+                          ')'   == pl1_src_text[i1][i2] ||
+                          '*'   == pl1_src_text[i1][i2] ||
+                          '\''  == pl1_src_text[i1][i2] ||
+                          '!'   == pl1_src_text[i1][i2]) && 
+                           ' '  == prev_processed_symb)
                 {
                     /* In accordance with this condition 'prev_processed_symb'
                      * which contains space-symbol will be removed
@@ -91,12 +93,4 @@ void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
             }
         }
     }
-
-    p_compact_pl1_src_text[i3] = '\0';
-    #if 0
-    printf("%s\n", p_compact_pl1_src_text);
-    #endif
-    #if 0
-    exit(0);
-    #endif
 }
