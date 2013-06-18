@@ -479,7 +479,6 @@ static int ODC(int entry, void const *param)
                 {
                     case 'B':
                         strcpy(SYM[ISYM].INIT, FORMT[init_pos + 1]);           
-
                         break;
                     case 'C':
                     {
@@ -487,7 +486,7 @@ static int ODC(int entry, void const *param)
                         #define init_value_len strlen(FORMT[init_value_pos])
 
                         strcpy(SYM[ISYM].INIT, FORMT[init_value_pos]);
-                        memset(SYM[ISYM].INIT, ' ', atoi(SYM[ISYM].RAZR) - init_value_len);
+                        memset(&(SYM[ISYM].INIT)[init_value_len], ' ', atoi(SYM[ISYM].RAZR) - init_value_len);
 
                         #undef init_value_pos
                         #undef init_value_len
@@ -594,26 +593,33 @@ static int OEN(int entry, void const *param)
             {
                 if (isalpha(SYM[i].NAME[0]))
                 {
-                    if ('B' == SYM[i].TYPE)
+                    int t_flag = 'P' != SYM[i].TYPE;
+                    if (t_flag)
                     {
                         strcpy(assembler_card.METKA, SYM[i].NAME);
                         assembler_card.METKA[strlen(assembler_card.METKA)] = ' ';
                         memcpy(assembler_card.OPERAC, "DC", 2);
+                    }
 
-                        if (strcmp(SYM[i].RAZR, "15") <= 0)
-                        {
-                            strcpy(assembler_card.OPERAND, "H\'");
-                        }
-                        else
-                        {
-                            strcpy(assembler_card.OPERAND, "F\'");
-                        }
+                    switch(SYM[i].TYPE)
+                    {
+                        case 'B':
+                            strcpy(assembler_card.OPERAND, (strcmp(SYM[i].RAZR, "15") <= 0) ? "H\'" : "F\'");
+                            strcat(assembler_card.OPERAND, gcvt(VALUE(SYM[i].INIT), 10, &RAB[0]));
+                            break;
+                        case 'C':
+                            strcpy(assembler_card.OPERAND, "C\'");
+                            strcat(assembler_card.OPERAND, SYM[i].INIT);
+                            break;
+                        default:
+                            break;
+                    }
 
-                        strcat(assembler_card.OPERAND, gcvt(VALUE(SYM[i].INIT), 10, &RAB[0]));
+                    if (t_flag)
+                    {
                         assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = '\'';
-
                         memcpy(assembler_card.COMM, "Variable definition", 19);
-                        ZKARD ();
+                        ZKARD();
                     }
                 }
             }
