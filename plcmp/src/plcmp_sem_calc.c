@@ -8,20 +8,16 @@
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_sem_calc.h"
 
-/* This union is type of assembler card
+/* This struct is type of assembler card
  * It is template to generate the output file record by IBM 370 assembler */
-static union assembler_card_un {
-    char BUFCARD[80];
-    struct
-    {
-        char METKA[8];
-        char PROB1;
-        char OPERAC[5];
-        char PROB2;
-        char OPERAND[12];
-        char PROB3;
-        char COMM[52];
-    } _BUFCARD;
+static struct assembler_card_un {
+    char METKA[8];
+    char PROB1;
+    char OPERAC[5];
+    char PROB2;
+    char OPERAND[12];
+    char PROB3;
+    char COMM[52];
 } assembler_card;
 
 /* Array for formatted (a sequence of 9-th positional lines-tokens)
@@ -47,7 +43,7 @@ static void plcmp_sem_calc_clear_assembler_card(void)
 /* ASSTXT                 */
 static void ZKARD(void)
 {
-    memcpy(ASSTXT[IASSTXT], assembler_card.BUFCARD, 80);
+    memcpy(ASSTXT[IASSTXT], &assembler_card, 80);
     ++IASSTXT;
     plcmp_sem_calc_clear_assembler_card();
 }
@@ -155,18 +151,18 @@ static int AVI(int entry, void const *param)
                         {
                             if (strcmp(SYM[i].RAZR, "15") <= 0)
                             {
-                                memcpy(assembler_card._BUFCARD.OPERAC, "LH", 2);
+                                memcpy(assembler_card.OPERAC, "LH", 2);
                             }
                             else
                             {
-                                memcpy(assembler_card._BUFCARD.OPERAC, "L", 1);
+                                memcpy(assembler_card.OPERAC, "L", 1);
                             }
 
-                            strcpy(assembler_card._BUFCARD.OPERAND, "RRAB,");
-                            strcat(assembler_card._BUFCARD.OPERAND, FORMT[0]);
+                            strcpy(assembler_card.OPERAND, "RRAB,");
+                            strcat(assembler_card.OPERAND, FORMT[0]);
 
-                            assembler_card._BUFCARD.OPERAND[strlen(assembler_card._BUFCARD.OPERAND)] = ' ';
-                            memcpy(assembler_card._BUFCARD.COMM, "Load variable into register", 27);
+                            assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
+                            memcpy(assembler_card.COMM, "Load variable into register", 27);
 
                             ZKARD();
 
@@ -194,11 +190,11 @@ static int AVI(int entry, void const *param)
                             {
                                 if (strcmp(SYM[i].RAZR, "15") <= 0 )
                                 {
-                                    memcpy(assembler_card._BUFCARD.OPERAC, "AH", 2);
+                                    memcpy(assembler_card.OPERAC, "AH", 2);
                                 }
                                 else
                                 {
-                                    memcpy(assembler_card._BUFCARD.OPERAC, "A", 1);
+                                    memcpy(assembler_card.OPERAC, "A", 1);
                                 }
                             }
                             else
@@ -207,11 +203,11 @@ static int AVI(int entry, void const *param)
                                 {
                                     if (strcmp(SYM[i].RAZR, "15") <= 0)
                                     {
-                                        memcpy(assembler_card._BUFCARD.OPERAC, "SH", 2);
+                                        memcpy(assembler_card.OPERAC, "SH", 2);
                                     }
                                     else
                                     {
-                                        memcpy(assembler_card._BUFCARD.OPERAC, "S", 1);
+                                        memcpy(assembler_card.OPERAC, "S", 1);
                                     }
                                 }
                                 else
@@ -221,10 +217,10 @@ static int AVI(int entry, void const *param)
 
                             }
 
-                            strcpy(assembler_card._BUFCARD.OPERAND, "RRAB," );
-                            strcat(assembler_card._BUFCARD.OPERAND, FORMT[IFORMT-1]);
-                            assembler_card._BUFCARD.OPERAND[strlen(assembler_card._BUFCARD.OPERAND)] = ' ';
-                            memcpy(assembler_card._BUFCARD.COMM, "Formation of intermediate value", 31);
+                            strcpy(assembler_card.OPERAND, "RRAB," );
+                            strcat(assembler_card.OPERAND, FORMT[IFORMT-1]);
+                            assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
+                            memcpy(assembler_card.COMM, "Formation of intermediate value", 31);
                             ZKARD();
 
                             return 0;
@@ -443,58 +439,59 @@ static int ODC(int entry, void const *param)
             int i;
             int dst_index = *((int *)param);
 
-            FORM(dst_index);                                        /* форматирование ПЛ1-опе-*/
-            /* ратора DCL             */
+            FORM(dst_index);
 
-            for (i = 0; i < ISYM; i++)                    /* если фиксируем повтор- */
+            for (i = 0; i < ISYM; i++)
             {
-                /* повторное объявление   */
-                if (!strcmp(SYM[i].NAME, FORMT[1])      /* второго терма оператора*/ /* DCL, то                */ /* завершение программы   */
-                        && strlen(SYM[i].NAME) == strlen(FORMT[1])) /* по ошибке              */
+                if (!strcmp(SYM[i].NAME, FORMT[1])
+                    && strlen(SYM[i].NAME) == strlen(FORMT[1]))
                 {
                     return 6;
                 }
             }
 
-            strcpy (SYM[ISYM].NAME, FORMT [1]);          /* при отсутствии повтор- */
-            strcpy (SYM[ISYM].RAZR, FORMT [4]);          /* ного объявления иденти-*/
-            /* фикатора запоминаем его*/
-            /* вместе с разрядностью в*/
-            /* табл.SYM               */
+            strcpy(SYM[ISYM].NAME, FORMT[1]);
+            strcpy(SYM[ISYM].RAZR, FORMT[4]);
 
-            /* если идентификатор оп- */
-            /* ределен как bin fixed, */
-            if (!strcmp(FORMT[2], "BIN") && !strcmp(FORMT[3], "FIXED"))
+            if (!(strcmp(FORMT[2], "BIN") || strcmp(FORMT[3], "FIXED")))
             {
-                SYM [ISYM].TYPE = 'B';                        /* то устанавливаем тип   */
-                /* идентификатора = 'B' и */
-                goto ODC11;                                   /* идем на продолжение об-*/
-                /* работки, а             */
+                SYM[ISYM].TYPE = 'B';
+                goto ODC11;
             }
-            else                                            /* иначе                  */
+            else if (!strcmp(FORMT[2], "CHAR"))
             {
-                SYM [ISYM].TYPE = 'U';                        /* устанавливаем тип иден-*/
-                /* тификатора = 'U'  и    */
-                return 2;                                     /* завершаем программу    */
-                /* по ошибке              */
+                SYM[ISYM].TYPE = 'C';
+                goto ODC12;
             }
-
-        ODC11:                                            /* если идентификатор     */
-            /* имеет начальную иници- */
-            if (!strcmp(FORMT[5], "INIT" ))           /* ализацию, то запомина- */
-            {
-                strcpy ( SYM [ISYM++].INIT, FORMT [6] );       /* ем в табл. SYM это на- *//* чальное значение, а    */
-            }
-            /* иначе                  */
-            /* инициализируем иденти- */
-            /* фикатор нулем          */
             else
             {
-                strcpy ( SYM [ISYM++].INIT, "0B" );
+                SYM[ISYM].TYPE = 'U';
+                return 2;
             }
 
-            /* успешное завешение     */
-            /* программы              */
+        ODC11:
+            if (!strcmp(FORMT[5], "INIT"))
+            {
+                strcpy(SYM[ISYM].INIT, FORMT[6]);
+            }
+            else
+            {
+                strcpy(SYM[ISYM].INIT, "0B");
+            }
+
+        ODC12:
+            if (!strcmp(FORMT[5], "INIT"))
+            {
+                strcpy(SYM[ISYM].INIT, FORMT[6]);
+                memset(&(SYM[ISYM].INIT + strlen(FORMT[6]))[0], ' ', atoi(SYM[ISYM].RAZR) - strlen(FORMT[6]));
+            }
+            else
+            {
+                memset(SYM[ISYM].INIT, ' ', atoi(SYM[ISYM].RAZR));
+            }
+
+            ++ISYM;
+
             return 0;
         }
         case 2:
@@ -558,10 +555,10 @@ static int OEN(int entry, void const *param)
             FORM(dst_index);
 
             /* формируем код безусловного возврата управления в вызывающую программу */
-            memcpy(assembler_card._BUFCARD.OPERAC, "BCR", 3);
+            memcpy(assembler_card.OPERAC, "BCR", 3);
             /* операнды команды и поле построчного коментария */
-            memcpy(assembler_card._BUFCARD.OPERAND, "15,14", 5);
-            memcpy(assembler_card._BUFCARD.COMM, "Exit from the program", 21);
+            memcpy(assembler_card.OPERAND, "15,14", 5);
+            memcpy(assembler_card.COMM, "Exit from the program", 21);
 
             /* запомнить опреацию Ассемблера */
             ZKARD ();
@@ -576,23 +573,23 @@ static int OEN(int entry, void const *param)
                 {
                     if ('B' == SYM[i].TYPE)
                     {
-                        strcpy(assembler_card._BUFCARD.METKA, SYM[i].NAME);
-                        assembler_card._BUFCARD.METKA[strlen(assembler_card._BUFCARD.METKA)] = ' ';
-                        memcpy(assembler_card._BUFCARD.OPERAC, "DC", 2);
+                        strcpy(assembler_card.METKA, SYM[i].NAME);
+                        assembler_card.METKA[strlen(assembler_card.METKA)] = ' ';
+                        memcpy(assembler_card.OPERAC, "DC", 2);
 
                         if (strcmp(SYM[i].RAZR, "15") <= 0)
                         {
-                            strcpy(assembler_card._BUFCARD.OPERAND, "H\'");
+                            strcpy(assembler_card.OPERAND, "H\'");
                         }
                         else
                         {
-                            strcpy(assembler_card._BUFCARD.OPERAND, "F\'");
+                            strcpy(assembler_card.OPERAND, "F\'");
                         }
 
-                        strcat(assembler_card._BUFCARD.OPERAND, gcvt(VALUE(SYM[i].INIT), 10, &RAB[0]));
-                        assembler_card._BUFCARD.OPERAND[strlen(assembler_card._BUFCARD.OPERAND)] = '\'';
+                        strcat(assembler_card.OPERAND, gcvt(VALUE(SYM[i].INIT), 10, &RAB[0]));
+                        assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = '\'';
 
-                        memcpy(assembler_card._BUFCARD.COMM, "Variable definition", 19);
+                        memcpy(assembler_card.COMM, "Variable definition", 19);
                         ZKARD ();
                     }
                 }
@@ -605,29 +602,29 @@ static int OEN(int entry, void const *param)
             /* рабочий регистры общего*/
             /* назначения */
 
-            memcpy(assembler_card._BUFCARD.METKA, "RBASE", 5);
-            memcpy(assembler_card._BUFCARD.OPERAC, "EQU", 3);
-            memcpy(assembler_card._BUFCARD.OPERAND, "15", 2);
+            memcpy(assembler_card.METKA, "RBASE", 5);
+            memcpy(assembler_card.OPERAC, "EQU", 3);
+            memcpy(assembler_card.OPERAND, "15", 2);
 
             ZKARD();
 
-            memcpy(assembler_card._BUFCARD.METKA, "RRAB", 4);
-            memcpy(assembler_card._BUFCARD.OPERAC, "EQU", 3);
-            memcpy(assembler_card._BUFCARD.OPERAND, "5", 1);
+            memcpy(assembler_card.METKA, "RRAB", 4);
+            memcpy(assembler_card.OPERAC, "EQU", 3);
+            memcpy(assembler_card.OPERAND, "5", 1);
 
             ZKARD();
 
-            memcpy(assembler_card._BUFCARD.OPERAC, "END", 3);
+            memcpy(assembler_card.OPERAC, "END", 3);
 
             i = 0;
 
             while (FORMT[1][i] != '\0')
             {
-                assembler_card._BUFCARD.OPERAND[i] = FORMT[1][i];
+                assembler_card.OPERAND[i] = FORMT[1][i];
                 ++i;
             }
 
-            memcpy(assembler_card._BUFCARD.COMM, "End of the program", 18);
+            memcpy(assembler_card.COMM, "End of the program", 18);
 
             ZKARD();
 
@@ -677,17 +674,17 @@ static int OPA(int entry, void const *param)
                     {
                         if (strcmp(SYM[i].RAZR, "15") <= 0 )
                         {
-                            memcpy(assembler_card._BUFCARD.OPERAC, "STH", 3);
+                            memcpy(assembler_card.OPERAC, "STH", 3);
                         }
                         else
                         {
-                            memcpy(assembler_card._BUFCARD.OPERAC, "ST", 2);
-                            strcpy(assembler_card._BUFCARD.OPERAND, "RRAB,");
-                            strcat(assembler_card._BUFCARD.OPERAND, FORMT[0]);
+                            memcpy(assembler_card.OPERAC, "ST", 2);
+                            strcpy(assembler_card.OPERAND, "RRAB,");
+                            strcat(assembler_card.OPERAND, FORMT[0]);
 
-                            assembler_card._BUFCARD.OPERAND[strlen(assembler_card._BUFCARD.OPERAND)] = ' ';
+                            assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
 
-                            memcpy(assembler_card._BUFCARD.COMM, "Formation of value of the arithmetic expression", 47);
+                            memcpy(assembler_card.COMM, "Formation of value of the arithmetic expression", 47);
 
                             ZKARD();
 
@@ -758,7 +755,7 @@ static int OPR(int entry, void const *param)
 
             while ('\0' != FORMT[0][i])
             {
-                assembler_card._BUFCARD.METKA[i] = FORMT[0][i];  /* нулевой терм используем */
+                assembler_card.METKA[i] = FORMT[0][i];  /* нулевой терм используем */
                 ++i;
             }
 
@@ -767,25 +764,25 @@ static int OPR(int entry, void const *param)
             /* дооперации Ассемблера  */
 
             /* достраиваем код и операнды в START-псевдооперации Ассемблера */
-            memcpy(assembler_card._BUFCARD.OPERAC, "START", 5);
-            memcpy(assembler_card._BUFCARD.OPERAND, "0", 1);
-            memcpy(assembler_card._BUFCARD.COMM, "Start of the program", 20);
+            memcpy(assembler_card.OPERAC, "START", 5);
+            memcpy(assembler_card.OPERAND, "0", 1);
+            memcpy(assembler_card.COMM, "Start of the program", 20);
 
             /* запоминаем карту Ассемблера */
             ZKARD();
 
             /* формируем BALR-операцию Ассемблера */
-            memcpy(assembler_card._BUFCARD.OPERAC, "BALR", 4 );
-            memcpy(assembler_card._BUFCARD.OPERAND, "RBASE,0", 7);
-            memcpy(assembler_card._BUFCARD.COMM, "Load base register", 18);
+            memcpy(assembler_card.OPERAC, "BALR", 4 );
+            memcpy(assembler_card.OPERAND, "RBASE,0", 7);
+            memcpy(assembler_card.COMM, "Load base register", 18);
 
             /* и запоминаем ее */
             ZKARD();
 
             /* формируем USING-псевдооперацию Ассемблера */
-            memcpy(assembler_card._BUFCARD.OPERAC, "USING", 5);
-            memcpy(assembler_card._BUFCARD.OPERAND, "*,RBASE", 7);
-            memcpy(assembler_card._BUFCARD.COMM, "Assign base register", 20);
+            memcpy(assembler_card.OPERAC, "USING", 5);
+            memcpy(assembler_card.OPERAND, "*,RBASE", 7);
+            memcpy(assembler_card.COMM, "Assign base register", 20);
 
             /* и запоминаем ее */
             ZKARD();
@@ -923,6 +920,25 @@ static int ZNK(int entry, void const *param)
     return 0;
 }
 
+/* Function for semantic calculation
+ * of the non-ternimal STC on the first
+ * and second phases of semantic calculation.
+ * STC is "constant string enclosed into single quotation marks " */
+
+static int STC(int entry, void const *param)
+{
+    switch (entry)
+    {
+        case 1:
+            break;
+        case 2:
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
+
 /*  п р о г р а м м а     */
 /* управления абстрактной */
 /* ЭВМ  -  семантического */
@@ -946,6 +962,7 @@ int plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name, int *p_dst_index)
       * - DST.DST2 - левая граница интерпретируемого фрагмента исх.текста;
       * - DST.DST4 - правая граница интерпретируемого фрагмента исх.текста
       */
+
     int (*handler[NNETRM])(int, void const*) = {
         /*    1  */ AVI,
         /*    2  */ BUK,
@@ -962,7 +979,8 @@ int plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name, int *p_dst_index)
         /*   13  */ PRO,
         /*   14  */ RZR,
         /*   15  */ TEL,
-        /*   16  */ ZNK
+        /*   16  */ ZNK,
+        /*   16  */ STC
     };
 
     /* Clear buffer string of the assembler output file */

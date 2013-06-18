@@ -96,4 +96,7 @@ void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
     #if 0
     printf("%s\n", p_compact_pl1_src_text);
     #endif
+    #if 0
+    exit(0);
+    #endif
 }

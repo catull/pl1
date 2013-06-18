@@ -5,7 +5,9 @@
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_synt_analyzer.h"
 
-/* программа заполнения ячейки стека поставленных целей */
+#define DEBUG_ON
+
+/* Subroutine adds a new goal into CEL-stack */
 static void mcel(char *T1, int T2, int T3)
 {
     strcpy(CEL[K].CEL1, T1);
@@ -14,7 +16,7 @@ static void mcel(char *T1, int T2, int T3)
     K++;
 }
 
-/* программа заполнения ячейки стека достигнутых целей */
+/* Subroutine adds a goal achieved into stack DST-stack */
 static void mdst(char *T1, int T2, int T3, int T4, int T5)
 {
     strcpy(DST[L].DST1, T1);
@@ -47,7 +49,7 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
 
     L2:
 
-    J = VXOD[numb(&compact_pl1_src_text[I], 1 )].VX;
+    J = VXOD[numb(&compact_pl1_src_text[I], 1)].VX;
 
     L3:
 
@@ -62,9 +64,8 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
         I4 = I;
     }
 
-    if (VXOD[numb(SINT[J].DER, 3)].TYP == 'T')
+    if ('T' == VXOD[numb(SINT[J].DER, 3)].TYP)
     {
-
         if (compact_pl1_src_text[I] == SINT[J].DER[0])
         {
             goto L3;
@@ -73,10 +74,9 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
         {
             goto L8;
         }
-
     }
 
-    if (SINT[SINT[J].POSL].DER[0] == '*')
+    if ('*' == SINT[SINT[J].POSL].DER[0])
     {
         I--;
 
@@ -91,7 +91,7 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
 
             if (TPR[numb(CEL[K - 1].CEL1, 3)][numb(CEL[K - 1].CEL1, 3)])
             {
-                J = VXOD[numb(CEL[K - 1].CEL1, 3 )].VX;
+                J = VXOD[numb(CEL[K - 1].CEL1, 3)].VX;
                 goto L3;
             }
 
@@ -99,6 +99,7 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
 
             J = CEL[K - 1].CEL3;
             K--;
+
             goto L3;
         }
 

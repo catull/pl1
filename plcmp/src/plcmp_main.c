@@ -40,7 +40,7 @@ static const char* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code
 
 /* Subroutine constructs table of the
  * successors of the adjacency matrix
- * of the Varshall's algorithm
+ * of the Uorshell's algorithm
  */
 static void plcmp_main_build_tpr(void)
 {
@@ -140,6 +140,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
             case 1:
                 printf("Mismatch of the name of the procedure "
                        "in prologue-epilogue\n");
+                exit(1);
                 break;
             case 2:
                 compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
@@ -148,6 +149,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
                        "Traslation is interrupted\n",
                        FORMT[1],
                        &compact_pl1_src_text[DST[dst_index].DST2]);
+                exit(2);
                 break;
             case 3:
                 compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
@@ -156,6 +158,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
                        "Traslation is interrupted\n",
                        FORMT[IFORMT - 1],
                        &compact_pl1_src_text[DST[dst_index].DST2]);
+                exit(3);
                 break;
             case 4:
                 compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
@@ -164,6 +167,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
                        "Traslation is interrupted\n",
                        FORMT[IFORMT - 1],
                        &compact_pl1_src_text[DST[dst_index].DST2]);
+                exit(4);
                 break;
             case 5:
                 compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
@@ -172,6 +176,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
                        "Traslation is interrupted\n",
                        compact_pl1_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
                        &compact_pl1_src_text[DST[dst_index].DST2]);
+                exit(5);
                 break;
             case 6:
                 compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
@@ -180,6 +185,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
                        "Traslation is interrupted\n",
                        compact_pl1_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
                        &compact_pl1_src_text[DST[dst_index].DST2]);
+                exit(6);
                 break;
             default:
                 break;
