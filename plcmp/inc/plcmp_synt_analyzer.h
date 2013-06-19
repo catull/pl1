@@ -8,7 +8,7 @@ typedef enum plcmp_synt_analyzer_error_code_e {
     PLCMP_SYNT_ANALYZER_FAILURE = 1
 } plcmp_synt_analyzer_error_code_t;
 
-plcmp_synt_analyzer_error_code_t plcmp_synt_analyzer_syntax_analyzer(cel_t *p_goals_ar,
-                                                                     dst_t *p_goals_achieved_ar);
+plcmp_synt_analyzer_error_code_t plcmp_synt_analyzer_syntax_analyzer(cel_t *p_goals,
+                                                                     dst_t *p_goals_achieved);
 
 #endif /* PLCMP_SYNT_ANALYZER_H */

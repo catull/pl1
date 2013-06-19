@@ -44,7 +44,7 @@ static void plcmp_sem_calc_clear_assembler_card(void)
 }
 
 
-/* Record new assembler command
+/* Record new assembler command by assembler card
  * into assembler commands' array 
  * and clear the temporary assembler card */
 static void ZKARD(void)

@@ -20,11 +20,11 @@ typedef enum plcmp_main_error_code_e {
  * and copies 'p_fp_str_from' string to
  *
  * @param1:
- * 'p_fp_str_to' has type 'char'
+ * 'p_fp_str_to' has type 'char*'
  * It has to be 'NULL'-pointer
  *
  * @param2:
- * 'p_fp_str_from' has type 'char' or 'char const'
+ * 'p_fp_str_from' has type 'char*' or 'char const*'
  *
  */
 #define PLCMP_MAIN_ALLOC_MEM_AND_COPY_FP_STR(p_fp_str_to, p_fp_str_from)                \
@@ -38,11 +38,11 @@ typedef enum plcmp_main_error_code_e {
  * from the file path with '.pli' extension
  *
  * @param1:
- * 'p_asm_fp_name' has type 'char'
+ * 'p_asm_fp_name' has type 'char*'
  * It has to be 'NULL'-pointer
  *
  * @param2:
- * 'p_pl1_fp_name' has type 'char' or 'char const'
+ * 'p_pl1_fp_name' has type 'char*' or 'char const*'
  * It hasn't to be 'NULL'-pointer
  *
  */
