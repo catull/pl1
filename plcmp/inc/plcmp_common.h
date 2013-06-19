@@ -1,3 +1,5 @@
+/* encoding: UTF-8 */
+
 #ifndef PLCMP_COMMON_H
 #define PLCMP_COMMON_H
 

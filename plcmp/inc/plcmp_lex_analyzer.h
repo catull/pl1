@@ -1,3 +1,5 @@
+/* encoding: UTF-8 */
+
 #ifndef PLCMP_LEX_ANALYZER_H
 #define PLCMP_LEX_ANALYZER_H
 

@@ -1,10 +1,12 @@
+/* encoding: UTF-8 */
+
 #ifndef PLCMP_SEM_CALC_H
 #define PLCMP_SEM_CALC_H
 
 /* Array for formatted (a sequence of 9-th positional lines-tokens)
  * representation interpreted fragment for compact source text */
 extern char FORMT[MAXFORMT][9];
-/* formatted array index */
+/* Formatted array index */
 extern int IFORMT;
 
 /* This struct is type of the table of labels' names of variables

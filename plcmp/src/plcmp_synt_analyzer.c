@@ -1,3 +1,5 @@
+/* encoding: UTF-8 */
+
 #include <string.h>
 
 #include "plcmp_common.h"

@@ -1,3 +1,5 @@
+/* encoding: UTF-8 */
+
 #ifndef PLCMP_SYNT_ANALYZER_H
 #define PLCMP_SYNT_ANALYZER_H
 

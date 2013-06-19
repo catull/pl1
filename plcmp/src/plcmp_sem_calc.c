@@ -1,3 +1,7 @@
+/* encoding: UTF-8 
+ * russian letters: (Cyrillic) KOI8-U
+ */
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -54,9 +58,9 @@ static void ZKARD(void)
     plcmp_sem_calc_clear_assembler_card();
 }
 
-/* Function translates 'long int' value written in string of ASCII-code
+/* Function translates 'long int' value written as string of ASCII-code
  * into normal 'long int' internal representation of machine */
-static long int VALUE(char const *str_long_value)
+static long int li_str_to_li(char const *str_long_value)
 {
     long int long_value = 0;
     int i = 0;
@@ -241,7 +245,7 @@ static int AVI(int entry, void const *param)
                                         return 5;
                                 }
 
-                                strcpy(assembler_card.OPERAND, "RRAB," );
+                                strcpy(assembler_card.OPERAND, "RRAB,");
                                 strcat(assembler_card.OPERAND, FORMT[IFORMT-1]);
                                 assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                                 memcpy(assembler_card.COMM, "Formation of intermediate value", 31);
@@ -629,7 +633,7 @@ static int OEN(int entry, void const *param)
                     {
                         case 'B':
                             strcpy(assembler_card.OPERAND, (strcmp(SYM[i].RAZR, "15") <= 0) ? "H\'" : "F\'");
-                            strcat(assembler_card.OPERAND, gcvt(VALUE(SYM[i].INIT), 10, &RAB[0]));
+                            strcat(assembler_card.OPERAND, gcvt(li_str_to_li(SYM[i].INIT), 10, &RAB[0]));
                             break;
                         case 'C':
                             strcpy(assembler_card.OPERAND, "C\'");
