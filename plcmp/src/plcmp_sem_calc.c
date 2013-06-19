@@ -54,27 +54,24 @@ static void ZKARD(void)
     plcmp_sem_calc_clear_assembler_card();
 }
 
-/* п р о г р а м м а      */
-/* перевода двоичной      */
-/* константы из ASCIIz-вида во внутреннее представление типа long int */
-static long int VALUE(char *s)
+/* Function translates 'long int' value written in string of ASCII-code
+ * into normal 'long int' internal representation of machine */
+static long int VALUE(char const *str_long_value)
 {
-    long int S;
-    int i;
+    long int long_value = 0;
+    int i = 0;
 
-    i = 0;
-    S = 0;
-    while ( *(s + i) != 'B' )
+    while ('B' != str_long_value[i])
     {
-        S <<= 1;
-        if ( *(s + i) == '1' )
+        long_value <<= 1;
+        if ('1' == str_long_value[i])
         {
-            S++;
+            ++long_value;
         }
-        i++;
+        ++i;
     }
 
-    return S;
+    return long_value;
 }
 
 /* п р о г р а м м а */
@@ -98,6 +95,7 @@ static void FORM(goals_achieved_stack_t achieved_goal)
 
     for (i = j; i <= achieved_goal.DST4 + 1; i++)
     {
+
         if ('\'' == compact_pl1_src_text[i] ||
             ':'  == compact_pl1_src_text[i] ||
             ' '  == compact_pl1_src_text[i] ||
@@ -112,6 +110,14 @@ static void FORM(goals_achieved_stack_t achieved_goal)
             FORMT[IFORMT][i - j] = '\0';
             IFORMT++;
             j = i + 1;
+            goto FORM1;
+        }
+        else if ('!' == compact_pl1_src_text[i] &&
+                 '!' == compact_pl1_src_text[i + 1])
+        {
+            FORMT[IFORMT][i - j] = '\0';
+            IFORMT++;
+            j = i + 2;
             goto FORM1;
         }
         else
@@ -150,35 +156,36 @@ static int AVI(int entry, void const *param)
 
             if (1 == IFORMT)
             {
-                for (i = 0; i < ISYM; i++ )
+                for (i = 0; i < ISYM; i++)
                 {
                     if (!strcmp(SYM[i].NAME, FORMT[0]) &&
                         (strlen(SYM[i].NAME) == strlen(FORMT[0])))
                     {
-                        if ('B' == SYM[i].TYPE)
+                        switch (SYM[i].TYPE)
                         {
-                            if (strcmp(SYM[i].RAZR, "15") <= 0)
-                            {
-                                memcpy(assembler_card.OPERAC, "LH", 2);
-                            }
-                            else
-                            {
-                                memcpy(assembler_card.OPERAC, "L", 1);
-                            }
+                            case 'B':
+                                if (strcmp(SYM[i].RAZR, "15") <= 0)
+                                {
+                                    memcpy(assembler_card.OPERAC, "LH", 2);
+                                }
+                                else
+                                {
+                                    memcpy(assembler_card.OPERAC, "L", 1);
+                                }
 
-                            strcpy(assembler_card.OPERAND, "RRAB,");
-                            strcat(assembler_card.OPERAND, FORMT[0]);
+                                strcpy(assembler_card.OPERAND, "RRAB,");
+                                strcat(assembler_card.OPERAND, FORMT[0]);
+                                assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
+                                memcpy(assembler_card.COMM, "Load variable into register", 27);
+                                ZKARD();
 
-                            assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
-                            memcpy(assembler_card.COMM, "Load variable into register", 27);
+                                return 0;
 
-                            ZKARD();
+                            case 'C':
+                                return 0;
 
-                            return 0;
-                        }
-                        else
-                        {
-                            return 3;
+                            default:
+                                return 3;
                         }
                     }
                 }
@@ -187,55 +194,66 @@ static int AVI(int entry, void const *param)
             }
             else
             {
+                size_t formt_len = strlen(FORMT[IFORMT - 1]);
+
                 for (i = 0; i < ISYM; i++)
                 {
                     if (!strcmp(SYM[i].NAME, FORMT[IFORMT - 1]) &&
-                        (strlen(SYM[i].NAME) == strlen(FORMT[IFORMT - 1])))
+                        (strlen(SYM[i].NAME) == formt_len))
                     {
-                        if (SYM[i].TYPE == 'B')
+                        switch (SYM[i].TYPE)
                         {
-                            if (compact_pl1_src_text[goal_achieved.DST4 - strlen(FORMT[IFORMT-1])] == '+')
-                            {
-                                if (strcmp(SYM[i].RAZR, "15") <= 0 )
+                            case 'B':
+
+                                switch (compact_pl1_src_text[goal_achieved.DST4 - formt_len])
                                 {
-                                    memcpy(assembler_card.OPERAC, "AH", 2);
-                                }
-                                else
-                                {
-                                    memcpy(assembler_card.OPERAC, "A", 1);
-                                }
-                            }
-                            else
-                            {
-                                if (compact_pl1_src_text[goal_achieved.DST4 - strlen(FORMT[IFORMT-1])] == '-')
-                                {
-                                    if (strcmp(SYM[i].RAZR, "15") <= 0)
-                                    {
-                                        memcpy(assembler_card.OPERAC, "SH", 2);
-                                    }
-                                    else
-                                    {
-                                        memcpy(assembler_card.OPERAC, "S", 1);
-                                    }
-                                }
-                                else
-                                {
-                                    return 5;
+                                    case '+':
+                                        if (strcmp(SYM[i].RAZR, "15") <= 0 )
+                                        {
+                                            memcpy(assembler_card.OPERAC, "AH", 2);
+                                        }
+                                        else
+                                        {
+                                            memcpy(assembler_card.OPERAC, "A", 1);
+                                        }
+                                        break;
+
+                                    case '-':
+                                        if (strcmp(SYM[i].RAZR, "15") <= 0)
+                                        {
+                                            memcpy(assembler_card.OPERAC, "SH", 2);
+                                        }
+                                        else
+                                        {
+                                            memcpy(assembler_card.OPERAC, "S", 1);
+                                        }
+                                        break;
+
+                                    case '!':
+                                        switch (compact_pl1_src_text[goal_achieved.DST4 - formt_len - 1])
+                                        {
+                                            case '!':
+                                                break;
+                                            default:
+                                                return 5;
+                                        }
+                                    default:
+                                        return 5;
                                 }
 
-                            }
+                                strcpy(assembler_card.OPERAND, "RRAB," );
+                                strcat(assembler_card.OPERAND, FORMT[IFORMT-1]);
+                                assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
+                                memcpy(assembler_card.COMM, "Formation of intermediate value", 31);
+                                ZKARD();
 
-                            strcpy(assembler_card.OPERAND, "RRAB," );
-                            strcat(assembler_card.OPERAND, FORMT[IFORMT-1]);
-                            assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
-                            memcpy(assembler_card.COMM, "Formation of intermediate value", 31);
-                            ZKARD();
+                                return 0;
 
-                            return 0;
-                        }
-                        else
-                        {
-                            return 3;
+                            case 'C':
+                                return 0;
+
+                            default:
+                                return 3;
                         }
                     }
                 }

@@ -72,10 +72,9 @@ plcmp_synt_analyzer_error_code_t plcmp_synt_analyzer_syntax_analyzer(cel_t *p_go
     /* Current index in the compact text */
     int i = 0;
     /* Current index in the table of grammar rules */
-    int j = 1;
+    int j;
 
     I4 = 0;
-
 
     add_goal(p_goals, "PRO", i, 999);
 

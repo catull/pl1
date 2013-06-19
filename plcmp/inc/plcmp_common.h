@@ -9,13 +9,13 @@
 /* The limited size of the source text */
 #define MAXNISXTXT 50
 /* The limited size of the table of the syntax rules */
-#define NSINT 225
+#define NSINT 229
 /* The limited size of the stack of the goals */
 #define NCEL 20
 /* The limited size of the stack of the goals achieved */
 #define NDST 500
 /* The limited size of the table of inputs */
-#define NVXOD 54
+#define NVXOD 55
 /* The limited size of the string of compact text */
 #define NSTROKA 200
 /* The limited size of the list of non-terminals */
