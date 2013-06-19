@@ -29,8 +29,6 @@
 /* The limited length of the line of the source text */
 #define LINELEN 80
 
-
-
 #define TRUE 1
 #define FALSE 0
 
@@ -80,10 +78,33 @@
 /* Cycles counters */
 extern int I4;
 
-extern int I; /* current index in compact text */
-extern int J; /* current index in the table of grammar rules */
-extern int K; /* current index in the stack of goals */
-extern int L; /* current index in the stack of achieved goals */
+/* Structure for the stack of goals */
+typedef struct goals_stack_s {
+    char CEL1[4];
+    int CEL2;
+    int CEL3;
+} goals_stack_t;
+
+/* */
+typedef struct cel_s {
+    unsigned int count;
+    goals_stack_t *cel_stack;
+} cel_t;
+
+/* Structure for the stack of goals achieved */
+typedef struct goals_achieved_stack_s {
+    char DST1[4];
+    int DST2;
+    int DST3;
+    int DST4;
+    int DST5; 
+} goals_achieved_stack_t;
+
+/* */
+typedef struct dst_s {
+    unsigned int count;
+    goals_achieved_stack_t *dst_stack;
+} dst_t;
 
 
 #endif /* PLCMP_COMMON_H */

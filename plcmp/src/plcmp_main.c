@@ -113,18 +113,28 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
                                                                 size_t pl1_src_text_len,
                                                                 char const *p_asm_fp_name)
 {
+    /* Later stacks for goals and goals achieved will be created */
+    cel_t goals;
+    dst_t goals_achieved;
+
     plcmp_main_error_code_t main_err_code = PLCMP_MAIN_SUCCESSFUL_TRANSLATION;
     plcmp_synt_analyzer_error_code_t synt_analyzer_err_code;
+    int sem_calc_err_code;
 
     /* Lexical analysis of the source text */
     plcmp_lex_analyzer_compress_src_text(compact_pl1_src_text, pl1_src_text, pl1_src_text_len);
     /* Construct adjacency matrix */
     plcmp_main_build_tpr();
 
+    /* Create stacks */
+    PLCMP_MAIN_CREATE_GOALS_STACK(goals);
+    PLCMP_MAIN_CREATE_GOALS_ACHIEVED_STACK(goals_achieved);
     /* Syntax analysis of the source text */
-    synt_analyzer_err_code = plcmp_synt_analyzer_syntax_analyzer();
+    synt_analyzer_err_code = plcmp_synt_analyzer_syntax_analyzer(&goals, &goals_achieved);
+    PLCMP_MAIN_DESTROY_GOALS_STACK(goals);
     if (PLCMP_SYNT_ANALYZER_SUCCESS != synt_analyzer_err_code)
     {
+        PLCMP_MAIN_DESTROY_GOALS_ACHIEVED_STACK(goals_achieved);
         /* Error in syntax of the source PL1-text */
         main_err_code = PLCMP_MAIN_SYNT_ANALYZER_ERROR;
     }
@@ -132,7 +142,7 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
     else
     {
         int dst_index = 0;
-        int sem_calc_err_code = plcmp_sem_calc_gen_asm_code(p_asm_fp_name, &dst_index);
+        sem_calc_err_code = plcmp_sem_calc_gen_asm_code(p_asm_fp_name, &goals_achieved, &dst_index);
         switch (sem_calc_err_code)
         {
             case 0:
@@ -140,56 +150,57 @@ static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_s
             case 1:
                 printf("Mismatch of the name of the procedure "
                        "in prologue-epilogue\n");
-                exit(1);
                 break;
             case 2:
-                compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
+                compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
                 printf("Not allowed indentifier type '%s' "
                        "in the source text: %s\n"
                        "Traslation is interrupted\n",
                        FORMT[1],
-                       &compact_pl1_src_text[DST[dst_index].DST2]);
-                exit(2);
+                       &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
                 break;
             case 3:
-                compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
+                compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
                 printf("Not allowed indentifier type '%s' "
                        "in the source text: %s\n"
                        "Traslation is interrupted\n",
                        FORMT[IFORMT - 1],
-                       &compact_pl1_src_text[DST[dst_index].DST2]);
-                exit(3);
+                       &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
                 break;
             case 4:
-                compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
+                compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
                 printf("Not determined identifier '%s' "
                        "in the source text: %s\n"
                        "Traslation is interrupted\n",
                        FORMT[IFORMT - 1],
-                       &compact_pl1_src_text[DST[dst_index].DST2]);
-                exit(4);
+                       &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
                 break;
             case 5:
-                compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
+                compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
                 printf("Not allowed operation '%c' "
                        "in the source text: %s\n"
                        "Traslation is interrupted\n",
-                       compact_pl1_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
-                       &compact_pl1_src_text[DST[dst_index].DST2]);
-                exit(5);
+                       compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
+                       &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
                 break;
             case 6:
-                compact_pl1_src_text[DST[dst_index].DST2 + 20] = '\0';
+                compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
                 printf("Repeated declaration of the identifier '%c' "
                        "in the source text: %s\n"
                        "Traslation is interrupted\n",
-                       compact_pl1_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
-                       &compact_pl1_src_text[DST[dst_index].DST2]);
-                exit(6);
+                       compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
+                       &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
                 break;
             default:
                 break;
         }
+    }
+
+    PLCMP_MAIN_DESTROY_GOALS_ACHIEVED_STACK(goals_achieved);
+
+    if (sem_calc_err_code)
+    {
+        main_err_code = PLCMP_MAIN_SEM_CALCULATOR_ERROR;
     }
 
     return main_err_code;

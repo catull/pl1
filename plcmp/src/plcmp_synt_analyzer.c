@@ -5,43 +5,81 @@
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_synt_analyzer.h"
 
-#define DEBUG_ON
-
-/* Subroutine adds a new goal into CEL-stack */
-static void mcel(char *T1, int T2, int T3)
+/* Subroutine adds a new goal into stack of goals */
+static void add_goal(cel_t *p_goals, char *T1, int T2, int T3)
 {
-    strcpy(CEL[K].CEL1, T1);
-    CEL[K].CEL2 = T2;
-    CEL[K].CEL3 = T3;
-    K++;
+    #define new p_goals->count
+
+    strcpy(p_goals->cel_stack[new].CEL1, T1);
+    p_goals->cel_stack[new].CEL2 = T2;
+    p_goals->cel_stack[new].CEL3 = T3;
+
+    #undef new
+
+    ++p_goals->count;
 }
 
-/* Subroutine adds a goal achieved into stack DST-stack */
-static void mdst(char *T1, int T2, int T3, int T4, int T5)
+/* Subroutine removes last goal from the stack of goals */
+static void remove_last_goal(cel_t *p_goals)
 {
-    strcpy(DST[L].DST1, T1);
-    DST[L].DST2 = T2;
-    DST[L].DST3 = T3;
-    DST[L].DST4 = T4;
-    DST[L].DST5 = T5;
-    L++;
+    #define last p_goals->count - 1
+
+    memset(p_goals->cel_stack[last].CEL1, '\0', sizeof(p_goals->cel_stack[last].CEL1));
+    p_goals->cel_stack[last].CEL2 = 0;
+    p_goals->cel_stack[last].CEL3 = 0;
+
+    #undef last
+
+    --p_goals->count;
 }
 
-/* Subroutine of syntax analyzer
- * It constructs parse tree */
-int plcmp_synt_analyzer_syntax_analyzer(void)
+/* Subroutine adds a goal achieved into stack of goals achieved */
+static void add_goal_achieved(dst_t *p_goals_achieved, char *T1, int T2, int T3, int T4, int T5)
 {
+    #define new p_goals_achieved->count
+
+    strcpy(p_goals_achieved->dst_stack[new].DST1, T1);
+    p_goals_achieved->dst_stack[new].DST2 = T2;
+    p_goals_achieved->dst_stack[new].DST3 = T3;
+    p_goals_achieved->dst_stack[new].DST4 = T4;
+    p_goals_achieved->dst_stack[new].DST5 = T5;
+
+    #undef new
+
+    ++p_goals_achieved->count;
+}
+
+/* Subroutine removes last goal achieved from the stack of goals achieved */
+static void remove_last_goal_achieved(dst_t *p_goals_achieved)
+{
+    #define last p_goals_achieved->count - 1
+
+    memset(p_goals_achieved->dst_stack[last].DST1, '\0', sizeof(p_goals_achieved->dst_stack[last].DST1));
+    p_goals_achieved->dst_stack[last].DST2 = 0;
+    p_goals_achieved->dst_stack[last].DST3 = 0;
+    p_goals_achieved->dst_stack[last].DST4 = 0;
+    p_goals_achieved->dst_stack[last].DST5 = 0;
+
+    #undef last
+
+    --p_goals_achieved->count;
+}
+
+/* Function of syntax analyzer. It constructs parse tree */
+plcmp_synt_analyzer_error_code_t plcmp_synt_analyzer_syntax_analyzer(cel_t *p_goals,
+                                                                     dst_t *p_goals_achieved)
+{   
+    /* Current index in the compact text */
+    int i = 0;
+    /* Current index in the table of grammar rules */
+    int j = 1;
+
     I4 = 0;
 
-    K = 0;
-    L = 0;
-    I = 0;
-    J = 1;
 
+    add_goal(p_goals, "PRO", i, 999);
 
-    mcel("PRO", I, 999);
-
-    if (!TPR[numb(&compact_pl1_src_text[I], 1)][numb("PRO", 3)])
+    if (!TPR[numb(&compact_pl1_src_text[i], 1)][numb("PRO", 3)])
     {
         compact_pl1_src_text[I4 + 20] = '\0';
         return PLCMP_SYNT_ANALYZER_FAILURE;
@@ -49,24 +87,24 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
 
     L2:
 
-    J = VXOD[numb(&compact_pl1_src_text[I], 1)].VX;
+    j = VXOD[numb(&compact_pl1_src_text[i], 1)].VX;
 
     L3:
 
-    J = SINT[J].POSL;
+    j = SINT[j].POSL;
 
     L31:
 
-    I++;
+    ++i;
 
-    if (I > I4)
+    if (i > I4)
     {
-        I4 = I;
+        I4 = i;
     }
 
-    if ('T' == VXOD[numb(SINT[J].DER, 3)].TYP)
+    if ('T' == VXOD[numb(SINT[j].DER, 3)].TYP)
     {
-        if (compact_pl1_src_text[I] == SINT[J].DER[0])
+        if (compact_pl1_src_text[i] == SINT[j].DER[0])
         {
             goto L3;
         }
@@ -76,80 +114,93 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
         }
     }
 
-    if ('*' == SINT[SINT[J].POSL].DER[0])
+    if ('*' == SINT[SINT[j].POSL].DER[0])
     {
-        I--;
+        --i;
 
-        if (!strcmp(SINT[J].DER, CEL[K - 1].CEL1))
+        if (!strcmp(SINT[j].DER, p_goals->cel_stack[p_goals->count - 1].CEL1))
         {
-            mdst(CEL[K - 1].CEL1, CEL[K - 1].CEL2, CEL[K - 1].CEL3, I, J);
+            add_goal_achieved(p_goals_achieved,
+                              p_goals->cel_stack[p_goals->count - 1].CEL1,
+                              p_goals->cel_stack[p_goals->count - 1].CEL2,
+                              p_goals->cel_stack[p_goals->count - 1].CEL3,
+                              i,
+                              j);
 
-            if (!strcmp(CEL[K - 1].CEL1, "PRO"))
+            if (!strcmp(p_goals->cel_stack[p_goals->count - 1].CEL1, "PRO"))
             {
                 return PLCMP_SYNT_ANALYZER_SUCCESS;
             }
 
-            if (TPR[numb(CEL[K - 1].CEL1, 3)][numb(CEL[K - 1].CEL1, 3)])
+            if (TPR[numb(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)][numb(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)])
             {
-                J = VXOD[numb(CEL[K - 1].CEL1, 3)].VX;
+                j = VXOD[numb(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)].VX;
                 goto L3;
             }
 
             L6:
 
-            J = CEL[K - 1].CEL3;
-            K--;
+            j = p_goals->cel_stack[p_goals->count - 1].CEL3;
+            remove_last_goal(p_goals);
 
             goto L3;
         }
 
-        if (!TPR[numb(SINT[J].DER, 3)][numb(CEL[K - 1].CEL1, 3)])
+        if (!TPR[numb(SINT[j].DER, 3)][numb(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)])
         {
             goto L9;
         }
 
-        mdst(SINT[J].DER, CEL[K - 1].CEL2, 0, I, J);
-        J = VXOD[numb(SINT[J].DER, 3)].VX;
+        add_goal_achieved(p_goals_achieved, 
+                          SINT[j].DER,
+                          p_goals->cel_stack[p_goals->count - 1].CEL2,
+                          0,
+                          i,
+                          j);
+        j = VXOD[numb(SINT[j].DER, 3)].VX;
         goto L3;
     }
 
-    if (!TPR[numb(&compact_pl1_src_text[I], 1)][numb(SINT[J].DER, 3)])
+    if (!TPR[numb(&compact_pl1_src_text[i], 1)][numb(SINT[j].DER, 3)])
     {
         goto L8;
     }
 
-    mcel(SINT[J].DER, I, J);
+    add_goal(p_goals, SINT[j].DER, i, j);
     goto L2;
 
     L8:
 
-    I--;
+    --i;
 
     L9:
 
-    if (SINT[J].ALT != 0)
+    if (SINT[j].ALT != 0)
     {
-        J = SINT[J].ALT;
+        j = SINT[j].ALT;
         goto L31;
     }
 
-    J = SINT[J].PRED;
+    j = SINT[j].PRED;
 
-    if ((VXOD[numb(SINT[J].DER, 3)].TYP == 'N' ) && (SINT[J].PRED > 0))
+    if ((VXOD[numb(SINT[j].DER, 3)].TYP == 'N' ) && (SINT[j].PRED > 0))
     {
-        mcel (DST[L - 1].DST1, DST[L - 1].DST2, DST[L - 1].DST3);
+        add_goal(p_goals,
+                 p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST1,
+                 p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST2,
+                 p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST3);
 
         L10:
 
-        J = DST[L - 1].DST5;
-        L--;
+        j = p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST5;
+        remove_last_goal_achieved(p_goals_achieved);
         goto L9;
     }
 
-    if ((VXOD[numb(SINT[J].DER, 3)].TYP == 'N' ) && (SINT[J].PRED == 0))
+    if ((VXOD[numb(SINT[j].DER, 3)].TYP == 'N' ) && (SINT[j].PRED == 0))
     {
 
-        if (!strcmp(CEL[K - 1].CEL1, DST[L - 1].DST1))
+        if (!strcmp(p_goals->cel_stack[p_goals->count - 1].CEL1, p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST1))
         {
             goto L6;
         }
@@ -160,15 +211,15 @@ int plcmp_synt_analyzer_syntax_analyzer(void)
 
     }
 
-    if (SINT[J].PRED > 0)
+    if (SINT[j].PRED > 0)
     {
         goto L8;
     }
 
-    J = CEL[K - 1].CEL3;
-    K--;
+    j = p_goals->cel_stack[p_goals->count - 1].CEL3;
+    remove_last_goal(p_goals);
 
-    if (999 == J)
+    if (999 == j)
     {
         compact_pl1_src_text[I4 + 20] = '\0';
         return PLCMP_SYNT_ANALYZER_FAILURE;

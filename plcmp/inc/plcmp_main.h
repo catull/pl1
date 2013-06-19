@@ -11,8 +11,8 @@ typedef enum plcmp_main_error_code_e {
     PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE,
     PLCMP_MAIN_ERROR_READING_PL1_FILE,
     PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW,
-    PLCMP_MAIN_SYNT_ANALYZER_ERROR
-
+    PLCMP_MAIN_SYNT_ANALYZER_ERROR,
+    PLCMP_MAIN_SEM_CALCULATOR_ERROR
 } plcmp_main_error_code_t;
 
 /* 
@@ -25,6 +25,7 @@ typedef enum plcmp_main_error_code_e {
  *
  * @param2:
  * 'p_fp_str_from' has type 'char' or 'char const'
+ *
  */
 #define PLCMP_MAIN_ALLOC_MEM_AND_COPY_FP_STR(p_fp_str_to, p_fp_str_from)                \
     do {                                                                                \
@@ -42,6 +43,8 @@ typedef enum plcmp_main_error_code_e {
  *
  * @param2:
  * 'p_pl1_fp_name' has type 'char' or 'char const'
+ * It hasn't to be 'NULL'-pointer
+ *
  */
 #define PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name, p_pl1_fp_name)    \
     do {                                                                                \
@@ -51,6 +54,75 @@ typedef enum plcmp_main_error_code_e {
         strcat(p_asm_fp_name, ".ass");                                                  \
     } while(0)
 
+/* 
+ * Macro creates stack for goals for using later by syntax analyzer (parser)
+ * 
+ * @param1:
+ * 'goals' has type 'cel_t'
+ * Its field 'cel_stack' has to be NULL-pointer
+ *
+ */
+#define PLCMP_MAIN_CREATE_GOALS_STACK(goals)                                    \
+    do {                                                                        \
+        goals.count = 0;                                                        \
+                                                                                \
+        goals.cel_stack = calloc(NCEL, sizeof(goals_stack_t));                  \
+        if (NULL == goals.cel_stack)                                            \
+        {                                                                       \
+            printf("Error of allocating memory for stack of goals. Assert\n");  \
+            PLCMP_COMMON_ASSERT(0);                                             \
+        }                                                                       \
+    } while(0)
 
+/* 
+ * Macro creates stack for goals achieved for using later
+ * by syntax analyzer (parser) and semantic calculator 
+ * 
+ * @param1:
+ * 'goals_achieved' has type 'dst_t'
+ * Its field 'dst_stack' has to be NULL-pointer
+ *
+ */
+#define PLCMP_MAIN_CREATE_GOALS_ACHIEVED_STACK(goals_achieved)                          \
+    do {                                                                                \
+        goals_achieved.count = 0;                                                       \
+                                                                                        \
+        goals_achieved.dst_stack = calloc(NDST, sizeof(goals_achieved_stack_t));        \
+        if (NULL == goals.cel_stack)                                                    \
+        {                                                                               \
+            printf("Error of allocating memory for stack of achieved goals. Assert\n"); \
+            PLCMP_COMMON_ASSERT(0);                                                     \
+        }                                                                               \
+    } while(0)
+
+/* 
+ * Macro destroys stack of goals 
+ * 
+ * @param1:
+ * 'goals' has type 'cel_t'
+ * Its field 'cel_stack' hasn't to be 'NULL'-pointer
+ *
+ */
+#define PLCMP_MAIN_DESTROY_GOALS_STACK(goals)                       \
+    do {                                                            \
+        goals.count = 0;                                            \
+                                                                    \
+        PLCMP_COMMON_RELEASE_MEM(goals.cel_stack);                  \
+    } while(0)
+
+/* 
+ * Macro destroys stack of goals achieved
+ * 
+ * @param1:
+ * 'goals_achieved' has type 'dst_t'
+ * Its field 'dst_stack' hasn't to be 'NULL'-pointer
+ *
+ */
+#define PLCMP_MAIN_DESTROY_GOALS_ACHIEVED_STACK(goals_achieved)     \
+    do {                                                            \
+        goals_achieved.count = 0;                                   \
+                                                                    \
+        PLCMP_COMMON_RELEASE_MEM(goals_achieved.dst_stack);         \
+    } while(0)
 
 #endif /* PLCMP_MAIN_H */

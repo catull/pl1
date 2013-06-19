@@ -8,6 +8,11 @@
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_sem_calc.h"
 
+sym_t SYM[NSYM];
+
+/* текущий индекс таблицы имен */
+int ISYM = 0;
+
 /* This struct is type of assembler card
  * It is template to generate the output file record by IBM 370 assembler */
 static struct assembler_card_un {
@@ -31,16 +36,17 @@ static char ASSTXT[MAXLTXT][80];
 /* Output array index */
 static int IASSTXT;
 
+
+/* Clear assembler card. Fresh card should contains ' ' (space symbols) */
 static void plcmp_sem_calc_clear_assembler_card(void)
 {
     memset(&assembler_card, ' ', sizeof(assembler_card));
 }
 
-/* п р о г р а м м а      */
-/* записи очередной сгене-*/
-/* рированной записи вы-  */
-/* ходного файла в массив */
-/* ASSTXT                 */
+
+/* Record new assembler command
+ * into assembler commands' array 
+ * and clear the temporary assembler card */
 static void ZKARD(void)
 {
     memcpy(ASSTXT[IASSTXT], &assembler_card, 80);
@@ -76,7 +82,7 @@ static long int VALUE(char *s)
 /* плотного текста в виде */
 /* массива 9-ти символьных*/
 /* лексем */
-static void FORM(int dst_index)
+static void FORM(goals_achieved_stack_t achieved_goal)
 {
     int i, j;
 
@@ -86,11 +92,11 @@ static void FORM(int dst_index)
     }
 
     IFORMT = 0;
-    j = DST[dst_index].DST2;
+    j = achieved_goal.DST2;
 
     FORM1:
 
-    for (i = j; i <= DST[dst_index].DST4 + 1; i++)
+    for (i = j; i <= achieved_goal.DST4 + 1; i++)
     {
         if ('\'' == compact_pl1_src_text[i] ||
             ':'  == compact_pl1_src_text[i] ||
@@ -138,9 +144,9 @@ static int AVI(int entry, void const *param)
         case 2:
         {
             unsigned int i;
-            int dst_index = *((int *)param);
+            goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
 
-            FORM(dst_index);
+            FORM(goal_achieved);
 
             if (1 == IFORMT)
             {
@@ -188,7 +194,7 @@ static int AVI(int entry, void const *param)
                     {
                         if (SYM[i].TYPE == 'B')
                         {
-                            if (compact_pl1_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT-1])] == '+')
+                            if (compact_pl1_src_text[goal_achieved.DST4 - strlen(FORMT[IFORMT-1])] == '+')
                             {
                                 if (strcmp(SYM[i].RAZR, "15") <= 0 )
                                 {
@@ -201,7 +207,7 @@ static int AVI(int entry, void const *param)
                             }
                             else
                             {
-                                if (compact_pl1_src_text[DST[dst_index].DST4 - strlen(FORMT[IFORMT-1])] == '-')
+                                if (compact_pl1_src_text[goal_achieved.DST4 - strlen(FORMT[IFORMT-1])] == '-')
                                 {
                                     if (strcmp(SYM[i].RAZR, "15") <= 0)
                                     {
@@ -440,9 +446,9 @@ static int ODC(int entry, void const *param)
         {
             int i;
             int init_pos;
-            int dst_index = *((int *)param);
+            goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
 
-            FORM(dst_index);
+            FORM(goal_achieved);
 
             for (i = 0; i < ISYM; i++)
             {
@@ -544,14 +550,14 @@ static int ODC(int entry, void const *param)
 
 static int OEN(int entry, void const *param)
 {
-    int dst_index = *((int *)param);
+    goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
     switch (entry)
     {
         case 1:
         {
             unsigned int i;
 
-            FORM(dst_index); /* форматирование ПЛ1-оператора END */
+            FORM(goal_achieved); /* форматирование ПЛ1-оператора END */
 
             /* если вторй терм оператора END записан в табл */
             for (i = 0; i < ISYM; i++)
@@ -574,7 +580,7 @@ static int OEN(int entry, void const *param)
             char RAB[20];
             unsigned int i;
             /* форматируем ПЛ1-оператор END */
-            FORM(dst_index);
+            FORM(goal_achieved);
 
             /* формируем код безусловного возврата управления в вызывающую программу */
             memcpy(assembler_card.OPERAC, "BCR", 3);
@@ -583,7 +589,7 @@ static int OEN(int entry, void const *param)
             memcpy(assembler_card.COMM, "Exit from the program", 21);
 
             /* запомнить опреацию Ассемблера */
-            ZKARD ();
+            ZKARD();
 
             /* далее идет блок формирования декларативных
              * псевдоопераций DC для каждого идентификатора
@@ -690,9 +696,9 @@ static int OPA(int entry, void const *param)
         case 2:
         {
             int i;
-            int dst_index = *((int *)param);
+            goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
 
-            FORM(dst_index);
+            FORM(goal_achieved);
 
             for ( i = 0; i < ISYM; i++ )
             {
@@ -754,12 +760,12 @@ static int OPA(int entry, void const *param)
 /* ПЛ1-программы          */
 static int OPR(int entry, void const *param)
 {
-    int dst_index = (*(int *)param);
+    goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
     switch (entry)
     {
         case 1:
         {
-            FORM(dst_index);                                        /* форматируем оператор   */
+            FORM(goal_achieved);                                        /* форматируем оператор   */
             /* ПЛ1 PROC               */
 
             strcpy(SYM[ISYM].NAME, FORMT[0]);          /* перепишем имя ПЛ1-прог-*/
@@ -777,7 +783,7 @@ static int OPR(int entry, void const *param)
         case 2:
         {
             unsigned int i = 0;
-            FORM(dst_index);
+            FORM(goal_achieved);
             /* форматируем оператор   */
             /* ПЛ1 - "начало процедур-*/
             /* ного блока"            */
@@ -980,7 +986,9 @@ static int STC(int entry, void const *param)
 
 /* Суть алгоритма управления в последовательной */
 /* интерпретации строк стека достижений в направлении от дна к вершине */
-int plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name, int *p_dst_index)                                    
+int plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name,
+                                dst_t const *p_goals_achieved,
+                                int *p_dst_index)
 {
     int i1;
     int err_code;
@@ -1019,24 +1027,17 @@ int plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name, int *p_dst_index)
     for (i1 = 1; i1 < 3; i1++)
     {
         int i2;
-        for (i2 = 0; i2 < L; i2++)
+        for (i2 = 0; i2 < p_goals_achieved->count; i2++)
         {
-            int hand_num = numb(DST[i2].DST1, 3);
-            switch (hand_num + 1)
+            int hand_num = numb(p_goals_achieved->dst_stack[i2].DST1, 3);
+            switch(hand_num + 1)
             {
-                case 1:
-                case 9:
-                case 10:
-                case 11:
-                case 12:
-                    err_code = handler[hand_num](i1, &i2);
-                    break;
                 case 13:
-                    err_code = handler[hand_num](i1, 1 == i1 ? NULL : p_asm_fp_name);
+                    err_code = handler[hand_num](i1, p_asm_fp_name);
                     break;
                 default:
-                    err_code = handler[hand_num](i1, NULL);
-                    break;
+                    err_code = handler[hand_num](i1, &p_goals_achieved->dst_stack[i2]);
+                    break;    
             }
             
             if (err_code)
