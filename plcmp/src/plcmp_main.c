@@ -32,11 +32,12 @@ static char const* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code
             return "Overflow of the program buffer while reading file with the source text";
         case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
             return "Error in syntax of the source text";
+        case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
+            return "Error in calculation of superposition of functions of the goals achieved";
         default:
             return "Unknown error code for generating error message";
     }
 }
-
 
 /* Subroutine constructs table of the
  * successors of the adjacency matrix
@@ -109,101 +110,57 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
     return err_code;
 }
 
-static enum plcmp_main_error_code_e plcmp_main_process_src_text(char const pl1_src_text[MAXNISXTXT][LINELEN],
-                                                                size_t pl1_src_text_len,
-                                                                char const *p_asm_fp_name)
+static struct plcmp_main_error_data_s plcmp_main_process_src_text(char const pl1_src_text[MAXNISXTXT][LINELEN],
+                                                                  size_t pl1_src_text_len,
+                                                                  char const *p_asm_fp_name)
 {
-    /* Later stacks for goals and goals achieved will be created */
-    cel_t goals;
+    /* It's stack of goals achieved. Later it will be created by macro */
     dst_t goals_achieved;
 
-    plcmp_main_error_code_t main_err_code = PLCMP_MAIN_SUCCESSFUL_TRANSLATION;
-    plcmp_synt_analyzer_error_code_t synt_analyzer_err_code;
-    int sem_calc_err_code;
+    plcmp_main_error_data_t err_data;
+
+    /* Clear error data structure and set default successful parameters
+     * before syntax analyzer and semantic calculator call */
+    memset(&err_data, 0, sizeof(plcmp_main_error_data_t));
+    err_data = (plcmp_main_error_data_t){
+        .main_err_code = PLCMP_MAIN_SUCCESS,
+        .synt_analyzer_err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS,
+        .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
+    };
 
     /* Lexical analysis of the source text */
     plcmp_lex_analyzer_compress_src_text(compact_pl1_src_text, pl1_src_text, pl1_src_text_len);
     /* Construct adjacency matrix */
     plcmp_main_build_tpr();
 
-    /* Create stacks */
-    PLCMP_MAIN_CREATE_GOALS_STACK(goals);
+    /* Create stack of achieved goals */
     PLCMP_MAIN_CREATE_GOALS_ACHIEVED_STACK(goals_achieved);
+
     /* Syntax analysis of the source text */
-    synt_analyzer_err_code = plcmp_synt_analyzer_syntax_analyzer(&goals, &goals_achieved);
-    PLCMP_MAIN_DESTROY_GOALS_STACK(goals);
-    if (PLCMP_SYNT_ANALYZER_SUCCESS != synt_analyzer_err_code)
+    err_data.synt_analyzer_err_data = plcmp_synt_analyzer_syntax_analyzer(&goals_achieved);
+    if (PLCMP_SYNT_ANALYZER_SUCCESS != err_data.synt_analyzer_err_data.err_code)
     {
-        PLCMP_MAIN_DESTROY_GOALS_ACHIEVED_STACK(goals_achieved);
-        /* Error in syntax of the source PL1-text */
-        main_err_code = PLCMP_MAIN_SYNT_ANALYZER_ERROR;
+        /* Error in syntax of the source PL1-text.
+         * Error data has already contained into 'err_data.synt_analyzer_err_data' structure
+         * because syntax analyzer has already returned its */
+        err_data.main_err_code = PLCMP_MAIN_SYNT_ANALYZER_ERROR;
     }
     /* Semantic calculation */
     else
     {
-        int dst_index = 0;
-        sem_calc_err_code = plcmp_sem_calc_gen_asm_code(p_asm_fp_name, &goals_achieved, &dst_index);
-        switch (sem_calc_err_code)
+        err_data.sem_calc_err_data = plcmp_sem_calc_gen_asm_code(p_asm_fp_name, &goals_achieved);
+        if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.sem_calc_err_data.err_code)
         {
-            case 0:
-                break;
-            case 1:
-                printf("Mismatch of the name of the procedure "
-                       "in prologue-epilogue\n");
-                break;
-            case 2:
-                compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
-                printf("Not allowed indentifier type '%s' "
-                       "in the source text: %s\n"
-                       "Traslation is interrupted\n",
-                       FORMT[1],
-                       &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
-                break;
-            case 3:
-                compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
-                printf("Not allowed indentifier type '%s' "
-                       "in the source text: %s\n"
-                       "Traslation is interrupted\n",
-                       FORMT[IFORMT - 1],
-                       &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
-                break;
-            case 4:
-                compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
-                printf("Not determined identifier '%s' "
-                       "in the source text: %s\n"
-                       "Traslation is interrupted\n",
-                       FORMT[IFORMT - 1],
-                       &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
-                break;
-            case 5:
-                compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
-                printf("Not allowed operation '%c' "
-                       "in the source text: %s\n"
-                       "Traslation is interrupted\n",
-                       compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
-                       &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
-                break;
-            case 6:
-                compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
-                printf("Repeated declaration of the identifier '%c' "
-                       "in the source text: %s\n"
-                       "Traslation is interrupted\n",
-                       compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
-                       &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
-                break;
-            default:
-                break;
+            /* Error in execution logic of the source PL1-text
+             * Error data has already contained into 'err_data.sem_calc_err_data' structure
+             * because semantic calculator has already returned its */
+            err_data.main_err_code = PLCMP_MAIN_SEM_CALCULATOR_ERROR;
         }
     }
 
     PLCMP_MAIN_DESTROY_GOALS_ACHIEVED_STACK(goals_achieved);
 
-    if (sem_calc_err_code)
-    {
-        main_err_code = PLCMP_MAIN_SEM_CALCULATOR_ERROR;
-    }
-
-    return main_err_code;
+    return err_data;
 }
 
 /* This program organizes the sequential processing of the source text:
@@ -221,12 +178,21 @@ int main(int const argc, char const *argv[])
     size_t pl1_src_text_len = 0; /* Length of the array of the source PL1-text */
     char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;
     size_t pl1_fp_len, asm_fp_len;
-    plcmp_main_error_code_t err_code = PLCMP_MAIN_SUCCESS;
+    plcmp_main_error_data_t err_data;
+
+    /* Clear error data structure and set default 
+     * successful parameters before modules call */
+    memset(&err_data, 0, sizeof(plcmp_main_error_data_t));
+    err_data = (plcmp_main_error_data_t){ 
+        .main_err_code = PLCMP_MAIN_SUCCESS,
+        .synt_analyzer_err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS,
+        .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
+    };
 
     /* Current program must contains one real parameter */
     if (argc != 2)
     {
-        err_code = PLCMP_MAIN_WRONG_NUM_CLI_PAR;
+        err_data.main_err_code = PLCMP_MAIN_WRONG_NUM_CLI_PAR;
         goto error;
     }
 
@@ -236,14 +202,14 @@ int main(int const argc, char const *argv[])
     pl1_fp_len = strlen(p_pl1_fp_name);
     if (pl1_fp_len < 4)
     {
-        err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH;
+        err_data.main_err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH;
         goto error;
     }
 
     /* Input file for translation must be with 'pli' extension */
     if (strcmp(&p_pl1_fp_name[pl1_fp_len - 4], ".pli"))
     {
-        err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION;
+        err_data.main_err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION;
         goto error;
     }
     else
@@ -251,13 +217,13 @@ int main(int const argc, char const *argv[])
         /* Clear array for the source PL1-text before getting text from the PL1-file */
         memset(pl1_src_text, '\0', sizeof(char)*MAXNISXTXT*80);
 
-        err_code = plcmp_main_read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
-        if (PLCMP_MAIN_SUCCESS == err_code)
+        err_data.main_err_code = plcmp_main_read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
+        if (PLCMP_MAIN_SUCCESS == err_data.main_err_code)
         {
             /* After successfully reading file proceed to translation of the compact source text */
             PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name, p_pl1_fp_name);
             PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name);
-            err_code = plcmp_main_process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
+            err_data = plcmp_main_process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
             PLCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
         }
         else
@@ -267,7 +233,7 @@ int main(int const argc, char const *argv[])
         }
     }
 
-    if (PLCMP_MAIN_SUCCESSFUL_TRANSLATION == err_code)
+    if (PLCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data.main_err_code)
     {
         printf("Translation is finished succesfully\n");
     }
@@ -275,12 +241,22 @@ int main(int const argc, char const *argv[])
     {
         error:
 
-        printf("Translation is interrupted\nReason: %s\n", plcmp_main_errmsg_by_errcode(err_code));
-        if (PLCMP_MAIN_SYNT_ANALYZER_ERROR == err_code)
+        printf("Translation is interrupted\nReason: %s\n", plcmp_main_errmsg_by_errcode(err_data.main_err_code));
+        switch(err_data.main_err_code)
         {
-            printf("%s\n", &compact_pl1_src_text[I4]);
+            case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
+                printf("Syntax analyzer error message: %s\n",
+                       plcmp_synt_analyzer_errmsg_by_errdata(&err_data.synt_analyzer_err_data));
+                break;
+            case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
+                printf("Semantic calculator error message: %s\n",
+                       plcmp_sem_calc_errmsg_by_errdata(&err_data.sem_calc_err_data));
+                break;
+            default:
+                printf("Unknown main error code (%d)", err_data.main_err_code);
+                break;
         }
     }
 
-    return err_code;
+    return err_data.main_err_code;
 }

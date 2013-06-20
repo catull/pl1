@@ -344,6 +344,7 @@ vxod_t VXOD[NVXOD] = {
     {/*.  54     .*/   "!  " , 225 , 'T' }
 };
 
+/* Adjacency matrix which will become reachability matrix afterward */
 char TPR[NVXOD][NNETRM] = {
 /*   __________ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___
     |       AVI:BUK:CIF:IDE:IPE:IPR:LIT:MAN:ODC:OEN:OPA:OPR:PRO:RZR:TEL:ZNK:STC|

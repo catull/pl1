@@ -67,14 +67,25 @@ static void remove_last_goal_achieved(dst_t *p_goals_achieved)
     --p_goals_achieved->count;
 }
 
-/* Function of syntax analyzer. It constructs parse tree */
-plcmp_synt_analyzer_error_code_t plcmp_synt_analyzer_syntax_analyzer(cel_t *p_goals,
-                                                                     dst_t *p_goals_achieved)
-{   
+/* Function of syntax analyzer. It constructs parse tree and return error data if it will be */
+struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(dst_t *p_goals_achieved)
+{
+    /* It's stack of goals and pointer on it.
+     * Later stack will be normally created by macro */
+    cel_t goals, *p_goals = &goals;
+
+    plcmp_synt_analyzer_error_data_t err_data;
     /* Current index in the compact text */
     int i = 0;
     /* Current index in the table of grammar rules */
     int j;
+
+    /* Create stack of goals */
+    PLCMP_SYNT_ANALYZER_CREATE_GOALS_STACK(goals);
+
+    /* Clear error data structure for later using and set default successful value for error code */
+    memset(&err_data, 0, sizeof(plcmp_synt_analyzer_error_data_t));
+    err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS;
 
     I4 = 0;
 
@@ -82,8 +93,15 @@ plcmp_synt_analyzer_error_code_t plcmp_synt_analyzer_syntax_analyzer(cel_t *p_go
 
     if (!TPR[numb(&compact_pl1_src_text[i], 1)][numb("PRO", 3)])
     {
-        compact_pl1_src_text[I4 + 20] = '\0';
-        return PLCMP_SYNT_ANALYZER_FAILURE;
+        PLCMP_SYNT_ANALYZER_DESTROY_GOALS_STACK(goals);
+
+        /* Prepare error data for return to main module */
+        err_data.err_code = PLCMP_SYNT_ANALYZER_FAILURE;
+
+        memcpy(err_data.src_text_part, &compact_pl1_src_text[I4], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
+        err_data.src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN] = '\0';
+
+        return err_data;
     }
 
     L2:
@@ -130,7 +148,9 @@ plcmp_synt_analyzer_error_code_t plcmp_synt_analyzer_syntax_analyzer(cel_t *p_go
 
             if (!strcmp(p_goals->cel_stack[p_goals->count - 1].CEL1, "PRO"))
             {
-                return PLCMP_SYNT_ANALYZER_SUCCESS;
+                /* Successful finish of the syntax analysis */
+                PLCMP_SYNT_ANALYZER_DESTROY_GOALS_STACK(goals);
+                return err_data;
             }
 
             if (TPR[numb(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)][numb(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)])
@@ -222,11 +242,33 @@ plcmp_synt_analyzer_error_code_t plcmp_synt_analyzer_syntax_analyzer(cel_t *p_go
 
     if (999 == j)
     {
-        compact_pl1_src_text[I4 + 20] = '\0';
-        return PLCMP_SYNT_ANALYZER_FAILURE;
+        PLCMP_SYNT_ANALYZER_DESTROY_GOALS_STACK(goals);
+
+        /* Prepare error data for return to main module */
+        err_data.err_code = PLCMP_SYNT_ANALYZER_FAILURE;
+        
+        memcpy(err_data.src_text_part, &compact_pl1_src_text[I4], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
+        err_data.src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN] = '\0';
+
+        return err_data;
     }
     else
     {
         goto L8;
+    }
+}
+
+char const* plcmp_synt_analyzer_errmsg_by_errdata(plcmp_synt_analyzer_error_data_t const *err_data)
+{
+    switch (err_data->err_code)
+    {
+        case PLCMP_SYNT_ANALYZER_FAILURE:
+        {
+            char errmsg[36 + PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN + 1] = {'\0'};
+            strcpy(errmsg, "Error in syntax of the source text: ");
+            return strcat(errmsg, err_data->src_text_part);
+        }
+        default:
+            return "Unknown error code in error data for generating error message";
     }
 }

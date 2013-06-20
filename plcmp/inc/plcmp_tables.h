@@ -27,6 +27,7 @@ extern sint_t SINT[NSINT];
  * This table contains root symbols type (terminal or non-terminal property) */
 extern vxod_t VXOD[NVXOD];
 
+/* Adjacency matrix which will become reachability matrix afterward */
 extern char TPR[NVXOD][NNETRM];
 
 /* Function finds necessary string with sought-for symbol in the VXOD-table 

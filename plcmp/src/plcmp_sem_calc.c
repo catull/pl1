@@ -183,18 +183,18 @@ static int AVI(int entry, void const *param)
                                 memcpy(assembler_card.COMM, "Load variable into register", 27);
                                 ZKARD();
 
-                                return 0;
+                                return PLCMP_SEM_CALCULATOR_SUCCESS;
 
                             case 'C':
-                                return 0;
-
+                                return PLCMP_SEM_CALCULATOR_SUCCESS;
+                            case 'P':
                             default:
-                                return 3;
+                                return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR;
                         }
                     }
                 }
 
-                return 4;
+                return PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR;
             }
             else
             {
@@ -239,30 +239,31 @@ static int AVI(int entry, void const *param)
                                             case '!':
                                                 break;
                                             default:
-                                                return 5;
+                                                return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR;
                                         }
                                     default:
-                                        return 5;
+                                        return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR;
                                 }
 
                                 strcpy(assembler_card.OPERAND, "RRAB,");
-                                strcat(assembler_card.OPERAND, FORMT[IFORMT-1]);
+                                strcat(assembler_card.OPERAND, FORMT[IFORMT - 1]);
                                 assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                                 memcpy(assembler_card.COMM, "Formation of intermediate value", 31);
                                 ZKARD();
 
-                                return 0;
+                                return PLCMP_SEM_CALCULATOR_SUCCESS;
 
                             case 'C':
-                                return 0;
+                                return PLCMP_SEM_CALCULATOR_SUCCESS;
 
+                            case 'P':
                             default:
-                                return 3;
+                                return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR;
                         }
                     }
                 }
 
-                return 4;
+                return PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR;
 
             }
 
@@ -271,7 +272,7 @@ static int AVI(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -296,7 +297,7 @@ static int BUK(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -321,7 +322,7 @@ static int CIF(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -346,7 +347,7 @@ static int IDE(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -371,7 +372,7 @@ static int IPE(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -396,7 +397,7 @@ static int IPR(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -421,7 +422,7 @@ static int LIT(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -446,7 +447,7 @@ static int MAN(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -477,7 +478,7 @@ static int ODC(int entry, void const *param)
                 if (!strcmp(SYM[i].NAME, FORMT[1])
                     && strlen(SYM[i].NAME) == strlen(FORMT[1]))
                 {
-                    return 6;
+                    return PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR;
                 }
             }
 
@@ -496,7 +497,7 @@ static int ODC(int entry, void const *param)
             else
             {
                 SYM[ISYM].TYPE = 'U';
-                return 2;
+                return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR;
             }
 
             strcpy(SYM[ISYM].RAZR, FORMT[init_pos - 1]);
@@ -542,16 +543,16 @@ static int ODC(int entry, void const *param)
 
             ++ISYM;
 
-            return 0;
+            return PLCMP_SEM_CALCULATOR_SUCCESS;
         }
         case 2:
         {
-            return 0;
+            return PLCMP_SEM_CALCULATOR_SUCCESS;
         }
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -590,12 +591,12 @@ static int OEN(int entry, void const *param)
                     (strlen(SYM[i].NAME) == strlen(FORMT[1])))
                 {
                     /* Successful completion of the function */
-                    return 0;
+                    return PLCMP_SEM_CALCULATOR_SUCCESS;
                 }
             }
 
             /* иначе завершение программы по ошибке */
-            return 1;
+            return PLCMP_SEM_CALCULATOR_MISMATCH_PROC_NAME_PROL_EPIL_ERROR;
         }
         case 2:
         {
@@ -685,7 +686,7 @@ static int OEN(int entry, void const *param)
 
             ZKARD();
 
-            return 0;
+            return PLCMP_SEM_CALCULATOR_SUCCESS;
         }
         default:
         {
@@ -693,7 +694,7 @@ static int OEN(int entry, void const *param)
         }
     }
 
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -714,7 +715,7 @@ static int OPA(int entry, void const *param)
     switch (entry)
     {
         case 1:
-            return 0;
+            return PLCMP_SEM_CALCULATOR_SUCCESS;
         case 2:
         {
             int i;
@@ -722,47 +723,50 @@ static int OPA(int entry, void const *param)
 
             FORM(goal_achieved);
 
-            for ( i = 0; i < ISYM; i++ )
+            for (i = 0; i < ISYM; i++)
             {
-                if (!strcmp(SYM[i].NAME, FORMT[0])
-                        && strlen(SYM[i].NAME) == strlen(FORMT[0]))
+                if (!strcmp(SYM[i].NAME, FORMT[0]) &&
+                    strlen(SYM[i].NAME) == strlen(FORMT[0]))
                 {
-                    if (SYM[i].TYPE == 'B')
+                    switch (SYM[i].TYPE)
                     {
-                        if (strcmp(SYM[i].RAZR, "15") <= 0 )
-                        {
-                            memcpy(assembler_card.OPERAC, "STH", 3);
-                        }
-                        else
-                        {
-                            memcpy(assembler_card.OPERAC, "ST", 2);
+                        case 'B':
+                            if (strcmp(SYM[i].RAZR, "15") <= 0 )
+                            {
+                                memcpy(assembler_card.OPERAC, "STH", 3);
+                            }
+                            else
+                            {
+                                memcpy(assembler_card.OPERAC, "ST", 2);
+                            }
+
                             strcpy(assembler_card.OPERAND, "RRAB,");
                             strcat(assembler_card.OPERAND, FORMT[0]);
-
                             assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
-
                             memcpy(assembler_card.COMM, "Formation of value of the arithmetic expression", 47);
-
                             ZKARD();
 
-                            return 0;
-                        }
-                    }
-                    else
-                    {
-                        return 3;
+                            return PLCMP_SEM_CALCULATOR_SUCCESS;
+
+                        case 'C':
+
+                            return PLCMP_SEM_CALCULATOR_SUCCESS;
+
+                        case 'P':
+                        default:
+                            return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR;
                     }
                 }
             }
 
-            return 4;
+            return PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR;
         }
         default:
         {
             break;
         }
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -850,7 +854,7 @@ static int OPR(int entry, void const *param)
             break;
         }
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -878,7 +882,7 @@ static int PRO(int entry, void const *param)
 
             if (NULL == p_asm_f)
             {
-                return 7;
+                return PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE;
             }
             else
             {
@@ -896,7 +900,7 @@ static int PRO(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -921,7 +925,7 @@ static int RZR(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 
@@ -948,7 +952,7 @@ static int TEL(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* п р о г р а м м а      */
@@ -974,7 +978,7 @@ static int ZNK(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /* Function for semantic calculation
@@ -993,7 +997,7 @@ static int STC(int entry, void const *param)
         default:
             break;
     }
-    return 0;
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
 /*  п р о г р а м м а     */
@@ -1008,12 +1012,15 @@ static int STC(int entry, void const *param)
 
 /* Суть алгоритма управления в последовательной */
 /* интерпретации строк стека достижений в направлении от дна к вершине */
-int plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name,
-                                dst_t const *p_goals_achieved,
-                                int *p_dst_index)
+struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name,
+                                                               dst_t const *p_goals_achieved)
 {
-    int i1;
-    int err_code;
+    int sem_calc_phase;
+    plcmp_sem_calc_error_data_t err_data;
+
+    /* Clear error data structure for later using and set default successful error code */
+    memset(&err_data, 0, sizeof(plcmp_sem_calc_error_data_t));
+    err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS;
 
      /* При этом каждая строка воспринимается как команда абстрактной ЭВМ со  
       * следующими полями: 
@@ -1046,29 +1053,204 @@ int plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name,
     plcmp_sem_calc_clear_assembler_card();
 
     /* First and second phases of semantic calculation */
-    for (i1 = 1; i1 < 3; i1++)
+    for (sem_calc_phase = 1; sem_calc_phase < 3; sem_calc_phase++)
     {
-        int i2;
-        for (i2 = 0; i2 < p_goals_achieved->count; i2++)
+        int dst_index;
+        for (dst_index = 0; dst_index < p_goals_achieved->count; dst_index++)
         {
-            int hand_num = numb(p_goals_achieved->dst_stack[i2].DST1, 3);
+            int hand_num = numb(p_goals_achieved->dst_stack[dst_index].DST1, 3);
             switch(hand_num + 1)
             {
                 case 13:
-                    err_code = handler[hand_num](i1, p_asm_fp_name);
+                    err_data.err_code = handler[hand_num](sem_calc_phase, p_asm_fp_name);
                     break;
                 default:
-                    err_code = handler[hand_num](i1, &p_goals_achieved->dst_stack[i2]);
+                    err_data.err_code = handler[hand_num](sem_calc_phase, &p_goals_achieved->dst_stack[dst_index]);
                     break;    
             }
             
-            if (err_code)
+            if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.err_code)
             {
-                *p_dst_index = i2;
-                return err_code;
+                switch (err_data.err_code)
+                {
+                    case PLCMP_SEM_CALCULATOR_MISMATCH_PROC_NAME_PROL_EPIL_ERROR:
+                        memcpy(err_data.src_text_part,
+                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
+                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
+                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
+                        break;
+                    case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
+                        memcpy(err_data.src_text_part,
+                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
+                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
+                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
+
+                        strcpy(err_data.data.identifier_type, FORMT[1]);
+
+                        break;
+                    case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR:
+                        memcpy(err_data.src_text_part,
+                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
+                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
+                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
+
+                        strcpy(err_data.data.identifier_type, FORMT[IFORMT - 1]);
+
+                        break;
+                    case PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR:
+                        memcpy(err_data.src_text_part,
+                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
+                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
+                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
+
+                        strcpy(err_data.data.identifier, FORMT[IFORMT - 1]);
+
+                        break;
+                    case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR:
+                    {
+                        size_t formt_len = strlen(FORMT[IFORMT - 1]);
+                        size_t oper_len = 0;
+                        memcpy(err_data.src_text_part,
+                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
+                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
+                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
+
+                        err_data.data.operation[oper_len] = 
+                            compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST4 - formt_len];
+                        ++oper_len;
+                        if ('!' == compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST4 - formt_len] &&
+                            '!' == compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST4 - formt_len + 1])
+                        {
+                            err_data.data.operation[oper_len] = 
+                                compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST4 - formt_len + 1];
+                            ++oper_len;
+                        }
+                        err_data.data.operation[oper_len] = '\0';
+
+                        break;
+                    }
+                    case PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR:
+                        memcpy(err_data.src_text_part,
+                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
+                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
+                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
+
+                        strcpy(err_data.data.identifier, FORMT[1]);
+
+                        break;
+                    case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
+                        break;
+                    default:
+                        break;
+                }
+                /* Error occured while calculation superposition 
+                 * of the functions of the goals achieved */
+                return err_data;
             }
         }
     }
 
-    return 0;
+    return err_data;
+}
+
+char const* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_data)
+{
+    switch (err_data->err_code)
+    {
+        case PLCMP_SEM_CALCULATOR_SUCCESS:
+            return "No error occured";
+        case PLCMP_SEM_CALCULATOR_MISMATCH_PROC_NAME_PROL_EPIL_ERROR:
+            return "Mismatch of the name of the procedure in prologue-epilogue";
+        case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
+        {
+            char errmsg[29 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1] = {'\0'};
+            strcpy(errmsg, "Not allowed identifier type '");
+            strcat(errmsg, err_data->data.identifier_type);
+            strcat(errmsg, "' in the source text '");
+            strcat(errmsg, err_data->src_text_part);
+            return strcat(errmsg, "'");
+            #if 0
+            compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
+            printf("Not allowed indentifier type '%s' "
+                   "in the source text: %s\n"
+                   "Traslation is interrupted\n",
+                   FORMT[1],
+                   &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
+            #endif
+        }
+        case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR:
+        {
+            char errmsg[29 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1] = {'\0'};
+            strcpy(errmsg, "Not allowed identifier type '");
+            strcat(errmsg, err_data->data.identifier_type);
+            strcat(errmsg, "' in the source text '");
+            strcat(errmsg, err_data->src_text_part);
+            return strcat(errmsg, "'");
+            #if 0
+            compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
+            printf("Not allowed indentifier type '%s' "
+                   "in the source text: %s\n"
+                   "Traslation is interrupted\n",
+                   FORMT[IFORMT - 1],
+                   &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
+            #endif
+        }
+        case PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR:
+        {
+            char errmsg[27 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1] = {'\0'};
+            strcpy(errmsg, "Not determined identifier '");
+            strcat(errmsg, err_data->data.identifier);
+            strcat(errmsg, "' in the source text '");
+            strcat(errmsg, err_data->src_text_part);
+            return strcat(errmsg, "'");
+            #if 0
+            compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
+            printf("Not determined identifier '%s' "
+                   "in the source text: %s\n"
+                   "Traslation is interrupted\n",
+                   FORMT[IFORMT - 1],
+                   &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
+            #endif
+        }
+        case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR:
+        {
+            char errmsg[23 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1] = {'\0'};
+            strcpy(errmsg, "Not allowed operation '");
+            strcat(errmsg, err_data->data.operation);
+            strcat(errmsg, "' in the source text '");
+            strcat(errmsg, err_data->src_text_part);
+            return strcat(errmsg, "'");
+            #if 0
+            compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
+            printf("Not allowed operation '%c' "
+                   "in the source text: %s\n"
+                   "Traslation is interrupted\n",
+                   compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
+                   &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
+            #endif
+        }
+        case PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR:
+        {
+            char errmsg[40 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1] = {'\0'};
+            strcpy(errmsg, "Repeated declaration of the identifier '");
+            strcat(errmsg, err_data->data.identifier);
+            strcat(errmsg, "' in the source text '");
+            strcat(errmsg, err_data->src_text_part);
+            return strcat(errmsg, "'");
+            #if 0
+            compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
+            printf("Repeated declaration of the identifier '%c' "
+                   "in the source text: %s\n"
+                   "Traslation is interrupted\n",
+                   FORMT[1],
+                   &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
+            #endif
+        }
+        case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
+        {
+            return "Can't write to assembler file";
+        }
+        default:
+            return "Unknown error code for generating error message";
+    }
 }

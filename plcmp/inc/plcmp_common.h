@@ -42,7 +42,7 @@
  * Macro allocates memory for new 'p_str_for' string with 'str_length' length
  *
  * @param1:
- * 'p_str_for' has type 'char'
+ * 'p_str_for' has type 'char*'
  * It has to be 'NULL'-pointer
  *
  * @param2:
@@ -66,7 +66,7 @@
  * Macro deallocates earlier allocated memory
  *
  * @param1:
- * 'pointer' has any pointer type except 'void*' or 'void const *'
+ * 'pointer' has any pointer type
  */
 #define PLCMP_COMMON_RELEASE_MEM(pointer)       \
     do {                                        \
