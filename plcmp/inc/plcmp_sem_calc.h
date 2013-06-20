@@ -50,6 +50,6 @@ typedef struct sym_s
 struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name,
                                                                dst_t const *p_goals_achieved);
 
-char const* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_data);
+char* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_data, char *errmsg);
 
 #endif /* PLCMP_SEM_CALC_H */

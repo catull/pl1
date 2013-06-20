@@ -55,6 +55,7 @@ typedef struct plcmp_synt_analyzer_error_data_s {
 
 
 struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(dst_t *p_goals_achieved);
-char const* plcmp_synt_analyzer_errmsg_by_errdata(plcmp_synt_analyzer_error_data_t const *err_data);
+
+char* plcmp_synt_analyzer_errmsg_by_errdata(plcmp_synt_analyzer_error_data_t const *err_data, char *errmsg);
 
 #endif /* PLCMP_SYNT_ANALYZER_H */

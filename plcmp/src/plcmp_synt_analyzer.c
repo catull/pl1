@@ -258,17 +258,24 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(dst_
     }
 }
 
-char const* plcmp_synt_analyzer_errmsg_by_errdata(plcmp_synt_analyzer_error_data_t const *err_data)
+char* plcmp_synt_analyzer_errmsg_by_errdata(plcmp_synt_analyzer_error_data_t const *err_data, char *errmsg)
 {
     switch (err_data->err_code)
     {
         case PLCMP_SYNT_ANALYZER_FAILURE:
         {
-            char errmsg[36 + PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN + 1] = {'\0'};
-            strcpy(errmsg, "Error in syntax of the source text: ");
-            return strcat(errmsg, err_data->src_text_part);
+            char __errmsg[36 + PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN + 1];
+            strcpy(__errmsg, "Error in syntax of the source text: ");
+            strcat(__errmsg, err_data->src_text_part);
+
+            strcpy(errmsg, __errmsg);
+
+            return errmsg;
         }
         default:
-            return "Unknown error code in error data for generating error message";
+        {
+            strcpy(errmsg, "Unknown error code in error data for generating error message");
+            return errmsg;
+        }
     }
 }

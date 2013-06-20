@@ -31,9 +31,9 @@ static char const* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code
         case PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW:
             return "Overflow of the program buffer while reading file with the source text";
         case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
-            return "Error in syntax of the source text";
+            return "Error in syntax analyzer";
         case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
-            return "Error in calculation of superposition of functions of the goals achieved";
+            return "Error in semantic calculator";
         default:
             return "Unknown error code for generating error message";
     }
@@ -245,15 +245,20 @@ int main(int const argc, char const *argv[])
         switch(err_data.main_err_code)
         {
             case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
+            {
+                char errmsg[100];
                 printf("Syntax analyzer error message: %s\n",
-                       plcmp_synt_analyzer_errmsg_by_errdata(&err_data.synt_analyzer_err_data));
+                       plcmp_synt_analyzer_errmsg_by_errdata(&err_data.synt_analyzer_err_data, errmsg));
                 break;
+            }
             case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
+            {
+                char errmsg[100];
                 printf("Semantic calculator error message: %s\n",
-                       plcmp_sem_calc_errmsg_by_errdata(&err_data.sem_calc_err_data));
+                       plcmp_sem_calc_errmsg_by_errdata(&err_data.sem_calc_err_data, errmsg));
                 break;
+            }
             default:
-                printf("Unknown main error code (%d)", err_data.main_err_code);
                 break;
         }
     }

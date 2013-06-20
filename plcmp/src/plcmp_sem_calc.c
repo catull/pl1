@@ -1074,10 +1074,6 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
                 switch (err_data.err_code)
                 {
                     case PLCMP_SEM_CALCULATOR_MISMATCH_PROC_NAME_PROL_EPIL_ERROR:
-                        memcpy(err_data.src_text_part,
-                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
-                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
-                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
                         break;
                     case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
                         memcpy(err_data.src_text_part,
@@ -1153,104 +1149,76 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
     return err_data;
 }
 
-char const* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_data)
+char* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_data, char *errmsg)
 {
     switch (err_data->err_code)
     {
         case PLCMP_SEM_CALCULATOR_SUCCESS:
-            return "No error occured";
+            strcpy(errmsg, "No error occured");
+            return errmsg;
         case PLCMP_SEM_CALCULATOR_MISMATCH_PROC_NAME_PROL_EPIL_ERROR:
-            return "Mismatch of the name of the procedure in prologue-epilogue";
+            strcpy(errmsg, "Mismatch of the name of the procedure in prologue-epilogue");
+            return errmsg;
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
         {
-            char errmsg[29 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1] = {'\0'};
-            strcpy(errmsg, "Not allowed identifier type '");
-            strcat(errmsg, err_data->data.identifier_type);
-            strcat(errmsg, "' in the source text '");
-            strcat(errmsg, err_data->src_text_part);
-            return strcat(errmsg, "'");
-            #if 0
-            compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
-            printf("Not allowed indentifier type '%s' "
-                   "in the source text: %s\n"
-                   "Traslation is interrupted\n",
-                   FORMT[1],
-                   &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
-            #endif
+            char __errmsg[29 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1];
+            strcpy(__errmsg, "Not allowed identifier type '");
+            strcat(__errmsg, err_data->data.identifier_type);
+            strcat(__errmsg, "' in the source text '");
+            strcat(__errmsg, err_data->src_text_part);
+            strcat(__errmsg, "'");
+            strcpy(errmsg, __errmsg);
+            return errmsg;
         }
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR:
         {
-            char errmsg[29 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1] = {'\0'};
-            strcpy(errmsg, "Not allowed identifier type '");
-            strcat(errmsg, err_data->data.identifier_type);
-            strcat(errmsg, "' in the source text '");
-            strcat(errmsg, err_data->src_text_part);
-            return strcat(errmsg, "'");
-            #if 0
-            compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
-            printf("Not allowed indentifier type '%s' "
-                   "in the source text: %s\n"
-                   "Traslation is interrupted\n",
-                   FORMT[IFORMT - 1],
-                   &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
-            #endif
+            char __errmsg[29 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1];
+            strcpy(__errmsg, "Not allowed identifier type '");
+            strcat(__errmsg, err_data->data.identifier_type);
+            strcat(__errmsg, "' in the source text '");
+            strcat(__errmsg, err_data->src_text_part);
+            strcat(__errmsg, "'");
+            strcpy(errmsg, __errmsg);
+            return errmsg;
         }
         case PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR:
         {
-            char errmsg[27 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1] = {'\0'};
-            strcpy(errmsg, "Not determined identifier '");
-            strcat(errmsg, err_data->data.identifier);
-            strcat(errmsg, "' in the source text '");
-            strcat(errmsg, err_data->src_text_part);
-            return strcat(errmsg, "'");
-            #if 0
-            compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
-            printf("Not determined identifier '%s' "
-                   "in the source text: %s\n"
-                   "Traslation is interrupted\n",
-                   FORMT[IFORMT - 1],
-                   &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
-            #endif
+            char __errmsg[27 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1];
+            strcpy(__errmsg, "Not determined identifier '");
+            strcat(__errmsg, err_data->data.identifier);
+            strcat(__errmsg, "' in the source text '");
+            strcat(__errmsg, err_data->src_text_part);
+            strcat(__errmsg, "'");
+            strcpy(errmsg, __errmsg);
+            return errmsg;
         }
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR:
         {
-            char errmsg[23 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1] = {'\0'};
-            strcpy(errmsg, "Not allowed operation '");
-            strcat(errmsg, err_data->data.operation);
-            strcat(errmsg, "' in the source text '");
-            strcat(errmsg, err_data->src_text_part);
-            return strcat(errmsg, "'");
-            #if 0
-            compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
-            printf("Not allowed operation '%c' "
-                   "in the source text: %s\n"
-                   "Traslation is interrupted\n",
-                   compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST4 - strlen(FORMT[IFORMT - 1])],
-                   &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
-            #endif
+            char __errmsg[23 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1];
+            strcpy(__errmsg, "Not allowed operation '");
+            strcat(__errmsg, err_data->data.operation);
+            strcat(__errmsg, "' in the source text '");
+            strcat(__errmsg, err_data->src_text_part);
+            strcat(__errmsg, "'");
+            strcpy(errmsg, __errmsg);
+            return errmsg;
         }
         case PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR:
         {
-            char errmsg[40 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1] = {'\0'};
-            strcpy(errmsg, "Repeated declaration of the identifier '");
-            strcat(errmsg, err_data->data.identifier);
-            strcat(errmsg, "' in the source text '");
-            strcat(errmsg, err_data->src_text_part);
-            return strcat(errmsg, "'");
-            #if 0
-            compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2 + 20] = '\0';
-            printf("Repeated declaration of the identifier '%c' "
-                   "in the source text: %s\n"
-                   "Traslation is interrupted\n",
-                   FORMT[1],
-                   &compact_pl1_src_text[goals_achieved.dst_stack[dst_index].DST2]);
-            #endif
+            char __errmsg[40 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1];
+            strcpy(__errmsg, "Repeated declaration of the identifier '");
+            strcat(__errmsg, err_data->data.identifier);
+            strcat(__errmsg, "' in the source text '");
+            strcat(__errmsg, err_data->src_text_part);
+            strcat(__errmsg, "'");
+            strcpy(errmsg, __errmsg);
+            return errmsg;
         }
         case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
-        {
-            return "Can't write to assembler file";
-        }
+            strcpy(errmsg, "Can't write to assembler file");
+            return errmsg;
         default:
-            return "Unknown error code for generating error message";
+            strcpy(errmsg, "Unknown error code for generating error message");
+            return errmsg;
     }
 }
