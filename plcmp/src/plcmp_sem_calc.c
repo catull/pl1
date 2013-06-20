@@ -145,7 +145,7 @@ static void FORM(goals_achieved_stack_t achieved_goal)
 /* нетерминала AVI на вто-*/
 /* ром проходе.   Здесь   */
 /* AVI -   "арифм.выраж." */
-static int AVI(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
 {
     switch (entry)
     {
@@ -286,7 +286,7 @@ static int AVI(int entry, void const *param)
 /* нетерминала BUK на вто-*/
 /* ром проходе.   Здесь   */
 /* BUK -   "буква"        */
-static int BUK(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e BUK(int entry, void const *param)
 {
     switch (entry)
     {
@@ -311,7 +311,7 @@ static int BUK(int entry, void const *param)
 /* нетерминала CIF на вто-*/
 /* ром проходе.   Здесь   */
 /* CIF -   "цифра"        */
-static int CIF(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e CIF(int entry, void const *param)
 {
     switch (entry)
     {
@@ -336,7 +336,7 @@ static int CIF(int entry, void const *param)
 /* нетерминала IDE на вто-*/
 /* ром проходе.   Здесь   */
 /* IDE -   "идентификатор"*/
-static int IDE(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e IDE(int entry, void const *param)
 {
     switch (entry)
     {
@@ -361,7 +361,7 @@ static int IDE(int entry, void const *param)
 /* нетерминала IPE на вто-*/
 /* ром проходе.   Здесь   */
 /* IPE - "имя переменной" */
-static int IPE(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e IPE(int entry, void const *param)
 {
     switch (entry)
     {
@@ -386,7 +386,7 @@ static int IPE(int entry, void const *param)
 /* нетерминала IPR на вто-*/
 /* ром проходе.   Здесь   */
 /* IPR -   "имя программы" */
-static int IPR(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e IPR(int entry, void const *param)
 {
     switch (entry)
     {
@@ -411,7 +411,7 @@ static int IPR(int entry, void const *param)
 /* нетерминала LIT на вто-*/
 /* ром проходе.   Здесь   */
 /* LIT -   "литерал"      */
-static int LIT(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e LIT(int entry, void const *param)
 {
     switch (entry)
     {
@@ -436,7 +436,7 @@ static int LIT(int entry, void const *param)
 /* нетерминала MAN на вто-*/
 /* ром проходе.   Здесь   */
 /* MAN -   "мантисса"     */
-static int MAN(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e MAN(int entry, void const *param)
 {
     switch (entry)
     {
@@ -461,7 +461,7 @@ static int MAN(int entry, void const *param)
 /* нетерминала ODC на вто-*/
 /* ром проходе.   Здесь   */
 /* ODC - "операт.ПЛ1- DCL"*/
-static int ODC(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
 {
     switch (entry)
     {
@@ -571,7 +571,7 @@ static int ODC(int entry, void const *param)
 /* эквивалента ПЛ1-прог-  */
 /* раммы                  */
 
-static int OEN(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
 {
     goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
     switch (entry)
@@ -710,7 +710,7 @@ static int OEN(int entry, void const *param)
 /* ром проходе.   Здесь   */
 /* OPA - "операт.присваи- */
 /* вания арифметический   */
-static int OPA(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
 {
     switch (entry)
     {
@@ -784,7 +784,7 @@ static int OPA(int entry, void const *param)
 /* пролог ассемблеровского*/
 /* эквивалента  исходной  */
 /* ПЛ1-программы          */
-static int OPR(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e OPR(int entry, void const *param)
 {
     goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
     switch (entry)
@@ -869,7 +869,7 @@ static int OPR(int entry, void const *param)
 /* ром проходе.   Здесь   */
 /* PRO - "программа"      */
 /* прогр.формирует выходной файл */
-static int PRO(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e PRO(int entry, void const *param)
 {
     switch(entry)
     {
@@ -914,7 +914,7 @@ static int PRO(int entry, void const *param)
 /* нетерминала RZR на вто-*/
 /* ром проходе.   Здесь   */
 /* RZR - "разрядность"    */
-static int RZR(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e RZR(int entry, void const *param)
 {
     switch (entry)
     {
@@ -941,7 +941,7 @@ static int RZR(int entry, void const *param)
 /* ром проходе.   Здесь   */
 /* TEL - "тело программы" */
 
-static int TEL(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e TEL(int entry, void const *param)
 {
     switch (entry)
     {
@@ -967,7 +967,7 @@ static int TEL(int entry, void const *param)
 /* ром проходе.   Здесь   */
 /* ZNK - "знак операции"  */
 
-static int ZNK(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e ZNK(int entry, void const *param)
 {
     switch (entry)
     {
@@ -986,7 +986,7 @@ static int ZNK(int entry, void const *param)
  * and second phases of semantic calculation.
  * STC is "constant string enclosed into single quotation marks " */
 
-static int STC(int entry, void const *param)
+static enum plcmp_sem_calc_error_code_e STC(int entry, void const *param)
 {
     switch (entry)
     {
@@ -1029,7 +1029,7 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
       * - DST.DST4 - правая граница интерпретируемого фрагмента исх.текста
       */
 
-    int (*handler[NNETRM])(int, void const*) = {
+    enum plcmp_sem_calc_error_code_e (*handler[NNETRM])(int, void const*) = {
         /*    1  */ AVI,
         /*    2  */ BUK,
         /*    3  */ CIF,
