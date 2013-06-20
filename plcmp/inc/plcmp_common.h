@@ -66,7 +66,6 @@ typedef struct dst_s {
 
 #define PLCMP_COMMON_ASSERT(condition) assert(condition)
 
-
 /*
  * Macro allocates memory for new 'p_str_for' string with 'str_length' length
  *
@@ -88,6 +87,24 @@ typedef struct dst_s {
             PLCMP_COMMON_ASSERT(0);                                             \
         }                                                                       \
         p_str_for[__str_length] = '\0';                                         \
+    } while(0)
+
+/* 
+ * Macro reasonably allocates memory for new 'p_fp_str_to' string of file path
+ * and copies 'p_fp_str_from' string to
+ *
+ * @param1:
+ * 'p_fp_str_to' has type 'char*'
+ * It has to be 'NULL'-pointer
+ *
+ * @param2:
+ * 'p_fp_str_from' has type 'char*' or 'char const*'
+ *
+ */
+#define PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_fp_str_to, p_fp_str_from)              \
+    do {                                                                                \
+        PLCMP_COMMON_ALLOC_MEM_FOR_STR(p_fp_str_to, strlen(p_fp_str_from));             \
+        strcpy(p_fp_str_to, p_fp_str_from);                                             \
     } while(0)
 
 

@@ -64,14 +64,14 @@ static void plcmp_main_build_tpr(void)
 }
 
 /* Function of reading PL1-file of the source text with 'p_pl1_fp_name' file path name */
-static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const p_pl1_fp_name[],
+static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const pl1_fp_name[],
                                                              char pl1_src_text[][LINELEN],
                                                              size_t *p_pl1_src_text_len)
 {
     FILE *p_pl1_f;
     plcmp_main_error_code_t err_code = PLCMP_MAIN_SUCCESS;
 
-    p_pl1_f = fopen(p_pl1_fp_name , "rb");
+    p_pl1_f = fopen(pl1_fp_name , "rb");
     if (NULL == p_pl1_f)
     {
         err_code = PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE;
@@ -183,7 +183,7 @@ int main(int const argc, char const *argv[])
     char pl1_src_text[MAXNISXTXT][LINELEN];             /* Content of the array of the source PL1-text */
     size_t pl1_src_text_len = 0;                        /* Length of the array of the source PL1-text */
     char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;
-    size_t pl1_fp_len, asm_fp_len;
+    size_t pl1_fp_len;
     plcmp_main_error_data_t err_data;
 
     /* Clear error data structure and set default 
@@ -203,7 +203,7 @@ int main(int const argc, char const *argv[])
     }
 
     /* Copy name of translated program from input argument */
-    PLCMP_MAIN_ALLOC_MEM_AND_COPY_FP_STR(p_pl1_fp_name, argv[1]);
+    PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_pl1_fp_name, argv[1]);
 
     pl1_fp_len = strlen(p_pl1_fp_name);
     if (pl1_fp_len < 4)
@@ -221,12 +221,12 @@ int main(int const argc, char const *argv[])
     else
     {
         /* Clear array for the source PL1-text before getting text from the PL1-file */
-        memset(pl1_src_text, '\0', sizeof(char)*MAXNISXTXT*80);
+        memset(pl1_src_text, '\0', sizeof(char)*MAXNISXTXT*LINELEN);
 
         err_data.main_err_code = plcmp_main_read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
         if (PLCMP_MAIN_SUCCESS == err_data.main_err_code)
         {
-            /* After successfully reading file proceed to translation of the compact source text */
+            /* After successfully reading file proceed to compression and translation of the source text */
             PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name, p_pl1_fp_name);
             PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name);
             err_data = plcmp_main_process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
