@@ -110,6 +110,9 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const p_pl1_fp
     return err_code;
 }
 
+/* Function processes source PL1-text by calling 
+ * lexical and syntax analyzers and semantic calculator 
+ * which translate PL1-text to text with assembler mnemonic commands */
 static struct plcmp_main_error_data_s plcmp_main_process_src_text(char pl1_src_text[][LINELEN],
                                                                   size_t pl1_src_text_len,
                                                                   char const p_asm_fp_name[])
