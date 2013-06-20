@@ -13,9 +13,12 @@
 #include "plcmp_sem_calc.h"
 
 sym_t SYM[NSYM];
-
 /* текущий индекс таблицы имен */
 int ISYM = 0;
+
+/* */
+sym_t *p_char_syms[9];
+int char_syms_size = 0;
 
 /* This struct is type of assembler card
  * It is template to generate the output file record by IBM 370 assembler */
@@ -264,6 +267,8 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                                 return PLCMP_SEM_CALCULATOR_SUCCESS;
 
                             case 'C':
+                                p_char_syms[char_syms_size] = &SYM[i];
+                                ++char_syms_size;
                                 return PLCMP_SEM_CALCULATOR_SUCCESS;
                             case 'P':
                             default:
@@ -319,6 +324,8 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                                             default:
                                                 return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR;
                                         }
+                                        break;
+
                                     default:
                                         return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR;
                                 }
@@ -332,6 +339,27 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                                 return PLCMP_SEM_CALCULATOR_SUCCESS;
 
                             case 'C':
+
+                                switch (compact_pl1_src_text[goal_achieved.DST4 - formt_len])
+                                {
+                                    case '!':
+                                        switch (compact_pl1_src_text[goal_achieved.DST4 - formt_len - 1])
+                                        {
+                                            case '!':
+                                                p_char_syms[char_syms_size] = &SYM[i];
+                                                ++char_syms_size;
+                                                break;
+                                            default:
+                                                return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR;
+                                        }
+                                        break;
+
+                                    case '+':
+                                    case '-':
+                                    default:
+                                        return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR;
+                                }
+
                                 return PLCMP_SEM_CALCULATOR_SUCCESS;
 
                             case 'P':
@@ -826,9 +854,51 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                             return PLCMP_SEM_CALCULATOR_SUCCESS;
 
                         case 'C':
+                        {
+                            int j;
+                            size_t offset = 0;
+                            for (j = 0; j < char_syms_size; j++)
+                            {
+                                /* Format of command: 
+                                 * MVC D1(L,B1),D2(B2) */
+                                char buffer[10];
 
+                                memcpy(assembler_card.OPERAC, "MVC", 3);                        /* command */
+
+                                sprintf(buffer, "%lu", offset);
+                                strcpy(assembler_card.OPERAND, buffer);                         /* D1 */
+
+                                strcat(assembler_card.OPERAND, "(");
+
+                                sprintf(buffer, "%lu", strlen(p_char_syms[j]->INIT));
+                                strcat(assembler_card.OPERAND, buffer);                         /* L */
+
+                                strcat(assembler_card.OPERAND, ",");                
+                                strcat(assembler_card.OPERAND, SYM[i].NAME);                    /* B1 */
+                                strcat(assembler_card.OPERAND, "),0(");                         /* D2 */
+                                strcat(assembler_card.OPERAND, p_char_syms[j]->NAME);           /* B2 */
+                                strcat(assembler_card.OPERAND, ")");
+
+                                assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
+
+                                if (0 == j)
+                                {
+                                    memcpy(assembler_card.COMM, "Move second string to the first", 31);
+                                }
+                                else
+                                {
+                                    memcpy(assembler_card.COMM, "Concat fir. and sec. strings. Result is in the first", 52);   
+                                }
+
+                                ZKARD();
+
+                                offset += strlen(p_char_syms[j]->INIT);
+                                p_char_syms[j] = NULL;
+                            }
+                            char_syms_size = 0;
+                            
                             return PLCMP_SEM_CALCULATOR_SUCCESS;
-
+                        }
                         case 'P':
                         default:
                             return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR;
