@@ -64,8 +64,8 @@ static void plcmp_main_build_tpr(void)
 }
 
 /* Function of reading PL1-file of the source text with 'p_pl1_fp_name' file path name */
-static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_fp_name,
-                                                             char pl1_src_text[MAXNISXTXT][LINELEN],
+static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const p_pl1_fp_name[],
+                                                             char pl1_src_text[][LINELEN],
                                                              size_t *p_pl1_src_text_len)
 {
     FILE *p_pl1_f;
@@ -110,9 +110,9 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
     return err_code;
 }
 
-static struct plcmp_main_error_data_s plcmp_main_process_src_text(char const pl1_src_text[MAXNISXTXT][LINELEN],
+static struct plcmp_main_error_data_s plcmp_main_process_src_text(char pl1_src_text[][LINELEN],
                                                                   size_t pl1_src_text_len,
-                                                                  char const *p_asm_fp_name)
+                                                                  char const p_asm_fp_name[])
 {
     /* It's stack of goals achieved. Later it will be created by macro */
     dst_t goals_achieved;
@@ -166,7 +166,10 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(char const pl1
 /* This program organizes the sequential processing of the source text:
  * - the lexical analyzer
  * - the syntax analyzer
- * - the semantic calculator
+ * - the semantic calculator 
+ * Successful result of this PL1 high level compiler is '.ass' assembler file
+ * Unsuccessful result is an error message with reason of interruption of translation
+ *
  * Requirements of the input parameters:
  * - 'argc' must be equal '2'
  * - 'argv[0]' as always is path to current program
@@ -174,8 +177,8 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(char const pl1
  */
 int main(int const argc, char const *argv[])
 {
-    char pl1_src_text[MAXNISXTXT][LINELEN]; /* Content of the array of the source PL1-text */
-    size_t pl1_src_text_len = 0; /* Length of the array of the source PL1-text */
+    char pl1_src_text[MAXNISXTXT][LINELEN];             /* Content of the array of the source PL1-text */
+    size_t pl1_src_text_len = 0;                        /* Length of the array of the source PL1-text */
     char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;
     size_t pl1_fp_len, asm_fp_len;
     plcmp_main_error_data_t err_data;

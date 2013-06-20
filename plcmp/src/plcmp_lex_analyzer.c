@@ -10,8 +10,8 @@ char compact_pl1_src_text[NSTROKA];
 
 /* Subroutine of primitive lexical analyzer 
  * It compresses the source text by removing all excess spaces and newline-symbols */
-void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
-                                          char const pl1_src_text[MAXNISXTXT][LINELEN],
+void plcmp_lex_analyzer_compress_src_text(char compact_pl1_src_text[],
+                                          char pl1_src_text[][LINELEN],
                                           size_t pl1_src_text_len)
 {
     int i1, i3 = 0;
@@ -86,7 +86,7 @@ void plcmp_lex_analyzer_compress_src_text(char *p_compact_pl1_src_text,
                 }
 
                 prev_processed_symb = pl1_src_text[i1][i2];
-                p_compact_pl1_src_text[i3] = prev_processed_symb;
+                compact_pl1_src_text[i3] = prev_processed_symb;
                 i3++;
             }
             else

@@ -9,9 +9,9 @@
 extern char compact_pl1_src_text[NSTROKA];
 
 /* Subroutine of primitive lexical analyzer 
- * It compresses the source text by removing all excess spaces */
-void plcmp_lex_analyzer_compress_src_text(char *p_compressed_text,
-                                          char const p_pl1_src_text[MAXNISXTXT][LINELEN],
+ * It compresses the source text by removing all excess spaces and newline-symbols */
+void plcmp_lex_analyzer_compress_src_text(char compact_pl1_src_text[],
+                                          char pl1_src_text[][LINELEN],
                                           size_t pl1_src_text_len);
 
 #endif /* PLCMP_LEX_ANALYZER_H */
