@@ -880,21 +880,29 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                 /* Format of command: 
                                  * MVC D1(L,B1),D2(B2) */
                                 char buffer[10];
+                                size_t str_len = strlen(p_char_syms[j]->INIT);
 
-                                memcpy(assembler_card.OPERAC, "MVC", 3);                        /* command */
+                                /* command */
+                                memcpy(assembler_card.OPERAC, "MVC", 3);
 
+                                /* D1 */
                                 sprintf(buffer, "%lu", offset);
-                                strcpy(assembler_card.OPERAND, buffer);                         /* D1 */
+                                strcpy(assembler_card.OPERAND, buffer);
 
                                 strcat(assembler_card.OPERAND, "(");
 
-                                sprintf(buffer, "%lu", strlen(p_char_syms[j]->INIT));
-                                strcat(assembler_card.OPERAND, buffer);                         /* L */
+                                /* L */
+                                sprintf(buffer, "%lu", str_len);
+                                strcat(assembler_card.OPERAND, buffer);
 
                                 strcat(assembler_card.OPERAND, ",");
-                                strcat(assembler_card.OPERAND, SYM[i].NAME);                    /* B1 */
-                                strcat(assembler_card.OPERAND, "),0(");                         /* D2 */
-                                strcat(assembler_card.OPERAND, p_char_syms[j]->NAME);           /* B2 */
+                                /* B1 */
+                                strcat(assembler_card.OPERAND, SYM[i].NAME);
+                                /* D2 */
+                                strcat(assembler_card.OPERAND, "),0(");
+                                /* B2 */
+                                strcat(assembler_card.OPERAND, p_char_syms[j]->NAME);
+                                
                                 strcat(assembler_card.OPERAND, ")");
 
                                 assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
@@ -910,7 +918,7 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
 
                                 ZKARD();
 
-                                offset += strlen(p_char_syms[j]->INIT);
+                                offset += str_len;
                                 p_char_syms[j] = NULL;
                             }
                             char_syms_size = 0;
