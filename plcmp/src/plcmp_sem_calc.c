@@ -116,6 +116,8 @@ static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_da
             break;
         case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
             break;
+        case PLCMP_SEM_CALCULATOR_CONCAT_ERROR:
+            break;
         default:
             break;
     }
@@ -857,6 +859,18 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                         {
                             int j;
                             size_t offset = 0;
+
+                            size_t final_necessary_razr = 0;
+                            for (j = 0; j < char_syms_size; j++)
+                            {
+                                final_necessary_razr += p_char_syms[j]->RAZR;
+                            }
+
+                            if (final_necessary_razr > SYM[i].RAZR)
+                            {
+                                return PLCMP_SEM_CALCULATOR_CONCAT_ERROR;
+                            }
+
                             for (j = 0; j < char_syms_size; j++)
                             {
                                 /* Format of command: 
@@ -1292,9 +1306,12 @@ char* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_da
         case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
             strcpy(errmsg, "Can't write to assembler file");
             break;
+        case PLCMP_SEM_CALCULATOR_CONCAT_ERROR:
+            strcpy(errmsg, "Capacity of the destination string is less than "
+                           "total capacity of strings which are being concatenated");
+            break;
         default:
             strcpy(errmsg, "Unknown error code for generating error message");
-            break;
 
     }
     return errmsg;
