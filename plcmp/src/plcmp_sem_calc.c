@@ -40,6 +40,81 @@ static char ASSTXT[MAXLTXT][80];
 /* Output array index */
 static int IASSTXT;
 
+/* Subroutine prepares error data for sending its to caller
+ * Error code in 'p_err_data->err_code' controls which data will be written */
+static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_data, 
+                                           goals_achieved_stack_t goal_achieved)
+{
+    switch (p_err_data->err_code)
+    {
+        case PLCMP_SEM_CALCULATOR_MISMATCH_PROC_NAME_PROL_EPIL_ERROR:
+            break;
+        case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
+            memcpy(p_err_data->src_text_part,
+                   &compact_pl1_src_text[goal_achieved.DST2],
+                   PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
+            p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
+
+            strcpy(p_err_data->data.identifier_type, FORMT[1]);
+
+            break;
+        case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR:
+            memcpy(p_err_data->src_text_part,
+                   &compact_pl1_src_text[goal_achieved.DST2],
+                   PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
+            p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
+
+            strcpy(p_err_data->data.identifier_type, FORMT[IFORMT - 1]);
+
+            break;
+        case PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR:
+            memcpy(p_err_data->src_text_part,
+                   &compact_pl1_src_text[goal_achieved.DST2],
+                   PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
+            p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
+
+            strcpy(p_err_data->data.identifier, FORMT[IFORMT - 1]);
+
+            break;
+        case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR:
+        {
+            size_t formt_len = strlen(FORMT[IFORMT - 1]);
+            size_t oper_len = 0;
+            memcpy(p_err_data->src_text_part,
+                   &compact_pl1_src_text[goal_achieved.DST2],
+                   PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
+            p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
+
+            p_err_data->data.operation[oper_len] = 
+                compact_pl1_src_text[goal_achieved.DST4 - formt_len];
+            ++oper_len;
+            if ('!' == compact_pl1_src_text[goal_achieved.DST4 - formt_len] &&
+                '!' == compact_pl1_src_text[goal_achieved.DST4 - formt_len + 1])
+            {
+                p_err_data->data.operation[oper_len] = 
+                    compact_pl1_src_text[goal_achieved.DST4 - formt_len + 1];
+                ++oper_len;
+            }
+            p_err_data->data.operation[oper_len] = '\0';
+
+            break;
+        }
+        case PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR:
+            memcpy(p_err_data->src_text_part,
+                   &compact_pl1_src_text[goal_achieved.DST2],
+                   PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
+            p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
+
+            strcpy(p_err_data->data.identifier, FORMT[1]);
+
+            break;
+        case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
+            break;
+        default:
+            break;
+    }
+}
+
 
 /* Clear assembler card. Fresh card should contains ' ' (space symbols) */
 static void plcmp_sem_calc_clear_assembler_card(void)
@@ -1061,9 +1136,11 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
             int hand_num = numb(p_goals_achieved->dst_stack[dst_index].DST1, 3);
             switch(hand_num + 1)
             {
+                /* PRO */
                 case 13:
                     err_data.err_code = handler[hand_num](sem_calc_phase, p_asm_fp_name);
                     break;
+                /* other */
                 default:
                     err_data.err_code = handler[hand_num](sem_calc_phase, &p_goals_achieved->dst_stack[dst_index]);
                     break;    
@@ -1071,76 +1148,11 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
             
             if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.err_code)
             {
-                switch (err_data.err_code)
-                {
-                    case PLCMP_SEM_CALCULATOR_MISMATCH_PROC_NAME_PROL_EPIL_ERROR:
-                        break;
-                    case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
-                        memcpy(err_data.src_text_part,
-                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
-                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
-                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
-
-                        strcpy(err_data.data.identifier_type, FORMT[1]);
-
-                        break;
-                    case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR:
-                        memcpy(err_data.src_text_part,
-                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
-                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
-                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
-
-                        strcpy(err_data.data.identifier_type, FORMT[IFORMT - 1]);
-
-                        break;
-                    case PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR:
-                        memcpy(err_data.src_text_part,
-                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
-                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
-                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
-
-                        strcpy(err_data.data.identifier, FORMT[IFORMT - 1]);
-
-                        break;
-                    case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR:
-                    {
-                        size_t formt_len = strlen(FORMT[IFORMT - 1]);
-                        size_t oper_len = 0;
-                        memcpy(err_data.src_text_part,
-                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
-                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
-                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
-
-                        err_data.data.operation[oper_len] = 
-                            compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST4 - formt_len];
-                        ++oper_len;
-                        if ('!' == compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST4 - formt_len] &&
-                            '!' == compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST4 - formt_len + 1])
-                        {
-                            err_data.data.operation[oper_len] = 
-                                compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST4 - formt_len + 1];
-                            ++oper_len;
-                        }
-                        err_data.data.operation[oper_len] = '\0';
-
-                        break;
-                    }
-                    case PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR:
-                        memcpy(err_data.src_text_part,
-                               &compact_pl1_src_text[p_goals_achieved->dst_stack[dst_index].DST2],
-                               PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
-                        err_data.src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
-
-                        strcpy(err_data.data.identifier, FORMT[1]);
-
-                        break;
-                    case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
-                        break;
-                    default:
-                        break;
-                }
                 /* Error occured while calculation superposition 
-                 * of the functions of the goals achieved */
+                 * of the functions of the goals achieved.
+                 * Prepare and send error data to the caller 
+                 */
+                plcmp_sem_calc_cook_error_data(&err_data, p_goals_achieved->dst_stack[dst_index]);
                 return err_data;
             }
         }

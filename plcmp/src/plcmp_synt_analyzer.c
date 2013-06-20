@@ -79,6 +79,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(dst_
     int i = 0;
     /* Current index in the table of grammar rules */
     int j;
+    /* Maximum index of processed compact source text 
+     * It needs for sending part of source text if error will occur */
+    int i4 = 0;
 
     /* Create stack of goals */
     PLCMP_SYNT_ANALYZER_CREATE_GOALS_STACK(goals);
@@ -87,7 +90,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(dst_
     memset(&err_data, 0, sizeof(plcmp_synt_analyzer_error_data_t));
     err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS;
 
-    I4 = 0;
+
 
     add_goal(p_goals, "PRO", i, 999);
 
@@ -98,7 +101,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(dst_
         /* Prepare error data for return to main module */
         err_data.err_code = PLCMP_SYNT_ANALYZER_FAILURE;
 
-        memcpy(err_data.src_text_part, &compact_pl1_src_text[I4], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
+        memcpy(err_data.src_text_part, &compact_pl1_src_text[i4], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
         err_data.src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN] = '\0';
 
         return err_data;
@@ -116,9 +119,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(dst_
 
     ++i;
 
-    if (i > I4)
+    if (i > i4)
     {
-        I4 = i;
+        i4 = i;
     }
 
     if ('T' == VXOD[numb(SINT[j].DER, 3)].TYP)
@@ -247,7 +250,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(dst_
         /* Prepare error data for return to main module */
         err_data.err_code = PLCMP_SYNT_ANALYZER_FAILURE;
         
-        memcpy(err_data.src_text_part, &compact_pl1_src_text[I4], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
+        memcpy(err_data.src_text_part, &compact_pl1_src_text[i4], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
         err_data.src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN] = '\0';
 
         return err_data;
