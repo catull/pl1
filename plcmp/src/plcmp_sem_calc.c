@@ -22,7 +22,7 @@ int char_syms_size = 0;
 
 /* This struct is type of assembler card
  * It is template to generate the output file record by IBM 370 assembler */
-static struct assembler_card_un {
+static struct assembler_card {
     char METKA[8];
     char PROB1;
     char OPERAC[5];
@@ -42,9 +42,6 @@ int IFORMT;
 static char assembler_out_text[MAXLTXT][80];
 /* Output array index */
 static int IASSTXT;
-
-
-/*static struct */
 
 /* Subroutine prepares error data for sending its to caller
  * Error code in 'p_err_data->err_code' controls which data will be written */
@@ -117,6 +114,8 @@ static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_da
         case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
             break;
         case PLCMP_SEM_CALCULATOR_CONCAT_ERROR:
+            break;
+        case PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG:
             break;
         default:
             break;
@@ -621,6 +620,11 @@ static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
                         #define init_value_pos (init_pos + 2)
                         #define init_value_len strlen(FORMT[init_value_pos])
 
+                        if (SYM[ISYM].RAZR < strlen(FORMT[init_value_pos]))
+                        {
+                            return PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG;
+                        }
+
                         strcpy(SYM[ISYM].INIT, FORMT[init_value_pos]);
                         memset(&(SYM[ISYM].INIT)[init_value_len], '\0', SYM[ISYM].RAZR - init_value_len);
 
@@ -863,7 +867,7 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                             size_t final_necessary_razr = 0;
                             for (j = 0; j < char_syms_size; j++)
                             {
-                                final_necessary_razr += p_char_syms[j]->RAZR;
+                                final_necessary_razr += strlen(p_char_syms[j]->INIT);
                             }
 
                             if (final_necessary_razr > SYM[i].RAZR)
@@ -887,7 +891,7 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                 sprintf(buffer, "%lu", strlen(p_char_syms[j]->INIT));
                                 strcat(assembler_card.OPERAND, buffer);                         /* L */
 
-                                strcat(assembler_card.OPERAND, ",");                
+                                strcat(assembler_card.OPERAND, ",");
                                 strcat(assembler_card.OPERAND, SYM[i].NAME);                    /* B1 */
                                 strcat(assembler_card.OPERAND, "),0(");                         /* D2 */
                                 strcat(assembler_card.OPERAND, p_char_syms[j]->NAME);           /* B2 */
@@ -910,7 +914,7 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                 p_char_syms[j] = NULL;
                             }
                             char_syms_size = 0;
-                            
+
                             return PLCMP_SEM_CALCULATOR_SUCCESS;
                         }
                         case 'P':
@@ -1308,10 +1312,14 @@ char* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_da
             break;
         case PLCMP_SEM_CALCULATOR_CONCAT_ERROR:
             strcpy(errmsg, "Capacity of the destination string is less than "
-                           "total capacity of strings which are being concatenated");
+                           "total length of strings which are being concatenated");
+            break;
+        case PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG:
+            strcpy(errmsg, "String initializer is very long for this capacity");
             break;
         default:
             strcpy(errmsg, "Unknown error code for generating error message");
+            break;
 
     }
     return errmsg;
