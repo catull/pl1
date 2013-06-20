@@ -40,6 +40,9 @@ static char assembler_out_text[MAXLTXT][80];
 /* Output array index */
 static int IASSTXT;
 
+
+/*static struct */
+
 /* Subroutine prepares error data for sending its to caller
  * Error code in 'p_err_data->err_code' controls which data will be written */
 static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_data, 
@@ -243,7 +246,7 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                         switch (SYM[i].TYPE)
                         {
                             case 'B':
-                                if (strcmp(SYM[i].RAZR, "15") <= 0)
+                                if (SYM[i].RAZR <= 15)
                                 {
                                     memcpy(assembler_card.OPERAC, "LH", 2);
                                 }
@@ -287,7 +290,7 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                                 switch (compact_pl1_src_text[goal_achieved.DST4 - formt_len])
                                 {
                                     case '+':
-                                        if (strcmp(SYM[i].RAZR, "15") <= 0 )
+                                        if (SYM[i].RAZR <= 15)
                                         {
                                             memcpy(assembler_card.OPERAC, "AH", 2);
                                         }
@@ -298,7 +301,7 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                                         break;
 
                                     case '-':
-                                        if (strcmp(SYM[i].RAZR, "15") <= 0)
+                                        if (SYM[i].RAZR <= 15)
                                         {
                                             memcpy(assembler_card.OPERAC, "SH", 2);
                                         }
@@ -339,7 +342,6 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                 }
 
                 return PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR;
-
             }
 
             break;
@@ -575,7 +577,7 @@ static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
                 return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR;
             }
 
-            strcpy(SYM[ISYM].RAZR, FORMT[init_pos - 1]);
+            SYM[ISYM].RAZR = atoi(FORMT[init_pos - 1]);
 
             if (!strcmp(FORMT[init_pos], "INIT"))
             {
@@ -590,7 +592,7 @@ static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
                         #define init_value_len strlen(FORMT[init_value_pos])
 
                         strcpy(SYM[ISYM].INIT, FORMT[init_value_pos]);
-                        memset(&(SYM[ISYM].INIT)[init_value_len], ' ', atoi(SYM[ISYM].RAZR) - init_value_len);
+                        memset(&(SYM[ISYM].INIT)[init_value_len], '\0', SYM[ISYM].RAZR - init_value_len);
 
                         #undef init_value_pos
                         #undef init_value_len
@@ -598,7 +600,7 @@ static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
                         break;
                     }
                     default:
-                        return 2;
+                        return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR;
                 }
             }
             else
@@ -609,10 +611,10 @@ static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
                         strcpy(SYM[ISYM].INIT, "0B");
                         break;
                     case 'C':
-                        memset(SYM[ISYM].INIT, ' ', atoi(SYM[ISYM].RAZR));
+                        memset(SYM[ISYM].INIT, '\0', SYM[ISYM].RAZR);
                         break;
                     default:
-                        return 2;
+                        return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR;
                 }
             }
 
@@ -708,7 +710,7 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
                     switch(SYM[i].TYPE)
                     {
                         case 'B':
-                            strcpy(assembler_card.OPERAND, (strcmp(SYM[i].RAZR, "15") <= 0) ? "H\'" : "F\'");
+                            strcpy(assembler_card.OPERAND, SYM[i].RAZR <= 15 ? "H\'" : "F\'");
                             strcat(assembler_card.OPERAND, gcvt(li_str_to_li(SYM[i].INIT), 10, &RAB[0]));
                             break;
                         case 'C':
@@ -806,7 +808,7 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                     switch (SYM[i].TYPE)
                     {
                         case 'B':
-                            if (strcmp(SYM[i].RAZR, "15") <= 0 )
+                            if (SYM[i].RAZR <= 15)
                             {
                                 memcpy(assembler_card.OPERAC, "STH", 3);
                             }
@@ -874,7 +876,8 @@ static enum plcmp_sem_calc_error_code_e OPR(int entry, void const *param)
 
             SYM[ISYM].TYPE = 'P';                        /* установим тип этого    */
             /* имени = 'P'            */
-            SYM[ISYM++].RAZR[0] = '\0';                  /* установим разрядность  */
+            SYM[ISYM].RAZR = 0;                  /* установим разрядность  */
+            ++ISYM;
             /* равной 0               */
 
                                                    /* успешное завершение    */
@@ -1097,12 +1100,12 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
     memset(&err_data, 0, sizeof(plcmp_sem_calc_error_data_t));
     err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS;
 
-     /* При этом каждая строка воспринимается как команда абстрактной ЭВМ со  
-      * следующими полями: 
-      * - DST.DST1 - код операции
-      * - DST.DST2 - левая граница интерпретируемого фрагмента исх.текста;
-      * - DST.DST4 - правая граница интерпретируемого фрагмента исх.текста
-      */
+    /* При этом каждая строка воспринимается как команда абстрактной ЭВМ со  
+     * следующими полями: 
+     * - DST.DST1 - код операции
+     * - DST.DST2 - левая граница интерпретируемого фрагмента исх.текста;
+     * - DST.DST4 - правая граница интерпретируемого фрагмента исх.текста
+     */
 
     enum plcmp_sem_calc_error_code_e (*handler[NNETRM])(int, void const*) = {
         /*    1  */ AVI,

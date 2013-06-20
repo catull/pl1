@@ -43,7 +43,7 @@ typedef struct sym_s
 {
     char NAME[8];
     char TYPE;
-    char RAZR[5];
+    unsigned int RAZR;
     char INIT[50];
 } sym_t;
 
