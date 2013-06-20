@@ -1167,70 +1167,62 @@ char* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_da
     {
         case PLCMP_SEM_CALCULATOR_SUCCESS:
             strcpy(errmsg, "No error occured");
-            return errmsg;
+            break;
         case PLCMP_SEM_CALCULATOR_MISMATCH_PROC_NAME_PROL_EPIL_ERROR:
             strcpy(errmsg, "Mismatch of the name of the procedure in prologue-epilogue");
-            return errmsg;
+            break;
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
         {
-            char __errmsg[29 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1];
-            strcpy(__errmsg, "Not allowed identifier type '");
-            strcat(__errmsg, err_data->data.identifier_type);
-            strcat(__errmsg, "' in the source text '");
-            strcat(__errmsg, err_data->src_text_part);
-            strcat(__errmsg, "'");
-            strcpy(errmsg, __errmsg);
-            return errmsg;
+            strcpy(errmsg, "Not allowed identifier type '");
+            strcat(errmsg, err_data->data.identifier_type);
+            strcat(errmsg, "' in the source text '");
+            strcat(errmsg, err_data->src_text_part);
+            strcat(errmsg, "'");
+            break;
         }
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR:
         {
-            char __errmsg[29 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1];
-            strcpy(__errmsg, "Not allowed identifier type '");
-            strcat(__errmsg, err_data->data.identifier_type);
-            strcat(__errmsg, "' in the source text '");
-            strcat(__errmsg, err_data->src_text_part);
-            strcat(__errmsg, "'");
-            strcpy(errmsg, __errmsg);
-            return errmsg;
+            strcpy(errmsg, "Not allowed identifier type '");
+            strcat(errmsg, err_data->data.identifier_type);
+            strcat(errmsg, "' in the source text '");
+            strcat(errmsg, err_data->src_text_part);
+            strcat(errmsg, "'");
+            break;
         }
         case PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR:
         {
-            char __errmsg[27 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1];
-            strcpy(__errmsg, "Not determined identifier '");
-            strcat(__errmsg, err_data->data.identifier);
-            strcat(__errmsg, "' in the source text '");
-            strcat(__errmsg, err_data->src_text_part);
-            strcat(__errmsg, "'");
-            strcpy(errmsg, __errmsg);
-            return errmsg;
+            strcpy(errmsg, "Not determined identifier '");
+            strcat(errmsg, err_data->data.identifier);
+            strcat(errmsg, "' in the source text '");
+            strcat(errmsg, err_data->src_text_part);
+            strcat(errmsg, "'");
+            break;
         }
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR:
         {
-            char __errmsg[23 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1];
-            strcpy(__errmsg, "Not allowed operation '");
-            strcat(__errmsg, err_data->data.operation);
-            strcat(__errmsg, "' in the source text '");
-            strcat(__errmsg, err_data->src_text_part);
-            strcat(__errmsg, "'");
-            strcpy(errmsg, __errmsg);
-            return errmsg;
+            strcpy(errmsg, "Not allowed operation '");
+            strcat(errmsg, err_data->data.operation);
+            strcat(errmsg, "' in the source text '");
+            strcat(errmsg, err_data->src_text_part);
+            strcat(errmsg, "'");
+            break;
         }
         case PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR:
         {
-            char __errmsg[40 + 8 + 22 + PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1 + 1];
-            strcpy(__errmsg, "Repeated declaration of the identifier '");
-            strcat(__errmsg, err_data->data.identifier);
-            strcat(__errmsg, "' in the source text '");
-            strcat(__errmsg, err_data->src_text_part);
-            strcat(__errmsg, "'");
-            strcpy(errmsg, __errmsg);
-            return errmsg;
+            strcpy(errmsg, "Repeated declaration of the identifier '");
+            strcat(errmsg, err_data->data.identifier);
+            strcat(errmsg, "' in the source text '");
+            strcat(errmsg, err_data->src_text_part);
+            strcat(errmsg, "'");
+            break;
         }
         case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
             strcpy(errmsg, "Can't write to assembler file");
-            return errmsg;
+            break;
         default:
             strcpy(errmsg, "Unknown error code for generating error message");
-            return errmsg;
+            break;
+
     }
+    return errmsg;
 }

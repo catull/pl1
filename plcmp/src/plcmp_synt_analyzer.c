@@ -267,18 +267,15 @@ char* plcmp_synt_analyzer_errmsg_by_errdata(plcmp_synt_analyzer_error_data_t con
     {
         case PLCMP_SYNT_ANALYZER_FAILURE:
         {
-            char __errmsg[36 + PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN + 1];
-            strcpy(__errmsg, "Error in syntax of the source text: ");
-            strcat(__errmsg, err_data->src_text_part);
-
-            strcpy(errmsg, __errmsg);
-
-            return errmsg;
+            strcpy(errmsg, "Error in syntax of the source text: ");
+            strcat(errmsg, err_data->src_text_part);
+            break;
         }
         default:
         {
             strcpy(errmsg, "Unknown error code in error data for generating error message");
-            return errmsg;
+            break;
         }
     }
+    return errmsg;
 }
