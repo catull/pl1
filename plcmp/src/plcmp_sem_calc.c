@@ -36,7 +36,7 @@ char FORMT[MAXFORMT][9];
 int IFORMT;
 
 /* Array for storage of output text written in IBM 370 ASSEMBLER */
-static char ASSTXT[MAXLTXT][80];
+static char assembler_out_text[MAXLTXT][80];
 /* Output array index */
 static int IASSTXT;
 
@@ -128,7 +128,7 @@ static void plcmp_sem_calc_clear_assembler_card(void)
  * and clear the temporary assembler card */
 static void ZKARD(void)
 {
-    memcpy(ASSTXT[IASSTXT], &assembler_card, 80);
+    memcpy(assembler_out_text[IASSTXT], &assembler_card, 80);
     ++IASSTXT;
     plcmp_sem_calc_clear_assembler_card();
 }
@@ -964,7 +964,7 @@ static enum plcmp_sem_calc_error_code_e PRO(int entry, void const *param)
                 int i;
                 for (i = 0; i < IASSTXT; i++)
                 {
-                    fwrite(ASSTXT[i], 80, 1, p_asm_f);
+                    fwrite(assembler_out_text[i], 80, 1, p_asm_f);
                     fwrite("\n", 1, 1, p_asm_f);
                 }
             }
