@@ -5,13 +5,16 @@
 
 #include <assert.h>
 
-#define DL_ASSTEXT 16
+#define DL_ASSTEXT 50
 #define DL_OBJTEXT 50                             /*длина об'ектн. текста   */
 #define NSYM 10                                   /*размер табл.символов    */
 #define NPOP 6                                    /*размер табл.псевдоопер. */
 #define NOP 6                                    /*размер табл.операций    */
-/* The limited length of the line of the assembler source text */
-#define LINELEN 80
+
+/* The limited length of the line of the assembler source text 
+ * It has to be 81 (80 + 1) because 'fread' function reads 
+ * newline-symbol too in the end of the each line of assembler code */
+#define LINELEN 81
 
 #define TRUE 1
 #define FALSE 0

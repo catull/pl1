@@ -849,7 +849,7 @@ int SOBJFILE(char const *p_tex_fp_name)
     }
     else
     {
-        RAB2 = fwrite(OBJTEXT, ITCARD, 80, p_text_fp);
+        RAB2 = fwrite(OBJTEXT, 80, ITCARD, p_text_fp);
         fclose(p_text_fp);
     }
 
@@ -981,23 +981,21 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
     };
 
     /* The first phase */
-    for (i1 = 0; i1 < DL_ASSTEXT; i1++)
+    for (i1 = 0; i1 < asm_src_text_len; i1++)
     {
         int i2;
 
         memcpy(TEK_ISX_KARTA.BUFCARD, asm_src_text[i1], 80);
-        if (' ' == TEK_ISX_KARTA.STRUCT_BUFCARD.METKA[0])
+
+        if (' ' != TEK_ISX_KARTA.STRUCT_BUFCARD.METKA[0])
         {
-            goto CONT1;
+            ITSYM += 1;
+            PRNMET = 'Y';
+            memcpy(T_SYM[ITSYM].IMSYM, TEK_ISX_KARTA.STRUCT_BUFCARD.METKA, 8);
+            T_SYM[ITSYM].ZNSYM = CHADR;
         }
 
-        ITSYM += 1;
-        PRNMET = 'Y';
-        memcpy(T_SYM[ITSYM].IMSYM, TEK_ISX_KARTA.STRUCT_BUFCARD.METKA, 8);
-        T_SYM[ITSYM].ZNSYM = CHADR;
-
-        CONT1:
-
+        /* Check if the current assembler command is one of the pseudo commands */
         for (i2 = 0; i2 < NPOP; i2++)
         {
             if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_POP[i2].MNCPOP, 5))
@@ -1048,7 +1046,7 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
     T_POP[5].BXPROG = SUSING;
 
     /* The second phase */
-    for (i1 = 0; i1 < DL_ASSTEXT; i1++)
+    for (i1 = 0; i1 < asm_src_text_len; i1++)
     {
         int i2;
         memcpy(TEK_ISX_KARTA.BUFCARD, asm_src_text[i1], 80);
@@ -1096,11 +1094,7 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
 
     CONT5:
 
-    if (ITCARD == (RAB = SOBJFILE(p_tex_fp_name)))
-    {
-        printf("%s\n", "успешое завершение трансляции");
-    }
-    else
+    if (ITCARD != (RAB = SOBJFILE(p_tex_fp_name)))
     {
         if (-7 == RAB)
         {
