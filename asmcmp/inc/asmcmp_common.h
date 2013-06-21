@@ -9,7 +9,7 @@
 #define DL_OBJTEXT 50                             /*длина об'ектн. текста   */
 #define NSYM 10                                   /*размер табл.символов    */
 #define NPOP 6                                    /*размер табл.псевдоопер. */
-#define NOP  6                                    /*размер табл.операций    */
+#define NOP 6                                    /*размер табл.операций    */
 /* The limited length of the line of the assembler source text */
 #define LINELEN 80
 

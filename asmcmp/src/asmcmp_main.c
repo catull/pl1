@@ -835,21 +835,26 @@ int SRX()                                         /*подпр.обр.опер.R
   STXT(4);                                        /*формирование TXT-карты  */
   return(0);                                      /*выйти из подпрограммы   */
  }
-/*..........................................................................*/
-int SOBJFILE()                                    /*подпрогр.формир.об'екн. */
- {                                                /*файла                   */
-  FILE *fp;                                       /*набор рабочих           */
-  int RAB2;                                       /*переменных              */
-                          /*формирование пути и име-*/
-  strcat ( NFIL , "tex" );                        /*ни об'ектного файла     */
-  if ( (fp = fopen ( NFIL , "wb" )) == NULL )     /*при неудачн.открыт.ф-ла */
-   return (-7);                                   /* сообщение об ошибке    */
-  else                                            /*иначе:                  */
-   RAB2 =fwrite (OBJTEXT, 80 , ITCARD , fp);      /* формируем тело об.файла*/
-  fclose ( fp );                                  /*закрываем об'ектный файл*/
-  return ( RAB2 );                                /*завершаем  подпрограмму */
 
- }
+
+int SOBJFILE(char const *p_tex_fp_name)
+{
+    FILE *p_text_fp;
+    int RAB2;
+
+    p_text_fp = fopen(p_tex_fp_name , "wb"); 
+    if (NULL == p_text_fp)
+    {
+        return -7; 
+    }
+    else
+    {
+        RAB2 = fwrite(OBJTEXT, ITCARD, 80, p_text_fp);
+        fclose(p_text_fp);
+    }
+
+    return RAB2;
+}
 
 
 static void INITUNION(void)
@@ -888,15 +893,39 @@ static void INITUNION(void)
     memset(END.STR_END.POLE9, 0x40, 8);
 }
 
-/* Function of reading ASM-file of the source text with 'asm_fp_name' file path name */
-static enum asmcmp_main_error_code_e asmcmp_main_read_asm_file(char const asm_fp_name[],
+static char const* asmcmp_main_errmsg_by_errcode(asmcmp_main_error_code_t err_code)
+{
+    switch (err_code)
+    {
+        case ASMCMP_MAIN_SUCCESS:
+            return "No error occured";
+        case ASMCMP_MAIN_WRONG_NUM_CLI_PAR:
+            return "Wrong number of command line parameters";
+        case ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_PATH:
+            return "Wrong path to ASM-file with the source text";
+        case ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_EXTENSION:
+            return "Wrong input file extension with the source text";
+        case ASMCMP_MAIN_NOT_FOUND_INPUT_ASM_FILE:
+            return "Couldn't find file with the source text";
+        case ASMCMP_MAIN_ERROR_READING_ASM_FILE:
+            return "Error occured while reading file with the source text";
+        case ASMCMP_MAIN_PROGRAM_BUFFER_OVERFLOW:
+            return "Overflow of the program buffer while reading file with the source text";
+        default:
+            return "Unknown error code for generating error message";
+    }
+}
+
+
+/* Function of reading ASM-file of the source text with 'p_asm_fp_name' file path name */
+static enum asmcmp_main_error_code_e asmcmp_main_read_asm_file(char const *p_asm_fp_name,
                                                                char asm_src_text[][LINELEN],
                                                                size_t *p_asm_src_text_len)
 {
     FILE *p_asm_f;
     asmcmp_main_error_code_t err_code = ASMCMP_MAIN_SUCCESS;
 
-    p_asm_f = fopen(asm_fp_name , "rb");
+    p_asm_f = fopen(p_asm_fp_name , "rb");
     if (NULL == p_asm_f)
     {
         err_code = ASMCMP_MAIN_NOT_FOUND_INPUT_ASM_FILE;
@@ -935,74 +964,28 @@ static enum asmcmp_main_error_code_e asmcmp_main_read_asm_file(char const asm_fp
     return err_code;
 }
 
-int main(int const argc, char const *argv[])
+/* Function processes source ASM-text */
+static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src_text[][LINELEN],
+                                                                    size_t asm_src_text_len,
+                                                                    char const *p_tex_fp_name)
 {
-    char asm_src_text[DL_ASSTEXT][LINELEN];                  /* Content of the array of the source assembler text */
-    size_t asm_src_text_len = 0;                             /* Length of the array of the source PL1-text */
-    char *p_asm_fp_name = NULL, *p_tex_fp_name = NULL;
-    size_t asm_fp_len;
+    int i1;
+    int RAB;
     asmcmp_main_error_data_t err_data;
 
-    int I1 , I2 , RAB;
-
-    /* Clear error data structure and set default successful parameters */
+    /* Clear error data structure and set default successful parameters
+     * before syntax analyzer and semantic calculator call */
     memset(&err_data, 0, sizeof(asmcmp_main_error_data_t));
-    err_data = (asmcmp_main_error_data_t){ 
-        .main_err_code = ASMCMP_MAIN_SUCCESS,
+    err_data = (asmcmp_main_error_data_t){
+        .main_err_code = ASMCMP_MAIN_SUCCESS
     };
 
-    /* Current program must contains one real parameter */
-    if (argc != 2)
+    /* The first phase */
+    for (i1 = 0; i1 < DL_ASSTEXT; i1++)
     {
-        err_data.main_err_code = ASMCMP_MAIN_WRONG_NUM_CLI_PAR;
-        goto error;
-    }
+        int i2;
 
-    /* Copy name of translated program from input argument */
-    ASMCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_asm_fp_name, argv[1]);
-
-    asm_fp_len = strlen(p_asm_fp_name);
-    if (asm_fp_len < 4)
-    {
-        err_data.main_err_code = ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_PATH;
-        goto error;
-    }
-
-    /* Input file for translation must be with 'ass' extension */
-    if (strcmp(&p_asm_fp_name[asm_fp_len - 4], ".ass"))
-    {
-        err_data.main_err_code = ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_EXTENSION;
-        goto error;
-    }
-    else
-    {
-        /* Clear array for the source ASM-text before getting text from the ASM-file */
-        memset(asm_src_text, '\0', sizeof(char)*DL_ASSTEXT*LINELEN);
-
-        err_data.main_err_code = asmcmp_main_read_asm_file(p_asm_fp_name, asm_src_text, &asm_src_text_len);
-        if (ASMCMP_MAIN_SUCCESS == err_data.main_err_code)
-        {
-            /* After successfully reading file proceed to translation of the source text */
-            INITUNION();
-            ASMCMP_MAIN_MAKE_TEX_FILE_PATH_BY_ASM_FILE_PATH(p_tex_fp_name, p_asm_fp_name);
-            ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
-            #if 0
-            err_data = plcmp_main_process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
-            #endif
-        }
-        else
-        {
-            /* Error occured while reading file */
-            ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
-            goto error;
-        }
-    }
-
-//    main1:
-
-    for (I1 = 0; I1 < DL_ASSTEXT; I1++)
-    {
-        memcpy(TEK_ISX_KARTA.BUFCARD, asm_src_text[I1], 80);
+        memcpy(TEK_ISX_KARTA.BUFCARD, asm_src_text[i1], 80);
         if (' ' == TEK_ISX_KARTA.STRUCT_BUFCARD.METKA[0])
         {
             goto CONT1;
@@ -1015,11 +998,11 @@ int main(int const argc, char const *argv[])
 
         CONT1:
 
-        for (I2 = 0; I2 < NPOP; I2++)
+        for (i2 = 0; i2 < NPOP; i2++)
         {
-            if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_POP[I2].MNCPOP, 5))
+            if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_POP[i2].MNCPOP, 5))
             {
-                switch (T_POP[I2].BXPROG())
+                switch (T_POP[i2].BXPROG())
                 {
                     case 0:
                         goto CONT2;
@@ -1064,15 +1047,17 @@ int main(int const argc, char const *argv[])
     T_POP[4].BXPROG = SSTART;
     T_POP[5].BXPROG = SUSING;
 
-    for (I1 = 0; I1 < DL_ASSTEXT; I1++)
+    /* The second phase */
+    for (i1 = 0; i1 < DL_ASSTEXT; i1++)
     {
-        memcpy(TEK_ISX_KARTA.BUFCARD, asm_src_text[I1], 80);
+        int i2;
+        memcpy(TEK_ISX_KARTA.BUFCARD, asm_src_text[i1], 80);
 
-        for (I2 = 0; I2 < NPOP; I2++)
+        for (i2 = 0; i2 < NPOP; i2++)
         {
-            if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_POP[I2].MNCPOP, 5))
+            if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_POP[i2].MNCPOP, 5))
             {
-                switch (T_POP[I2].BXPROG())
+                switch (T_POP[i2].BXPROG())
                 {
                     case 0:
                         goto CONT4;
@@ -1111,7 +1096,7 @@ int main(int const argc, char const *argv[])
 
     CONT5:
 
-    if (ITCARD == (RAB = SOBJFILE()))
+    if (ITCARD == (RAB = SOBJFILE(p_tex_fp_name)))
     {
         printf("%s\n", "успешое завершение трансляции");
     }
@@ -1127,7 +1112,11 @@ int main(int const argc, char const *argv[])
         }
     }
 
+    #if 0
     return 6;
+    #else
+    return err_data;
+    #endif
 
     ERR1:
 
@@ -1165,9 +1154,81 @@ int main(int const argc, char const *argv[])
     goto CONT6;
 
     CONT6:
-    printf ("%s%d\n","ошибка в карте N ",I1+1);
+    printf ("%s%d\n","ошибка в карте N ", i1 + 1);
 
-    error:
+    return err_data;
+}
+
+int main(int const argc, char const *argv[])
+{
+    char asm_src_text[DL_ASSTEXT][LINELEN];                  /* Content of the array of the source ASM-text */
+    size_t asm_src_text_len = 0;                             /* Length of the array of the source ASM-text */
+    char *p_asm_fp_name = NULL, *p_tex_fp_name = NULL;
+    size_t asm_fp_len;
+    asmcmp_main_error_data_t err_data;
+
+    /* Clear error data structure and set default successful parameters */
+    memset(&err_data, 0, sizeof(asmcmp_main_error_data_t));
+    err_data = (asmcmp_main_error_data_t){ 
+        .main_err_code = ASMCMP_MAIN_SUCCESS
+    };
+
+    /* Current program must contains one real parameter */
+    if (argc != 2)
+    {
+        err_data.main_err_code = ASMCMP_MAIN_WRONG_NUM_CLI_PAR;
+        goto error;
+    }
+
+    /* Copy name of translated program from input argument */
+    ASMCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_asm_fp_name, argv[1]);
+
+    asm_fp_len = strlen(p_asm_fp_name);
+    if (asm_fp_len < 4)
+    {
+        err_data.main_err_code = ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_PATH;
+        goto error;
+    }
+
+    /* Input file for translation must be with 'ass' extension */
+    if (strcmp(&p_asm_fp_name[asm_fp_len - 4], ".ass"))
+    {
+        err_data.main_err_code = ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_EXTENSION;
+        goto error;
+    }
+    else
+    {
+        /* Clear array for the source ASM-text before getting text from the ASM-file */
+        memset(asm_src_text, '\0', sizeof(char)*DL_ASSTEXT*LINELEN);
+
+        err_data.main_err_code = asmcmp_main_read_asm_file(p_asm_fp_name, asm_src_text, &asm_src_text_len);
+        if (ASMCMP_MAIN_SUCCESS == err_data.main_err_code)
+        {
+            /* After successfully reading file proceed to translation of the source text */
+            INITUNION();
+            ASMCMP_MAIN_MAKE_TEX_FILE_PATH_BY_ASM_FILE_PATH(p_tex_fp_name, p_asm_fp_name);
+            ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
+            err_data = asmcmp_main_process_src_text(asm_src_text, asm_src_text_len, p_tex_fp_name);
+            ASMCMP_COMMON_RELEASE_MEM(p_tex_fp_name);
+        }
+        else
+        {
+            /* Error occured while reading file */
+            ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
+            goto error;
+        }
+    }
+
+    if (ASMCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data.main_err_code)
+    {
+        printf("Translation is finished succesfully\n");
+    }
+    else
+    {
+        error:
+
+        printf("Translation is interrupted\nReason: %s\n", asmcmp_main_errmsg_by_errcode(err_data.main_err_code));
+    }
 
     return err_data.main_err_code;
 }

@@ -64,14 +64,14 @@ static void plcmp_main_build_tpr(void)
 }
 
 /* Function of reading PL1-file of the source text with 'p_pl1_fp_name' file path name */
-static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const pl1_fp_name[],
+static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_fp_name,
                                                              char pl1_src_text[][LINELEN],
                                                              size_t *p_pl1_src_text_len)
 {
     FILE *p_pl1_f;
     plcmp_main_error_code_t err_code = PLCMP_MAIN_SUCCESS;
 
-    p_pl1_f = fopen(pl1_fp_name , "rb");
+    p_pl1_f = fopen(p_pl1_fp_name , "rb");
     if (NULL == p_pl1_f)
     {
         err_code = PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE;
@@ -115,7 +115,7 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const pl1_fp_n
  * which translate PL1-text to text with assembler mnemonic commands */
 static struct plcmp_main_error_data_s plcmp_main_process_src_text(char pl1_src_text[][LINELEN],
                                                                   size_t pl1_src_text_len,
-                                                                  char const p_asm_fp_name[])
+                                                                  char const *p_asm_fp_name)
 {
     /* It's stack of goals achieved. Later it will be created by macro */
     dst_t goals_achieved;

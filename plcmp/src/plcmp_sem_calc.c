@@ -1066,9 +1066,10 @@ static enum plcmp_sem_calc_error_code_e PRO(int entry, void const *param)
                     fwrite(assembler_out_text[i], 80, 1, p_asm_f);
                     fwrite("\n", 1, 1, p_asm_f);
                 }
+                
+                fclose(p_asm_f);
             }
 
-            fclose(p_asm_f);
             break;
         }
         default:
