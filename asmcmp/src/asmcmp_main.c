@@ -6,12 +6,6 @@
 #include "asmcmp_common.h"
 #include "asmcmp_main.h"
 
-/*
-******* Б Л О К  об'явлений статических рабочих переменных
-*/
-
-char NFIL[30];
-
 unsigned char PRNMET = 'N';                       /*индикатор обнаруж.метки */
 int I3;                                           /*счетчик цикла           */
 
@@ -73,34 +67,25 @@ int SRR();                                        /*подпр.обр.опер.R
 int SRX();                                        /*подпр.обр.опер.RX-форм. */
 /*..........................................................................*/
 
-/*
-******* Б Л О К  об'явлений таблиц базы данных компилятора
-*/
-
-/*
-******* ОБ'ЯВЛЕНИЕ структуры строки (карты) исходного текста
-*/
-
- struct ASSKARTA                                  /*структ.карты АССЕМБЛЕРА */
-  {
-   unsigned  char METKA    [ 8];                  /*поле метки              */
-   unsigned  char PROBEL1  [ 1];                  /*пробел-разделитель      */
-   unsigned  char OPERAC   [ 5];                  /*поле операции           */
-   unsigned  char PROBEL2  [ 1];                  /*пробел-разделитель      */
-   unsigned  char OPERAND  [12];                  /*поле операнда           */
-   unsigned  char PROBEL3  [ 1];                  /*пробел разделитель      */
-   unsigned  char COMM     [52];                  /*поле комментария        */
-  };
+struct ASSKARTA                                  /*структ.карты АССЕМБЛЕРА */
+{
+    char METKA[8];                  /*поле метки              */
+    char PROBEL1[1];                  /*пробел-разделитель      */
+    char OPERAC[5];                  /*поле операции           */
+    char PROBEL2[1];                  /*пробел-разделитель      */
+    char OPERAND[12];                  /*поле операнда           */
+    char PROBEL3[1];                  /*пробел разделитель      */
+    char COMM[52];                  /*поле комментария        */
+};
 
 /*
 ******* НАЛОЖЕНИЕ структуры карты исх. текста на входной буфер
 */
 
- union                                            /*определить об'единение  */
-  {
-   unsigned char BUFCARD [80];                    /*буфер карты.исх.текста  */
-   struct ASSKARTA STRUCT_BUFCARD;                /*наложение шабл.на буфер */
-  } TEK_ISX_KARTA;
+union {
+    unsigned char BUFCARD[80];                    /*буфер карты.исх.текста  */
+    struct ASSKARTA STRUCT_BUFCARD;                /*наложение шабл.на буфер */
+} TEK_ISX_KARTA;
 
 /*
 ***** СЧЕТЧИК относительного адреса (смещешия относительно базы )
@@ -893,27 +878,63 @@ static void INITUNION(void)
     memset(END.STR_END.POLE9, 0x40, 8);
 }
 
-static char const* asmcmp_main_errmsg_by_errcode(asmcmp_main_error_code_t err_code)
+static char* asmcmp_main_errmsg_by_errdata(asmcmp_main_error_data_t err_data, char *errmsg)
 {
-    switch (err_code)
+    switch (err_data.main_err_code)
     {
         case ASMCMP_MAIN_SUCCESS:
-            return "No error occured";
+            strcpy(errmsg, "No error occured");
+            break;
         case ASMCMP_MAIN_WRONG_NUM_CLI_PAR:
-            return "Wrong number of command line parameters";
+            strcpy(errmsg, "Wrong number of command line parameters");
+            break;
         case ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_PATH:
-            return "Wrong path to ASM-file with the source text";
+            strcpy(errmsg, "Wrong path to ASM-file with the source text");
+            break;
         case ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_EXTENSION:
-            return "Wrong input file extension with the source text";
+            strcpy(errmsg, "Wrong input file extension with the source text");
+            break;
         case ASMCMP_MAIN_NOT_FOUND_INPUT_ASM_FILE:
-            return "Couldn't find file with the source text";
+            strcpy(errmsg, "Couldn't find file with the source text");
+            break;
         case ASMCMP_MAIN_ERROR_READING_ASM_FILE:
-            return "Error occured while reading file with the source text";
+            strcpy(errmsg, "Error occured while reading file with the source text");
+            break;
         case ASMCMP_MAIN_PROGRAM_BUFFER_OVERFLOW:
-            return "Overflow of the program buffer while reading file with the source text";
+            strcpy(errmsg, "Overflow of the program buffer while reading file with the source text");
+            break;
+        case ASMCMP_MAIN_WRONG_DATA_FORMAT_ERROR:
+            strcpy(errmsg, "Wrong data format");
+            break;
+        case ASMCMP_MAIN_NOT_DECLARED_IDENT_ERROR:
+            strcpy(errmsg, "Not declared identifier");
+            break;
+        case ASMCMP_MAIN_OPERATION_CODE_ERROR:
+            strcpy(errmsg, "Error of the operation code");
+            break;
+        case ASMCMP_MAIN_SECOND_OPERAND_ERROR:
+            strcpy(errmsg, "Error of the second operand");
+            break;
+        case ASMCMP_MAIN_BASING_ERROR:
+            strcpy(errmsg, "Basing error");
+            break;
+        case ASMCMP_MAIN_ILLEGAL_REGISTER_NUMBER_ERROR:
+            strcpy(errmsg, "Illegal register number");
+            break;
+        case ASMCMP_MAIN_CANT_WRITE_TEX_FILE_ERROR:
+            strcpy(errmsg, "Can't write to object file");
+            break;
+        case ASMCMP_MAIN_WRONG_WRITE_TEX_FILE_ERROR:
+            strcpy(errmsg, "Wrong writing to object file");
+            break;
         default:
             return "Unknown error code for generating error message";
     }
+
+    strcat(errmsg, ". Error in card ");
+    sprintf(&errmsg[strlen(errmsg)], "%d", err_data.card_number);
+
+    return errmsg;
 }
 
 
@@ -1005,7 +1026,8 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
                     case 0:
                         goto CONT2;
                     case 1:
-                        goto ERR1;
+                        err_data.main_err_code = ASMCMP_MAIN_WRONG_DATA_FORMAT_ERROR;
+                        goto error;
                     case 100:
                         goto CONT3;
                 }
@@ -1022,7 +1044,8 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
             }
         }
 
-        goto ERR3;
+        err_data.main_err_code = ASMCMP_MAIN_OPERATION_CODE_ERROR;
+        goto error;
 
         CONT2:
         
@@ -1074,15 +1097,18 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
                     case 0:
                         goto CONT4;
                     case 2:
-                        goto ERR2;
+                        err_data.main_err_code = ASMCMP_MAIN_NOT_DECLARED_IDENT_ERROR;
+                        goto error;
                     case 4:
-                        goto ERR4;
+                        err_data.main_err_code = ASMCMP_MAIN_SECOND_OPERAND_ERROR;
+                        goto error;
                     case 5:
-                        goto ERR5;
+                        err_data.main_err_code = ASMCMP_MAIN_BASING_ERROR;
+                        goto error;
                     case 6:
-                        goto ERR6;
                     case 7:
-                        goto ERR6;
+                        err_data.main_err_code = ASMCMP_MAIN_ILLEGAL_REGISTER_NUMBER_ERROR;
+                        goto error;
                 }
             }
         }
@@ -1094,61 +1120,18 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
 
     CONT5:
 
-    if (ITCARD != (RAB = SOBJFILE(p_tex_fp_name)))
+    RAB = SOBJFILE(p_tex_fp_name);
+    if (ITCARD != RAB)
     {
-        if (-7 == RAB)
-        {
-            goto ERR7;
-        }
-        else
-        {
-            printf("%s\n","ошибка при формировании об'ектного файла");
-        }
+        err_data.main_err_code = (-7 == RAB) ? ASMCMP_MAIN_CANT_WRITE_TEX_FILE_ERROR : ASMCMP_MAIN_WRONG_WRITE_TEX_FILE_ERROR;
     }
 
-    #if 0
-    return 6;
-    #else
-    return err_data;
-    #endif
+    error:
 
-    ERR1:
-
-    printf ("%s\n","ошибка формата данных");
-    goto CONT6;
-
-    ERR2:
-
-    printf ("%s\n","необ'явленный идентификатор");
-    goto CONT6;
-
-    ERR3:
-
-    printf ("%s\n","ошибка кода операции");
-    goto CONT6;
-
-    ERR4:
-
-    printf ("%s\n","ошибка второго операнда");
-    goto CONT6;
-
-    ERR5:
-
-    printf ("%s\n","ошибка базирования");
-    goto CONT6;
-
-    ERR6:
-
-    printf ("%s\n","недопустимый номер регистра");
-    goto CONT6;
-
-    ERR7:
-
-    printf ("%s\n","ошибка открытия об'ектн.файла");
-    goto CONT6;
-
-    CONT6:
-    printf ("%s%d\n","ошибка в карте N ", i1 + 1);
+    if (ASMCMP_MAIN_SUCCESSFUL_TRANSLATION != err_data.main_err_code)
+    {
+        err_data.card_number = i1 + 1;
+    }
 
     return err_data;
 }
@@ -1219,9 +1202,11 @@ int main(int const argc, char const *argv[])
     }
     else
     {
+        char errmsg[100];
+
         error:
 
-        printf("Translation is interrupted\nReason: %s\n", asmcmp_main_errmsg_by_errcode(err_data.main_err_code));
+        printf("Translation is interrupted\nReason: %s\n", asmcmp_main_errmsg_by_errdata(err_data, errmsg));
     }
 
     return err_data.main_err_code;

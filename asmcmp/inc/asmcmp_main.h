@@ -12,11 +12,21 @@ typedef enum asmcmp_main_error_code_e {
     ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_EXTENSION,
     ASMCMP_MAIN_NOT_FOUND_INPUT_ASM_FILE,
     ASMCMP_MAIN_ERROR_READING_ASM_FILE,
-    ASMCMP_MAIN_PROGRAM_BUFFER_OVERFLOW
+    ASMCMP_MAIN_PROGRAM_BUFFER_OVERFLOW,
+/********************/
+    ASMCMP_MAIN_WRONG_DATA_FORMAT_ERROR,
+    ASMCMP_MAIN_NOT_DECLARED_IDENT_ERROR,
+    ASMCMP_MAIN_OPERATION_CODE_ERROR,
+    ASMCMP_MAIN_SECOND_OPERAND_ERROR,
+    ASMCMP_MAIN_BASING_ERROR,
+    ASMCMP_MAIN_ILLEGAL_REGISTER_NUMBER_ERROR,
+    ASMCMP_MAIN_CANT_WRITE_TEX_FILE_ERROR,
+    ASMCMP_MAIN_WRONG_WRITE_TEX_FILE_ERROR
 } asmcmp_main_error_code_t;
 
 typedef struct asmcmp_main_error_data_s {
     asmcmp_main_error_code_t main_err_code;
+    int card_number;
 } asmcmp_main_error_data_t;
 
 
