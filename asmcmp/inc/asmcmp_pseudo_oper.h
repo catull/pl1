@@ -11,7 +11,7 @@
 typedef struct pseudo_operations_table_s
 {
     unsigned char MNCPOP[5];
-    int (*BXPROG)(void);
+    int (*BXPROG)(int entry);
 } pseudo_operations_table_t;
 
 extern pseudo_operations_table_t T_POP[NPOP];

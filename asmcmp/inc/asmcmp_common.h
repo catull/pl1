@@ -77,4 +77,6 @@
         }                                       \
     } while(0)
 
+void STXT(int ARG);
+
 #endif

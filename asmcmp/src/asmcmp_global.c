@@ -1,3 +1,5 @@
+/* encoding: UTF-8 */
+
 #include "asmcmp_global.h"
 
 /*

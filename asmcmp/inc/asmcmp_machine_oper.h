@@ -9,7 +9,7 @@ typedef struct machine_operations_table_s {
     char MNCOP[5];
     unsigned char CODOP;
     unsigned char DLOP;
-    int (*BXPROG)(void);
+    int (*BXPROG)(int entry);
 } machine_operations_table_t;
 
 extern machine_operations_table_t T_MOP[NOP];
