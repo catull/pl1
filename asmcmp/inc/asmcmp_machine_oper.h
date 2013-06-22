@@ -5,6 +5,8 @@
 
 #include "asmcmp_common.h"
 
+/* Structure describes type of 
+ * table of machine operations */
 typedef struct machine_operations_table_s {
     char MNCOP[5];
     unsigned char CODOP;

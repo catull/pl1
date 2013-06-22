@@ -197,13 +197,13 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
 
         if (' ' != TEK_ISX_KARTA.STRUCT_BUFCARD.METKA[0])
         {
-            ITSYM += 1;
+            ++ITSYM;
             PRNMET = 'Y';
             memcpy(T_SYM[ITSYM].IMSYM, TEK_ISX_KARTA.STRUCT_BUFCARD.METKA, 8);
             T_SYM[ITSYM].ZNSYM = CHADR;
         }
 
-        /* Check if the current assembler command is one of the pseudo commands */
+        /* Check if the current assembler command is one of the pseudo operations */
         for (i2 = 0; i2 < NPOP; i2++)
         {
             if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_POP[i2].MNCPOP, 5))
@@ -221,6 +221,7 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
             }
         }
 
+        /* Check if the current assembler command is one of the machine operations */
         for (I3 = 0; I3 < NOP; I3++)
         {
             if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_MOP[I3].MNCOP, 5))
@@ -263,7 +264,7 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
 
         for (I3 = 0; I3 < NOP; I3++)
         {
-            if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_MOP[I3].MNCOP , 5))
+            if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_MOP[I3].MNCOP, 5))
             {
                 switch (T_MOP[I3].BXPROG(2))
                 {

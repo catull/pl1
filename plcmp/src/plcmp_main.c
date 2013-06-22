@@ -123,7 +123,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(char pl1_src_t
     plcmp_main_error_data_t err_data;
 
     /* Clear error data structure and set default successful parameters
-     * before syntax analyzer and semantic calculator call */
+     * before syntax analyzer and semantic calculator will be call */
     memset(&err_data, 0, sizeof(plcmp_main_error_data_t));
     err_data = (plcmp_main_error_data_t){
         .main_err_code = PLCMP_MAIN_SUCCESS,
@@ -148,9 +148,9 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(char pl1_src_t
          * because syntax analyzer has already returned its */
         err_data.main_err_code = PLCMP_MAIN_SYNT_ANALYZER_ERROR;
     }
-    /* Semantic calculation */
     else
     {
+        /* Semantic calculation */
         err_data.sem_calc_err_data = plcmp_sem_calc_gen_asm_code(p_asm_fp_name, &goals_achieved);
         if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.sem_calc_err_data.err_code)
         {
