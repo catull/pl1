@@ -773,13 +773,19 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
 
             memcpy(assembler_card.METKA, "RBASE", 5);
             memcpy(assembler_card.OPERAC, "EQU", 3);
-            memcpy(assembler_card.OPERAND, "15", 2);
+            memcpy(assembler_card.OPERAND, "6", 1);
+
+            ZKARD();
+
+            memcpy(assembler_card.METKA, "RRAC", 4);
+            memcpy(assembler_card.OPERAC, "EQU", 3);
+            memcpy(assembler_card.OPERAND, "5", 1);
 
             ZKARD();
 
             memcpy(assembler_card.METKA, "RRAB", 4);
             memcpy(assembler_card.OPERAC, "EQU", 3);
-            memcpy(assembler_card.OPERAND, "5", 1);
+            memcpy(assembler_card.OPERAND, "4", 1);
 
             ZKARD();
 
@@ -862,7 +868,6 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                         case 'C':
                         {
                             int j;
-                            size_t offset = 0;
 
                             size_t final_necessary_razr = 0;
                             for (j = 0; j < char_syms_size; j++)
@@ -877,44 +882,105 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
 
                             for (j = 0; j < char_syms_size; j++)
                             {
-                                /* Format of command: 
-                                 * MVC D1(L,B1),D2(B2) */
+                                /* For example consider PL1-command: C = A !! B (concatenation)
+                                 * First phase: move 'A' to 'C'
+                                 * Second phase: move 'B' to the address equal to address 'C' plus length of the operand 'A'
+                                 *
+                                 * Format of command for move one string to another: 
+                                 * MVC D1(L,B1),D2(B2) 
+                                 * 
+                                 * Instead of exact command we construct 
+                                 * command MVC D1(L,B1),D2 (without B2 base address value, 
+                                 * because in our case it is contained by default in RBASE register) 
+                                 * 
+                                 * - D1 (displacement of the destination operand) - in our case always will be have '0' value 
+                                 * on the first phase and 'length of the second operand by previous phase' on the second phase
+                                 * If it is much more phases than two then D1 will be contain lengths of the operands which have
+                                 * been concatenated with destination operand
+                                 * - L (length of the operands) - in our case it will be length of the source operand
+                                 * - B1 (base of the destination operand) - it will be constructed 
+                                 * of two values: RBASE value and base address of the destination operand. 
+                                 * RBASE value is contained in default base register RBASE and usually has '0' value
+                                 * for program.
+                                 * - D2 (displacement of the source operand) - it has to be symbolic name 
+                                 * of the second operand or absolute displacement address of the second operand
+                                 *
+                                 * Base address of the destination operand on the start has value equal to
+                                 * displacement address of the destination operand (while operation " move 'A' to 'C' " 
+                                 * is being processed)
+                                 *
+                                 * Now we can construct sequence of the assembler commands for processing 
+                                 * first phase of concatenation (move 'A' to 'C'):
+                                 * 1) LER RRAB,RBASE (Load RBASE register value into RRAB register, number
+                                 * of registers must be equal to 0, 2, 4 or 6)
+                                 * 2) LA RRAC,D (Load address of destination operand 'D' to RRAC register)
+                                 * 3) AR RRAB,RRAC (Add value of RRAC register to value of RRAB, result is in RRAB)
+                                 * 4) MVC 0(len(A),RRAB),A  (len(A) calculates by the PL1-compiler)
+                                 *
+                                 * The second phase is concatenate result of the first phase and operand 'B':
+                                 * 1) MVC len(A)(len(B),RRAB),B (len(B) calculates by PL1-compiler, len(A) have been 
+                                 * already calculated by the previous phase)
+                                 *
+                                 * In the cycle we can concatenate more strings with '!!' operator. Actions are the same 
+                                 * as in the second phase
+                                 */
+
+                                size_t offset = 0, str_len;
                                 char buffer[10];
-                                size_t str_len = strlen(p_char_syms[j]->INIT);
-
-                                /* command */
-                                memcpy(assembler_card.OPERAC, "MVC", 3);
-
-                                /* D1 */
-                                sprintf(buffer, "%lu", offset);
-                                strcpy(assembler_card.OPERAND, buffer);
-
-                                strcat(assembler_card.OPERAND, "(");
-
-                                /* L */
-                                sprintf(buffer, "%lu", str_len);
-                                strcat(assembler_card.OPERAND, buffer);
-
-                                strcat(assembler_card.OPERAND, ",");
-                                /* B1 */
-                                strcat(assembler_card.OPERAND, SYM[i].NAME);
-                                /* D2 */
-                                strcat(assembler_card.OPERAND, "),0(");
-                                /* B2 */
-                                strcat(assembler_card.OPERAND, p_char_syms[j]->NAME);
-                                
-                                strcat(assembler_card.OPERAND, ")");
-
-                                assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
 
                                 if (0 == j)
                                 {
+                                    memcpy(assembler_card.OPERAC, "LER", 3);
+                                    memcpy(assembler_card.OPERAND, "RRAB,RBASE", 10);
+                                    assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
+                                    memcpy(assembler_card.COMM, "Load base address to register", 29);
+
+                                    ZKARD();
+
+                                    memcpy(assembler_card.OPERAC, "LA", 2);
+                                    memcpy(assembler_card.OPERAND, "RRAC,D", 6);
+                                    assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
+                                    memcpy(assembler_card.COMM, "Load operand's address to register", 34);
+
+                                    ZKARD();
+
+                                    memcpy(assembler_card.OPERAC, "AR", 2);
+                                    memcpy(assembler_card.OPERAND, "RRAB,RRAC", 10);
+                                    assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
+                                    memcpy(assembler_card.COMM, "Add values of two registers, result is in the first", 51);
+
+                                    ZKARD();
+
                                     memcpy(assembler_card.COMM, "Move second string to the first", 31);
                                 }
                                 else
                                 {
-                                    memcpy(assembler_card.COMM, "Concat fir. and sec. strings. Result is in the first", 52);   
+                                    offset += str_len;
+                                    memcpy(assembler_card.OPERAC, "LER", 3);
+                                    memcpy(assembler_card.OPERAND, "RRAB,RBASE", 10);
+                                    assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
+                                    memcpy(assembler_card.COMM, "Load base address to register", 29);
+
+                                    ZKARD();
+
+                                    memcpy(assembler_card.COMM, "Concat fir. and sec. strings. Result is in the first", 52);
                                 }
+
+                                /* MVC */
+                                memcpy(assembler_card.OPERAC, "MVC", 3);
+                                /* D1 */
+                                sprintf(buffer, "%lu", offset);
+                                strcpy(assembler_card.OPERAND, buffer);
+                                strcat(assembler_card.OPERAND, "(");
+                                /* L */
+                                str_len = strlen(p_char_syms[j]->INIT);
+                                sprintf(buffer, "%lu", str_len);
+                                strcat(assembler_card.OPERAND, buffer);
+                                /* B1 */
+                                strcat(assembler_card.OPERAND, ",RRAB),");
+                                /* D2 */
+                                strcat(assembler_card.OPERAND, p_char_syms[j]->NAME);
+                                assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
 
                                 ZKARD();
 
