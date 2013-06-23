@@ -748,9 +748,17 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
                             strcat(assembler_card.OPERAND, gcvt(li_str_to_li(SYM[i].INIT), 10, &RAB[0]));
                             break;
                         case 'C':
-                            strcpy(assembler_card.OPERAND, "C\'");
+                        {
+                            char buffer[2];
+                            strcpy(assembler_card.OPERAND, "C");
+
+                            sprintf(buffer, "%d", SYM[i].RAZR);
+                            strcat(assembler_card.OPERAND, buffer);
+                            
+                            strcat(assembler_card.OPERAND, "\'");
                             strcat(assembler_card.OPERAND, SYM[i].INIT);
                             break;
+                        }
                         default:
                             break;
                     }
