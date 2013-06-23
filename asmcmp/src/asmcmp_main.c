@@ -31,38 +31,38 @@ static int asmcmp_main_make_tex_file(char const *p_tex_fp_name)
 
 static void INITUNION(void)
 {
-    ESD.STR_ESD.POLE1 = 0x02;
-    memcpy(ESD.STR_ESD.POLE2, "ESD", 3);
-    memset(ESD.STR_ESD.POLE3, 0x40, 6);
-    ESD.STR_ESD.POLE31[0] = 0x00;
-    ESD.STR_ESD.POLE31[1] = 0x10;
-    memset(ESD.STR_ESD.POLE32, 0x40, 2);
-    ESD.STR_ESD.POLE4[0] = 0x00;
-    ESD.STR_ESD.POLE4[1] = 0x01;
-    memset(ESD.STR_ESD.IMPR, 0x40, 8);
-    ESD.STR_ESD.POLE6 = 0x00;
-    memset(ESD.STR_ESD.ADPRG, 0x00, 3);
-    ESD.STR_ESD.POLE8 = 0x40;
-    memset(ESD.STR_ESD.DLPRG, 0x00, 3);
-    memset(ESD.STR_ESD.POLE10, 0x40, 40);
-    memset(ESD.STR_ESD.POLE11, 0x40, 8);
+    ESD.POLE1 = 0x02;
+    memcpy(ESD.POLE2, "ESD", 3);
+    memset(ESD.POLE3, 0x40, 6);
+    ESD.POLE31[0] = 0x00;
+    ESD.POLE31[1] = 0x10;
+    memset(ESD.POLE32, 0x40, 2);
+    ESD.POLE4[0] = 0x00;
+    ESD.POLE4[1] = 0x01;
+    memset(ESD.IMPR, 0x40, 8);
+    ESD.POLE6 = 0x00;
+    memset(ESD.ADPRG, 0x00, 3);
+    ESD.POLE8 = 0x40;
+    memset(ESD.DLPRG, 0x00, 3);
+    memset(ESD.POLE10, 0x40, 40);
+    memset(ESD.POLE11, 0x40, 8);
 
-    TXT.STR_TXT.POLE1 = 0x02;
-    memcpy(TXT.STR_TXT.POLE2, "TXT", 3);
-    TXT.STR_TXT.POLE3 = 0x40;
-    memset(TXT.STR_TXT.ADOP, 0x00, 3);
-    memset(TXT.STR_TXT.POLE5, 0x40, 2);
-    memset(TXT.STR_TXT.DLNOP, 0X00, 2);
-    memset(TXT.STR_TXT.POLE7, 0x40, 2);
-    TXT.STR_TXT.POLE71[0] = 0x00;
-    TXT.STR_TXT.POLE71[1] = 0x01;
-    memset(TXT.STR_TXT.OPER, 0x40, 56);
-    memset(TXT.STR_TXT.POLE9, 0x40, 8);
+    TXT.POLE1 = 0x02;
+    memcpy(TXT.POLE2, "TXT", 3);
+    TXT.POLE3 = 0x40;
+    memset(TXT.ADOP, 0x00, 3);
+    memset(TXT.POLE5, 0x40, 2);
+    memset(TXT.DLNOP, 0X00, 2);
+    memset(TXT.POLE7, 0x40, 2);
+    TXT.POLE71[0] = 0x00;
+    TXT.POLE71[1] = 0x01;
+    memset(TXT.OPER, 0x40, 56);
+    memset(TXT.POLE9, 0x40, 8);
 
-    END.STR_END.POLE1 = 0x02;
-    memcpy(END.STR_END.POLE2, "END", 3);
-    memset(END.STR_END.POLE3, 0x40, 68);
-    memset(END.STR_END.POLE9, 0x40, 8);
+    END.POLE1 = 0x02;
+    memcpy(END.POLE2, "END", 3);
+    memset(END.POLE3, 0x40, 68);
+    memset(END.POLE9, 0x40, 8);
 }
 
 static char* asmcmp_main_errmsg_by_errdata(asmcmp_main_error_data_t err_data, char *errmsg)
@@ -193,20 +193,20 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
     {
         int i2;
 
-        memcpy(TEK_ISX_KARTA.BUFCARD, asm_src_text[i1], 80);
+        memcpy(&TEK_ISX_KARTA, asm_src_text[i1], 80);
 
-        if (' ' != TEK_ISX_KARTA.STRUCT_BUFCARD.METKA[0])
+        if (' ' != TEK_ISX_KARTA.METKA[0])
         {
             ++ITSYM;
             PRNMET = 'Y';
-            memcpy(T_SYM[ITSYM].IMSYM, TEK_ISX_KARTA.STRUCT_BUFCARD.METKA, 8);
+            memcpy(T_SYM[ITSYM].IMSYM, TEK_ISX_KARTA.METKA, 8);
             T_SYM[ITSYM].ZNSYM = CHADR;
         }
 
         /* Check if the current assembler command is one of the pseudo operations */
         for (i2 = 0; i2 < NPOP; i2++)
         {
-            if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_POP[i2].MNCPOP, 5))
+            if(!memcmp(TEK_ISX_KARTA.OPERAC, T_POP[i2].MNCPOP, 5))
             {
                 switch (T_POP[i2].BXPROG(1))
                 {
@@ -224,7 +224,7 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
         /* Check if the current assembler command is one of the machine operations */
         for (I3 = 0; I3 < NOP; I3++)
         {
-            if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_MOP[I3].MNCOP, 5))
+            if(!memcmp(TEK_ISX_KARTA.OPERAC, T_MOP[I3].MNCOP, 5))
             {
                 T_MOP[I3].BXPROG(1);
                 PRNMET = 'N';
@@ -246,11 +246,11 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
     for (i1 = 0; i1 < asm_src_text_len; i1++)
     {
         int i2;
-        memcpy(TEK_ISX_KARTA.BUFCARD, asm_src_text[i1], 80);
+        memcpy(&TEK_ISX_KARTA, asm_src_text[i1], 80);
 
         for (i2 = 0; i2 < NPOP; i2++)
         {
-            if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_POP[i2].MNCPOP, 5))
+            if(!memcmp(TEK_ISX_KARTA.OPERAC, T_POP[i2].MNCPOP, 5))
             {
                 switch (T_POP[i2].BXPROG(2))
                 {
@@ -264,7 +264,7 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
 
         for (I3 = 0; I3 < NOP; I3++)
         {
-            if(!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAC, T_MOP[I3].MNCOP, 5))
+            if(!memcmp(TEK_ISX_KARTA.OPERAC, T_MOP[I3].MNCOP, 5))
             {
                 switch (T_MOP[I3].BXPROG(2))
                 {

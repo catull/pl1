@@ -33,7 +33,7 @@ static int FRR(int entry)
     switch (entry)
     {
         case 1:
-            CHADR = CHADR + 2;
+            CHADR += 2;
 
             if ('Y' == PRNMET)
             {
@@ -48,9 +48,9 @@ static int FRR(int entry)
             char *METKA2;
             unsigned char R1R2;
             int J;
-            RR.OP_RR.OP = T_MOP[I3].CODOP;
+            RR.OP = T_MOP[I3].CODOP;
 
-            METKA1 = strtok(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, ",");
+            METKA1 = strtok(TEK_ISX_KARTA.OPERAND, ",");
             METKA2 = strtok(NULL, " ");
 
             if (isalpha(*METKA1))
@@ -95,7 +95,7 @@ static int FRR(int entry)
 
             SRR2:
 
-            RR.OP_RR.R1R2 = R1R2;
+            RR.R1R2 = R1R2;
 
             STXT(2);
             break;
@@ -115,7 +115,7 @@ static int FRX(int entry)
     switch (entry)
     {
         case 1:
-            CHADR = CHADR + 4;
+            CHADR += 4;
 
             if ('Y' == PRNMET)
             {
@@ -136,8 +136,8 @@ static int FRX(int entry)
             int I;
             unsigned char R1X2;
             int B2D2;
-            RX.OP_RX.OP = T_MOP[I3].CODOP;
-            METKA1 = strtok(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, ",");
+            RX.OP = T_MOP[I3].CODOP;
+            METKA1 = strtok(TEK_ISX_KARTA.OPERAND, ",");
             METKA2 = strtok(NULL, " ");
             if (isalpha(*METKA1))
             {
@@ -191,7 +191,7 @@ static int FRX(int entry)
                             B2D2 = B2D2 + DELTA;
                             PTR = (char *)&B2D2;
                             swab(PTR, PTR, 2);
-                            RX.OP_RX.B2D2 = B2D2;
+                            RX.B2D2 = B2D2;
                         }
                         goto SRX2;
                     }
@@ -206,7 +206,7 @@ static int FRX(int entry)
 
             SRX2:
 
-            RX.OP_RX.R1X2 = R1X2;
+            RX.R1X2 = R1X2;
 
             STXT(4);
             break;
@@ -219,6 +219,8 @@ static int FRX(int entry)
     return 0;
 }
 
+/* Function handles machine operation with type 'SS'
+ * on the first and the second phases */
 int FSS(int entry)
 {
     switch (entry)

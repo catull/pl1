@@ -2,6 +2,8 @@
 
 #include <ctype.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "asmcmp_common.h"
 #include "asmcmp_pseudo_oper.h"
@@ -35,7 +37,7 @@ static int FDC(int entry)
         case 1:
             if ('Y' == PRNMET)
             {
-                switch (TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[0])
+                switch (TEK_ISX_KARTA.OPERAND[0])
                 {
                     case 'F':
                         T_SYM[ITSYM].DLSYM = 4;
@@ -50,7 +52,7 @@ static int FDC(int entry)
                         PRNMET = 'N';
                         break;
                     case 'C':
-                        T_SYM[ITSYM].DLSYM = atoi(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[1]);
+                        T_SYM[ITSYM].DLSYM = atoi(TEK_ISX_KARTA.OPERAND[1]);
                         T_SYM[ITSYM].PRPER = 'R';
 
                         if (CHADR % 4)
@@ -64,6 +66,7 @@ static int FDC(int entry)
                     default:
                         return 1;
                 }
+
             }
             else
             {
@@ -79,34 +82,22 @@ static int FDC(int entry)
         {
             char *RAB;
 
-            RX.OP_RX.OP = 0;
-            RX.OP_RX.R1X2 = 0;
+            RX.OP = 0;
+            RX.R1X2 = 0;
 
-            if (!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, "F'", 2))
+            if (!memcmp(TEK_ISX_KARTA.OPERAND, "F'", 2))
             {
-                RAB = strtok(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND + 2, "'");
-                RX.OP_RX.B2D2 = atoi(RAB);
-                RAB = (char*)&RX.OP_RX.B2D2;
+                RAB = strtok(TEK_ISX_KARTA.OPERAND + 2, "'");
+                RX.B2D2 = atoi(RAB);
+                RAB = (char*)&RX.B2D2;
                 swab(RAB, RAB, 2);
+                STXT(4);
             }
-            #if 0
-            else if (!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, "C", 1))
-            {
-                char *sym;
-                RAB = strtok(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND + 3, "'");
-                sym = RAB;
-                while (sym)
-                {
-
-                }
-            }
-            #endif
             else
             {
                 return 1;
             }
-
-            STXT(4);
+            
             break;
         }
         default:
@@ -126,7 +117,7 @@ static int FDS(int entry)
         case 1:
             if ('Y' == PRNMET)
             {
-                if ('F' == TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[0])
+                if ('F' == TEK_ISX_KARTA.OPERAND[0])
                 {
                     T_SYM[ITSYM].DLSYM = 4;
                     T_SYM[ITSYM].PRPER = 'R';
@@ -156,12 +147,12 @@ static int FDS(int entry)
             CHADR = CHADR + 4;
             break;
         case 2:
-            RX.OP_RX.OP = 0;
-            RX.OP_RX.R1X2 = 0;
+            RX.OP = 0;
+            RX.R1X2 = 0;
 
-            if ('F' == TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[0])
+            if ('F' == TEK_ISX_KARTA.OPERAND[0])
             {
-                RX.OP_RX.B2D2 = 0;
+                RX.B2D2 = 0;
             }
             else
             {
@@ -187,8 +178,8 @@ static int FEND(int entry)
         case 1:
             break;
         case 2:
-            memcpy(END.STR_END.POLE9, ESD.STR_ESD.POLE11, 8);
-            memcpy(OBJTEXT[ITCARD], END.BUF_END, 80);
+            memcpy(END.POLE9, ESD.POLE11, 8);
+            memcpy(OBJTEXT[ITCARD], &END, 80);
             ITCARD += 1;
             break;
         default:
@@ -205,7 +196,7 @@ static int FEQU(int entry)
     switch (entry)
     {
         case 1:
-            if ('*' == TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[0])
+            if ('*' == TEK_ISX_KARTA.OPERAND[0])
             {
                 T_SYM[ITSYM].ZNSYM = CHADR;
                 T_SYM[ITSYM].DLSYM = 1;
@@ -213,7 +204,7 @@ static int FEQU(int entry)
             }
             else
             {
-                T_SYM[ITSYM].ZNSYM = atoi(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND);
+                T_SYM[ITSYM].ZNSYM = atoi(TEK_ISX_KARTA.OPERAND);
                 T_SYM[ITSYM].DLSYM = 1;
                 T_SYM[ITSYM].PRPER = 'A';
             }
@@ -238,7 +229,7 @@ static int FSTART(int entry)
     switch (entry)
     {
         case 1:
-            CHADR = atoi(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND);
+            CHADR = atoi(TEK_ISX_KARTA.OPERAND);
 
             /* Operand must have a value a multiple of eight */ 
             if (CHADR % 8)
@@ -260,7 +251,7 @@ static int FSTART(int entry)
             int J;
             int RAB;
 
-            METKA1 = strtok(TEK_ISX_KARTA.STRUCT_BUFCARD.METKA, " ");
+            METKA1 = strtok(TEK_ISX_KARTA.METKA, " ");
             for (J = 0; J <= ITSYM; J++)
             {
                 METKA = strtok(T_SYM[J].IMSYM, " ");
@@ -271,19 +262,19 @@ static int FSTART(int entry)
                     PTR = (char*)&RAB;
                     swab(PTR, PTR, 2);
 
-                    ESD.STR_ESD.DLPRG[0] = 0;
-                    ESD.STR_ESD.DLPRG[1] = *PTR;
-                    ESD.STR_ESD.DLPRG[2] = *(PTR + 1);
+                    ESD.DLPRG[0] = 0;
+                    ESD.DLPRG[1] = *PTR;
+                    ESD.DLPRG[2] = *(PTR + 1);
 
                     CHADR = T_SYM[J].ZNSYM;
                     PTR = (char*)&CHADR;
 
-                    ESD.STR_ESD.ADPRG[2] = *PTR;
-                    ESD.STR_ESD.ADPRG[1] = *(PTR+1);
-                    ESD.STR_ESD.ADPRG[0] = '\x00';
-                    memcpy(ESD.STR_ESD.IMPR, METKA, strlen(METKA));
-                    memcpy(ESD.STR_ESD.POLE11, METKA, strlen(METKA));
-                    memcpy(OBJTEXT[ITCARD], ESD.BUF_ESD, 80);
+                    ESD.ADPRG[2] = *PTR;
+                    ESD.ADPRG[1] = *(PTR + 1);
+                    ESD.ADPRG[0] = '\x00';
+                    memcpy(ESD.IMPR, METKA, strlen(METKA));
+                    memcpy(ESD.POLE11, METKA, strlen(METKA));
+                    memcpy(OBJTEXT[ITCARD], &ESD, 80);
                     ++ITCARD; 
                     return 0;
                 }
@@ -313,7 +304,7 @@ static int FUSING(int entry)
             int J;
             int NBASRG;
 
-            METKA1 = strtok(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, ",");
+            METKA1 = strtok(TEK_ISX_KARTA.OPERAND, ",");
             METKA2 = strtok(NULL, " ");
             if (isalpha(*METKA2))
             {
@@ -355,7 +346,7 @@ static int FUSING(int entry)
             T_BASR[NBASRG - 1].PRDOST = 'Y';
             if ('*' == *METKA1)
             {
-                T_BASR[NBASRG-1].SMESH = CHADR;
+                T_BASR[NBASRG - 1].SMESH = CHADR;
             }
             else
             {
@@ -364,7 +355,7 @@ static int FUSING(int entry)
                     METKA = strtok(T_SYM[J].IMSYM, " ");
                     if (!strcmp(METKA, METKA1))
                     {
-                        T_BASR[NBASRG-1].SMESH = T_SYM[J].ZNSYM;
+                        T_BASR[NBASRG - 1].SMESH = T_SYM[J].ZNSYM;
                     }
                 }
 
