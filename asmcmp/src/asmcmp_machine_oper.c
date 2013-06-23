@@ -7,9 +7,9 @@
 #include "asmcmp_machine_oper.h"
 #include "asmcmp_global.h"
 
-static int FRR(int entry);
-static int FRX(int entry);
-static int FSS(int entry);
+static enum asmcmp_machine_oper_error_code_s FRR(int entry);
+static enum asmcmp_machine_oper_error_code_s FRX(int entry);
+static enum asmcmp_machine_oper_error_code_s FSS(int entry);
 
 /* Table of the machine operations */
 machine_operations_table_t T_MOP[NOP] = 
@@ -28,7 +28,7 @@ machine_operations_table_t T_MOP[NOP] =
 
 /* Function handles machine operation with type 'RR'
  * on the first and the second phases */
-static int FRR(int entry)
+static enum asmcmp_machine_oper_error_code_s FRR(int entry)
 {
     switch (entry)
     {
@@ -65,7 +65,7 @@ static int FRR(int entry)
                     }
                 }
 
-                return 2;
+                return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
             }
             else
             {
@@ -86,7 +86,7 @@ static int FRR(int entry)
                     }
                 }
 
-                return 2;
+                return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
             }
             else
             {
@@ -105,12 +105,12 @@ static int FRR(int entry)
             break;
     }
 
-    return 0;
+    return ASMCMP_MACHINE_OPER_SUCCESS;
 }
 
 /* Function handles machine operation with type 'RX'
  * on the first and the second phases */
-static int FRX(int entry)
+static enum asmcmp_machine_oper_error_code_s FRX(int entry)
 {
     switch (entry)
     {
@@ -151,7 +151,7 @@ static int FRX(int entry)
                     }
                 }
 
-                return 2;
+                return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
             }
             else
             {
@@ -183,7 +183,7 @@ static int FRX(int entry)
 
                         if (0 == NBASRG || DELTA > 0xfff )
                         {
-                            return 5;
+                            return ASMCMP_MACHINE_OPER_BASING_ERROR;
                         }
                         else
                         {
@@ -197,11 +197,11 @@ static int FRX(int entry)
                     }
                 }
 
-                return 2;
+                return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
             }
             else
             {
-                return 4;
+                return ASMCMP_MACHINE_OPER_SECOND_OPERAND_ERROR;
             }
 
             SRX2:
@@ -216,12 +216,12 @@ static int FRX(int entry)
             break;
     }
 
-    return 0;
+    return ASMCMP_MACHINE_OPER_SUCCESS;
 }
 
 /* Function handles machine operation with type 'SS'
  * on the first and the second phases */
-int FSS(int entry)
+static enum asmcmp_machine_oper_error_code_s FSS(int entry)
 {
     switch (entry)
     {
@@ -233,5 +233,22 @@ int FSS(int entry)
             ASMCMP_COMMON_ASSERT(0);
             break;
     }
-    return 0;
+    return ASMCMP_MACHINE_OPER_SUCCESS;
+}
+
+char const* asmcmp_machine_oper_errmsg_by_errcode(asmcmp_machine_oper_error_code_t err_code)
+{
+    switch (err_code)
+    {
+        case ASMCMP_MACHINE_OPER_SUCCESS:
+            return "No error occured";
+        case ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR:
+            return "Not declared identifier";
+        case ASMCMP_MACHINE_OPER_SECOND_OPERAND_ERROR:
+            return "Error of the second operand";
+        case ASMCMP_MACHINE_OPER_BASING_ERROR:
+            return "Basing error";
+        default:
+            return "Unknown error code for generating error message";
+    }
 }

@@ -5,7 +5,7 @@
 #include "asmcmp_common.h"
 #include "asmcmp_global.h"
 
-void STXT(int ARG)
+void STXT(int len)
 {
     char *PTR;                                      /*рабоч.переменная-указат.*/
 
@@ -14,7 +14,17 @@ void STXT(int ARG)
     TXT.ADOP[1] = *(PTR+1);                /*двоичного целого        */
     TXT.ADOP[0] = '\x00';                  /*в соглашениях ЕС ЭВМ    */
 
-    if (2 == ARG)                                 /*формирование поля OPER  */
+    switch (len)
+    {
+        case 2:
+            break;
+        case 4:
+            break;
+        default:
+            break;
+    }
+
+    if (2 == len)                                 /*формирование поля OPER  */
     {
         memset(TXT.OPER, 64, 4);
         memcpy(TXT.OPER, &RR, 2); /* для RR-формата         */
@@ -29,5 +39,5 @@ void STXT(int ARG)
 
     memcpy(OBJTEXT[ITCARD], &TXT, 80);  /*запись об'ектной карты  */
     ++ITCARD;                                    /*коррекц.инд-са своб.к-ты*/
-    CHADR = CHADR + ARG;                            /*коррекц.счетчика адреса */
+    CHADR = CHADR + len;                            /*коррекц.счетчика адреса */
 }

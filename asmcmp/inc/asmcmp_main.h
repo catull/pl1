@@ -4,6 +4,8 @@
 #define ASMCMP_MAIN_H
 
 #include "asmcmp_common.h"
+#include "asmcmp_pseudo_oper.h"
+#include "asmcmp_machine_oper.h"
 
 typedef enum asmcmp_main_error_code_e {
     ASMCMP_MAIN_SUCCESS = 0, ASMCMP_MAIN_SUCCESSFUL_TRANSLATION = 0,
@@ -13,20 +15,22 @@ typedef enum asmcmp_main_error_code_e {
     ASMCMP_MAIN_NOT_FOUND_INPUT_ASM_FILE,
     ASMCMP_MAIN_ERROR_READING_ASM_FILE,
     ASMCMP_MAIN_PROGRAM_BUFFER_OVERFLOW,
-/********************/
-    ASMCMP_MAIN_WRONG_DATA_FORMAT_ERROR,
-    ASMCMP_MAIN_NOT_DECLARED_IDENT_ERROR,
+    ASMCMP_MAIN_PSEUDO_OPER_ERROR,
+    ASMCMP_MAIN_MACHINE_OPER_ERROR,
     ASMCMP_MAIN_OPERATION_CODE_ERROR,
-    ASMCMP_MAIN_SECOND_OPERAND_ERROR,
-    ASMCMP_MAIN_BASING_ERROR,
-    ASMCMP_MAIN_ILLEGAL_REGISTER_NUMBER_ERROR,
     ASMCMP_MAIN_CANT_WRITE_TEX_FILE_ERROR,
     ASMCMP_MAIN_WRONG_WRITE_TEX_FILE_ERROR
 } asmcmp_main_error_code_t;
 
-typedef struct asmcmp_main_error_data_s {
+typedef struct __asmcmp_main_error_data_s {
     asmcmp_main_error_code_t main_err_code;
     int card_number;
+} __asmcmp_main_error_data_t;
+
+typedef struct asmcmp_main_error_data_s {
+    __asmcmp_main_error_data_t main_err_data;
+    asmcmp_pseudo_oper_error_code_t pseudo_oper_err_code;
+    asmcmp_machine_oper_error_code_t machine_oper_err_code;
 } asmcmp_main_error_data_t;
 
 

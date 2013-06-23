@@ -9,27 +9,82 @@
 #include "asmcmp_machine_oper.h"
 #include "asmcmp_global.h"
 
-static int asmcmp_main_make_tex_file(char const *p_tex_fp_name)
+static char* asmcmp_main_errmsg_by_errdata(__asmcmp_main_error_data_t err_data, char *errmsg)
+{
+    switch (err_data.main_err_code)
+    {
+        case ASMCMP_MAIN_SUCCESS:
+            strcpy(errmsg, "No error occured");
+            break;
+        case ASMCMP_MAIN_WRONG_NUM_CLI_PAR:
+            strcpy(errmsg, "Wrong number of command line parameters");
+            break;
+        case ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_PATH:
+            strcpy(errmsg, "Wrong path to ASM-file with the source text");
+            break;
+        case ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_EXTENSION:
+            strcpy(errmsg, "Wrong input file extension with the source text");
+            break;
+        case ASMCMP_MAIN_NOT_FOUND_INPUT_ASM_FILE:
+            strcpy(errmsg, "Couldn't find file with the source text");
+            break;
+        case ASMCMP_MAIN_ERROR_READING_ASM_FILE:
+            strcpy(errmsg, "Error occured while reading file with the source text");
+            break;
+        case ASMCMP_MAIN_PROGRAM_BUFFER_OVERFLOW:
+            strcpy(errmsg, "Overflow of the program buffer while reading file with the source text");
+            break;
+        case ASMCMP_MAIN_PSEUDO_OPER_ERROR:
+            strcpy(errmsg, "Pseudo operations module error");
+            break;
+        case ASMCMP_MAIN_MACHINE_OPER_ERROR:
+            strcpy(errmsg, "Machine operations module error");
+            break;
+        case ASMCMP_MAIN_OPERATION_CODE_ERROR:
+            strcpy(errmsg, "Error of the operation code");
+            break;
+        case ASMCMP_MAIN_CANT_WRITE_TEX_FILE_ERROR:
+            strcpy(errmsg, "Can't write to object file");
+            break;
+        case ASMCMP_MAIN_WRONG_WRITE_TEX_FILE_ERROR:
+            strcpy(errmsg, "Wrong writing to object file");
+            break;
+        default:
+            return "Unknown error code for generating error message";
+    }
+
+    if (-1 != err_data.card_number)
+    {
+        strcat(errmsg, ". Error in card ");
+        sprintf(&errmsg[strlen(errmsg)], "%d", err_data.card_number);
+    }
+
+    return errmsg;
+}
+
+/* Function constructs final '.tex' file. 
+ * 'p_tex_fp_name' is path to this file */
+static enum asmcmp_main_error_code_e asmcmp_main_make_tex_file(char const *p_tex_fp_name)
 {
     FILE *p_text_fp;
-    int RAB2;
+    unsigned int cards_written;
 
     p_text_fp = fopen(p_tex_fp_name , "wb"); 
     if (NULL == p_text_fp)
     {
-        return -7; 
+        return ASMCMP_MAIN_CANT_WRITE_TEX_FILE_ERROR;
     }
     else
     {
-        RAB2 = fwrite(OBJTEXT, 80, ITCARD, p_text_fp);
+        cards_written = fwrite(OBJTEXT, 80, ITCARD, p_text_fp);
         fclose(p_text_fp);
     }
 
-    return RAB2;
+    return (cards_written == ITCARD) ? ASMCMP_MAIN_SUCCESSFUL_TRANSLATION : ASMCMP_MAIN_WRONG_WRITE_TEX_FILE_ERROR;
 }
 
 
-static void INITUNION(void)
+static void plcmp_main_init_cards(void)
 {
     ESD.POLE1 = 0x02;
     memcpy(ESD.POLE2, "ESD", 3);
@@ -64,66 +119,6 @@ static void INITUNION(void)
     memset(END.POLE3, 0x40, 68);
     memset(END.POLE9, 0x40, 8);
 }
-
-static char* asmcmp_main_errmsg_by_errdata(asmcmp_main_error_data_t err_data, char *errmsg)
-{
-    switch (err_data.main_err_code)
-    {
-        case ASMCMP_MAIN_SUCCESS:
-            strcpy(errmsg, "No error occured");
-            break;
-        case ASMCMP_MAIN_WRONG_NUM_CLI_PAR:
-            strcpy(errmsg, "Wrong number of command line parameters");
-            break;
-        case ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_PATH:
-            strcpy(errmsg, "Wrong path to ASM-file with the source text");
-            break;
-        case ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_EXTENSION:
-            strcpy(errmsg, "Wrong input file extension with the source text");
-            break;
-        case ASMCMP_MAIN_NOT_FOUND_INPUT_ASM_FILE:
-            strcpy(errmsg, "Couldn't find file with the source text");
-            break;
-        case ASMCMP_MAIN_ERROR_READING_ASM_FILE:
-            strcpy(errmsg, "Error occured while reading file with the source text");
-            break;
-        case ASMCMP_MAIN_PROGRAM_BUFFER_OVERFLOW:
-            strcpy(errmsg, "Overflow of the program buffer while reading file with the source text");
-            break;
-        case ASMCMP_MAIN_WRONG_DATA_FORMAT_ERROR:
-            strcpy(errmsg, "Wrong data format");
-            break;
-        case ASMCMP_MAIN_NOT_DECLARED_IDENT_ERROR:
-            strcpy(errmsg, "Not declared identifier");
-            break;
-        case ASMCMP_MAIN_OPERATION_CODE_ERROR:
-            strcpy(errmsg, "Error of the operation code");
-            break;
-        case ASMCMP_MAIN_SECOND_OPERAND_ERROR:
-            strcpy(errmsg, "Error of the second operand");
-            break;
-        case ASMCMP_MAIN_BASING_ERROR:
-            strcpy(errmsg, "Basing error");
-            break;
-        case ASMCMP_MAIN_ILLEGAL_REGISTER_NUMBER_ERROR:
-            strcpy(errmsg, "Illegal register number");
-            break;
-        case ASMCMP_MAIN_CANT_WRITE_TEX_FILE_ERROR:
-            strcpy(errmsg, "Can't write to object file");
-            break;
-        case ASMCMP_MAIN_WRONG_WRITE_TEX_FILE_ERROR:
-            strcpy(errmsg, "Wrong writing to object file");
-            break;
-        default:
-            return "Unknown error code for generating error message";
-    }
-
-    strcat(errmsg, ". Error in card ");
-    sprintf(&errmsg[strlen(errmsg)], "%d", err_data.card_number);
-
-    return errmsg;
-}
-
 
 /* Function of reading ASM-file of the source text with 'p_asm_fp_name' file path name */
 static enum asmcmp_main_error_code_e asmcmp_main_read_asm_file(char const *p_asm_fp_name,
@@ -178,14 +173,15 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
                                                                     char const *p_tex_fp_name)
 {
     int i1;
-    int RAB;
     asmcmp_main_error_data_t err_data;
 
     /* Clear error data structure and set default successful parameters
      * before syntax analyzer and semantic calculator call */
     memset(&err_data, 0, sizeof(asmcmp_main_error_data_t));
     err_data = (asmcmp_main_error_data_t){
-        .main_err_code = ASMCMP_MAIN_SUCCESS
+        .main_err_data.main_err_code = ASMCMP_MAIN_SUCCESS,
+        .pseudo_oper_err_code = ASMCMP_PSEUDO_OPER_SUCCESS,
+        .machine_oper_err_code = ASMCMP_MACHINE_OPER_SUCCESS
     };
 
     /* The first phase */
@@ -208,14 +204,17 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
         {
             if(!memcmp(TEK_ISX_KARTA.OPERAC, T_POP[i2].MNCPOP, 5))
             {
-                switch (T_POP[i2].BXPROG(1))
+                err_data.pseudo_oper_err_code = T_POP[i2].BXPROG(1);
+                switch (err_data.pseudo_oper_err_code)
                 {
-                    case 0:
+                    case ASMCMP_PSEUDO_OPER_SUCCESS:
                         goto CONT2;
-                    case 1:
-                        err_data.main_err_code = ASMCMP_MAIN_WRONG_DATA_FORMAT_ERROR;
+                    case ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR:
+                    case ASMCMP_PSEUDO_OPER_NOT_DECLARED_IDENT_ERROR:
+                    case ASMCMP_PSEUDO_OPER_ILLEGAL_REGISTER_NUMBER_ERROR:
+                        err_data.main_err_data.main_err_code = ASMCMP_MAIN_PSEUDO_OPER_ERROR;
                         goto error;
-                    case 100:
+                    case ASMCMP_PSEUDO_OPER_PHASE_PROCESSING_END:
                         goto CONT3;
                 }
             }
@@ -226,13 +225,18 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
         {
             if(!memcmp(TEK_ISX_KARTA.OPERAC, T_MOP[I3].MNCOP, 5))
             {
-                T_MOP[I3].BXPROG(1);
+                err_data.machine_oper_err_code = T_MOP[I3].BXPROG(1);
+                if (ASMCMP_MACHINE_OPER_SUCCESS != err_data.machine_oper_err_code)
+                {
+                    ASMCMP_COMMON_ASSERT(0);
+                }
+
                 PRNMET = 'N';
                 goto CONT2;
             }
         }
 
-        err_data.main_err_code = ASMCMP_MAIN_OPERATION_CODE_ERROR;
+        err_data.main_err_data.main_err_code = ASMCMP_MAIN_OPERATION_CODE_ERROR;
         goto error;
 
         CONT2:
@@ -252,11 +256,17 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
         {
             if(!memcmp(TEK_ISX_KARTA.OPERAC, T_POP[i2].MNCPOP, 5))
             {
-                switch (T_POP[i2].BXPROG(2))
+                err_data.pseudo_oper_err_code = T_POP[i2].BXPROG(2);
+                switch (err_data.pseudo_oper_err_code)
                 {
-                    case 0:
+                    case ASMCMP_PSEUDO_OPER_SUCCESS:
                         goto CONT4;
-                    case 100:
+                    case ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR:
+                    case ASMCMP_PSEUDO_OPER_NOT_DECLARED_IDENT_ERROR:
+                    case ASMCMP_PSEUDO_OPER_ILLEGAL_REGISTER_NUMBER_ERROR:
+                        err_data.main_err_data.main_err_code = ASMCMP_MAIN_PSEUDO_OPER_ERROR;
+                        goto error;
+                    case ASMCMP_PSEUDO_OPER_PHASE_PROCESSING_END:
                         goto CONT5;
                 }
             }
@@ -268,20 +278,12 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
             {
                 switch (T_MOP[I3].BXPROG(2))
                 {
-                    case 0:
+                    case ASMCMP_MACHINE_OPER_SUCCESS:
                         goto CONT4;
-                    case 2:
-                        err_data.main_err_code = ASMCMP_MAIN_NOT_DECLARED_IDENT_ERROR;
-                        goto error;
-                    case 4:
-                        err_data.main_err_code = ASMCMP_MAIN_SECOND_OPERAND_ERROR;
-                        goto error;
-                    case 5:
-                        err_data.main_err_code = ASMCMP_MAIN_BASING_ERROR;
-                        goto error;
-                    case 6:
-                    case 7:
-                        err_data.main_err_code = ASMCMP_MAIN_ILLEGAL_REGISTER_NUMBER_ERROR;
+                    case ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR:
+                    case ASMCMP_MACHINE_OPER_SECOND_OPERAND_ERROR:
+                    case ASMCMP_MACHINE_OPER_BASING_ERROR:
+                        err_data.main_err_data.main_err_code = ASMCMP_MAIN_MACHINE_OPER_ERROR;
                         goto error;
                 }
             }
@@ -294,17 +296,13 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
 
     CONT5:
 
-    RAB = asmcmp_main_make_tex_file(p_tex_fp_name);
-    if (ITCARD != RAB)
-    {
-        err_data.main_err_code = (-7 == RAB) ? ASMCMP_MAIN_CANT_WRITE_TEX_FILE_ERROR : ASMCMP_MAIN_WRONG_WRITE_TEX_FILE_ERROR;
-    }
+    err_data.main_err_data.main_err_code = asmcmp_main_make_tex_file(p_tex_fp_name);
 
     error:
 
-    if (ASMCMP_MAIN_SUCCESSFUL_TRANSLATION != err_data.main_err_code)
+    if (ASMCMP_MAIN_SUCCESSFUL_TRANSLATION != err_data.main_err_data.main_err_code)
     {
-        err_data.card_number = i1 + 1;
+        err_data.main_err_data.card_number = i1 + 1;
     }
 
     return err_data;
@@ -321,13 +319,14 @@ int main(int const argc, char const *argv[])
     /* Clear error data structure and set default successful parameters */
     memset(&err_data, 0, sizeof(asmcmp_main_error_data_t));
     err_data = (asmcmp_main_error_data_t){ 
-        .main_err_code = ASMCMP_MAIN_SUCCESS
+        .main_err_data.main_err_code = ASMCMP_MAIN_SUCCESS,
+        .main_err_data.card_number = -1
     };
 
     /* Current program must contains one real parameter */
     if (argc != 2)
     {
-        err_data.main_err_code = ASMCMP_MAIN_WRONG_NUM_CLI_PAR;
+        err_data.main_err_data.main_err_code = ASMCMP_MAIN_WRONG_NUM_CLI_PAR;
         goto error;
     }
 
@@ -337,14 +336,14 @@ int main(int const argc, char const *argv[])
     asm_fp_len = strlen(p_asm_fp_name);
     if (asm_fp_len < 4)
     {
-        err_data.main_err_code = ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_PATH;
+        err_data.main_err_data.main_err_code = ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_PATH;
         goto error;
     }
 
     /* Input file for translation must be with 'ass' extension */
     if (strcmp(&p_asm_fp_name[asm_fp_len - 4], ".ass"))
     {
-        err_data.main_err_code = ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_EXTENSION;
+        err_data.main_err_data.main_err_code = ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_EXTENSION;
         goto error;
     }
     else
@@ -352,11 +351,11 @@ int main(int const argc, char const *argv[])
         /* Clear array for the source ASM-text before getting text from the ASM-file */
         memset(asm_src_text, '\0', sizeof(char)*DL_ASSTEXT*LINELEN);
 
-        err_data.main_err_code = asmcmp_main_read_asm_file(p_asm_fp_name, asm_src_text, &asm_src_text_len);
-        if (ASMCMP_MAIN_SUCCESS == err_data.main_err_code)
+        err_data.main_err_data.main_err_code = asmcmp_main_read_asm_file(p_asm_fp_name, asm_src_text, &asm_src_text_len);
+        if (ASMCMP_MAIN_SUCCESS == err_data.main_err_data.main_err_code)
         {
             /* After successfully reading file proceed to translation of the source text */
-            INITUNION();
+            plcmp_main_init_cards();
             ASMCMP_MAIN_MAKE_TEX_FILE_PATH_BY_ASM_FILE_PATH(p_tex_fp_name, p_asm_fp_name);
             ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
             err_data = asmcmp_main_process_src_text(asm_src_text, asm_src_text_len, p_tex_fp_name);
@@ -370,7 +369,7 @@ int main(int const argc, char const *argv[])
         }
     }
 
-    if (ASMCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data.main_err_code)
+    if (ASMCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data.main_err_data.main_err_code)
     {
         printf("Translation is finished succesfully\n");
     }
@@ -380,9 +379,23 @@ int main(int const argc, char const *argv[])
 
         error:
 
-        printf("Translation is interrupted\nReason: %s\n", asmcmp_main_errmsg_by_errdata(err_data, errmsg));
+        printf("Translation is interrupted\nReason: %s\n", asmcmp_main_errmsg_by_errdata(err_data.main_err_data, errmsg));
+
+        switch (err_data.main_err_data.main_err_code)
+        {
+            case ASMCMP_MAIN_PSEUDO_OPER_ERROR:
+                printf("Pseudo operations module error message: %s\n",
+                       asmcmp_pseudo_oper_errmsg_by_errcode(err_data.pseudo_oper_err_code));
+                break;
+            case ASMCMP_MAIN_MACHINE_OPER_ERROR:
+                printf("Machine operations module error message: %s\n",
+                       asmcmp_machine_oper_errmsg_by_errcode(err_data.machine_oper_err_code));
+                break;
+            default:
+                break;
+        }
     }
 
-    return err_data.main_err_code;
+    return err_data.main_err_data.main_err_code;
 }
 

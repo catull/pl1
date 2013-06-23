@@ -9,28 +9,26 @@
 #include "asmcmp_pseudo_oper.h"
 #include "asmcmp_global.h"
 
-static int FDC(int entry);
-static int FDS(int entry);
-static int FEND(int entry);
-static int FEQU(int entry);
-static int FSTART(int entry);
-static int FUSING(int entry);
+static enum asmcmp_pseudo_oper_error_code_s FDC(int entry);
+static enum asmcmp_pseudo_oper_error_code_s FDS(int entry);
+static enum asmcmp_pseudo_oper_error_code_s FEND(int entry);
+static enum asmcmp_pseudo_oper_error_code_s FEQU(int entry);
+static enum asmcmp_pseudo_oper_error_code_s FSTART(int entry);
+static enum asmcmp_pseudo_oper_error_code_s FUSING(int entry);
 
 /* Table of the pseudo operations */
 pseudo_operations_table_t T_POP[NPOP] = {
-
     { {'D','C',' ',' ',' '}, FDC    },
     { {'D','S',' ',' ',' '}, FDS    },
     { {'E','N','D',' ',' '}, FEND   },
     { {'E','Q','U',' ',' '}, FEQU   },
     { {'S','T','A','R','T'}, FSTART },
     { {'U','S','I','N','G'}, FUSING }
-
 };
 
 /* Function handles pseudo operation 'DC'
  * on the first and the second phases */
-static int FDC(int entry)
+static enum asmcmp_pseudo_oper_error_code_s FDC(int entry)
 {
     switch (entry)
     {
@@ -52,7 +50,12 @@ static int FDC(int entry)
                         PRNMET = 'N';
                         break;
                     case 'C':
-                        T_SYM[ITSYM].DLSYM = atoi(TEK_ISX_KARTA.OPERAND[1]);
+                    {
+                        char buffer[2];
+
+                        sprintf(buffer, "%c", TEK_ISX_KARTA.OPERAND[1]);
+                        buffer[1] = '\0';
+                        T_SYM[ITSYM].DLSYM = atoi(buffer);
                         T_SYM[ITSYM].PRPER = 'R';
 
                         if (CHADR % 4)
@@ -63,10 +66,10 @@ static int FDC(int entry)
 
                         PRNMET = 'N';
                         break;
+                    }
                     default:
-                        return 1;
+                        return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;
                 }
-
             }
             else
             {
@@ -93,9 +96,14 @@ static int FDC(int entry)
                 swab(RAB, RAB, 2);
                 STXT(4);
             }
+            else if (!memcmp(TEK_ISX_KARTA.OPERAND, "C", 1))
+            {
+                RAB = strtok(TEK_ISX_KARTA.OPERAND + 3, "'");
+                STXT(4);
+            }
             else
             {
-                return 1;
+                return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;
             }
             
             break;
@@ -105,41 +113,37 @@ static int FDC(int entry)
             break;
     }
    
-    return 0;
+    return ASMCMP_PSEUDO_OPER_SUCCESS;
 }
 
 /* Function handles pseudo operation 'DS'
  * on the first and the second phases */
-static int FDS(int entry)
+static enum asmcmp_pseudo_oper_error_code_s FDS(int entry)
 {
-    switch (entry) 
+    switch (entry)
     {
         case 1:
             if ('Y' == PRNMET)
             {
-                if ('F' == TEK_ISX_KARTA.OPERAND[0])
+                switch (TEK_ISX_KARTA.OPERAND[0])
                 {
-                    T_SYM[ITSYM].DLSYM = 4;
-                    T_SYM[ITSYM].PRPER = 'R';
+                    case 'F':
+                        T_SYM[ITSYM].DLSYM = 4;
+                        T_SYM[ITSYM].PRPER = 'R';
 
-                    if (CHADR % 4)
-                    {
-                        CHADR = (CHADR / 4 + 1)*4;
-                        T_SYM[ITSYM].ZNSYM = CHADR;
-                    }
+                        if (CHADR % 4)
+                        {
+                            CHADR = (CHADR / 4 + 1) * 4;
+                            T_SYM[ITSYM].ZNSYM = CHADR;
+                        }
 
-                    PRNMET = 'N';
+                        PRNMET = 'N';
+                        break;
+                    default:
+                        return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;
                 }
-                else
-                {
-                    return 1;
-                }
-            }
-            else
-            {
-                ;
-            }
-            if (CHADR % 4)
+            } 
+            else if (CHADR % 4)
             {
                 CHADR = (CHADR / 4 + 1) * 4;
             }
@@ -150,13 +154,13 @@ static int FDS(int entry)
             RX.OP = 0;
             RX.R1X2 = 0;
 
-            if ('F' == TEK_ISX_KARTA.OPERAND[0])
+            switch (TEK_ISX_KARTA.OPERAND[0])
             {
-                RX.B2D2 = 0;
-            }
-            else
-            {
-                return 1;
+                case 'F':
+                    RX.B2D2 = 0;
+                    break;
+                default:
+                    return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;    
             }
 
             STXT(4);
@@ -166,12 +170,12 @@ static int FDS(int entry)
             break;
     }
 
-    return 0;
+    return ASMCMP_PSEUDO_OPER_SUCCESS;
 }
 
 /* Function handles pseudo operation 'END'
  * on the first and the second phases */
-static int FEND(int entry)
+static enum asmcmp_pseudo_oper_error_code_s FEND(int entry)
 {
     switch (entry)
     {
@@ -180,18 +184,18 @@ static int FEND(int entry)
         case 2:
             memcpy(END.POLE9, ESD.POLE11, 8);
             memcpy(OBJTEXT[ITCARD], &END, 80);
-            ITCARD += 1;
+            ++ITCARD;
             break;
         default:
             ASMCMP_COMMON_ASSERT(0);
             break;
     }
-    return 100;
+    return ASMCMP_PSEUDO_OPER_PHASE_PROCESSING_END;
 }
 
 /* Function handles pseudo operation 'EQU'
  * on the first and the second phases */
-static int FEQU(int entry)
+static enum asmcmp_pseudo_oper_error_code_s FEQU(int entry)
 {
     switch (entry)
     {
@@ -219,12 +223,12 @@ static int FEQU(int entry)
             break;
     }
 
-    return 0;
+    return ASMCMP_PSEUDO_OPER_SUCCESS;
 }
 
 /* Function handles pseudo operation 'START'
  * on the first and the second phases */
-static int FSTART(int entry)
+static enum asmcmp_pseudo_oper_error_code_s FSTART(int entry)
 {
     switch (entry)
     {
@@ -276,21 +280,21 @@ static int FSTART(int entry)
                     memcpy(ESD.POLE11, METKA, strlen(METKA));
                     memcpy(OBJTEXT[ITCARD], &ESD, 80);
                     ++ITCARD; 
-                    return 0;
+                    return ASMCMP_PSEUDO_OPER_SUCCESS;
                 }
             }
-            return 2; 
+            return ASMCMP_PSEUDO_OPER_NOT_DECLARED_IDENT_ERROR; 
         }
         default:
             ASMCMP_COMMON_ASSERT(0);
             break;
     }
-    return 0;
+    return ASMCMP_PSEUDO_OPER_SUCCESS;
 }
 
 /* Subrountine handles pseudo operation 'USING'
  * on the first and the second phases */
-static int FUSING(int entry)
+static enum asmcmp_pseudo_oper_error_code_s FUSING(int entry)
 {
     switch (entry)
     {
@@ -320,13 +324,13 @@ static int FUSING(int entry)
                         }
                         else
                         {
-                            return 6;
+                            return ASMCMP_PSEUDO_OPER_ILLEGAL_REGISTER_NUMBER_ERROR;
                         }
 
                     }
                 }
 
-                return 2;
+                return ASMCMP_PSEUDO_OPER_NOT_DECLARED_IDENT_ERROR;
             }
             else
             {
@@ -337,7 +341,7 @@ static int FUSING(int entry)
                 }
                 else
                 {
-                    return 6;
+                    return ASMCMP_PSEUDO_OPER_ILLEGAL_REGISTER_NUMBER_ERROR;
                 }
             }
 
@@ -359,7 +363,7 @@ static int FUSING(int entry)
                     }
                 }
 
-                return 2;
+                return ASMCMP_PSEUDO_OPER_NOT_DECLARED_IDENT_ERROR;
             } 
             break;
         }
@@ -367,5 +371,23 @@ static int FUSING(int entry)
             ASMCMP_COMMON_ASSERT(0);
             break;
     }
-    return 0;
+    return ASMCMP_PSEUDO_OPER_SUCCESS;
+}
+
+
+char const* asmcmp_pseudo_oper_errmsg_by_errcode(asmcmp_pseudo_oper_error_code_t err_code)
+{
+    switch(err_code)
+    {
+        case ASMCMP_PSEUDO_OPER_SUCCESS:
+            return "No error occured";
+        case ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR:
+            return "Wrong data format";
+        case ASMCMP_PSEUDO_OPER_NOT_DECLARED_IDENT_ERROR:
+            return "Not declared identifier";
+        case ASMCMP_PSEUDO_OPER_ILLEGAL_REGISTER_NUMBER_ERROR:
+            return "Illegal register number";
+        default:
+            return "Unknown error code for generating error message";
+    }
 }
