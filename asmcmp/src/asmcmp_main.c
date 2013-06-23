@@ -179,7 +179,10 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
      * before syntax analyzer and semantic calculator call */
     memset(&err_data, 0, sizeof(asmcmp_main_error_data_t));
     err_data = (asmcmp_main_error_data_t){
-        .main_err_data.main_err_code = ASMCMP_MAIN_SUCCESS,
+        .main_err_data = {
+            .main_err_code = ASMCMP_MAIN_SUCCESS,
+            .card_number = -1
+        },
         .pseudo_oper_err_code = ASMCMP_PSEUDO_OPER_SUCCESS,
         .machine_oper_err_code = ASMCMP_MACHINE_OPER_SUCCESS
     };
