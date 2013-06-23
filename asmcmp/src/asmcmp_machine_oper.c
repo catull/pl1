@@ -2,6 +2,7 @@
 
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "asmcmp_common.h"
 #include "asmcmp_machine_oper.h"
