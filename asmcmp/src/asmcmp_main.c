@@ -322,8 +322,12 @@ int main(int const argc, char const *argv[])
     /* Clear error data structure and set default successful parameters */
     memset(&err_data, 0, sizeof(asmcmp_main_error_data_t));
     err_data = (asmcmp_main_error_data_t){ 
-        .main_err_data.main_err_code = ASMCMP_MAIN_SUCCESS,
-        .main_err_data.card_number = -1
+        .main_err_data = {
+            .main_err_code = ASMCMP_MAIN_SUCCESS,
+            .card_number = -1
+        },
+        .pseudo_oper_err_code = ASMCMP_PSEUDO_OPER_SUCCESS,
+        .machine_oper_err_code = ASMCMP_MACHINE_OPER_SUCCESS
     };
 
     /* Current program must contains one real parameter */
