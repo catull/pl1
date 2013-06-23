@@ -9,7 +9,7 @@
 #include "asmcmp_machine_oper.h"
 #include "asmcmp_global.h"
 
-static int SOBJFILE(char const *p_tex_fp_name)
+static int asmcmp_main_make_tex_file(char const *p_tex_fp_name)
 {
     FILE *p_text_fp;
     int RAB2;
@@ -294,7 +294,7 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
 
     CONT5:
 
-    RAB = SOBJFILE(p_tex_fp_name);
+    RAB = asmcmp_main_make_tex_file(p_tex_fp_name);
     if (ITCARD != RAB)
     {
         err_data.main_err_code = (-7 == RAB) ? ASMCMP_MAIN_CANT_WRITE_TEX_FILE_ERROR : ASMCMP_MAIN_WRONG_WRITE_TEX_FILE_ERROR;

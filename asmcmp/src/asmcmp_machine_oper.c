@@ -9,6 +9,7 @@
 
 static int FRR(int entry);
 static int FRX(int entry);
+static int FSS(int entry);
 
 /* Table of the machine operations */
 machine_operations_table_t T_MOP[NOP] = 
@@ -18,9 +19,15 @@ machine_operations_table_t T_MOP[NOP] =
     { {'S','T',' ',' ',' '}, '\x50', 4, FRX },
     { {'L',' ',' ',' ',' '}, '\x58', 4, FRX },
     { {'A',' ',' ',' ',' '}, '\x5A', 4, FRX },
-    { {'S',' ',' ',' ',' '}, '\x5B', 4, FRX }
+    { {'S',' ',' ',' ',' '}, '\x5B', 4, FRX },
+    { {'L','E','R',' ',' '}, '\x38', 2, FRR },
+    { {'L','A',' ',' ',' '}, '\x41', 4, FRX },
+    { {'A','R',' ',' ',' '}, '\x1A', 2, FRR },
+    { {'M','V','C',' ',' '}, '\xD2', 6, FSS }
 };
 
+/* Function handles machine operation with type 'RR'
+ * on the first and the second phases */
 static int FRR(int entry)
 {
     switch (entry)
@@ -50,7 +57,7 @@ static int FRR(int entry)
             {
                 for (J = 0; J <= ITSYM; J++)
                 {
-                    METKA = strtok(T_SYM[J].IMSYM , " ");
+                    METKA = strtok(T_SYM[J].IMSYM, " ");
                     if (!strcmp(METKA, METKA1))
                     {
                         R1R2 = T_SYM[J].ZNSYM << 4;
@@ -101,6 +108,8 @@ static int FRR(int entry)
     return 0;
 }
 
+/* Function handles machine operation with type 'RX'
+ * on the first and the second phases */
 static int FRX(int entry)
 {
     switch (entry)
@@ -207,5 +216,20 @@ static int FRX(int entry)
             break;
     }
 
+    return 0;
+}
+
+int FSS(int entry)
+{
+    switch (entry)
+    {
+        case 1:
+            break;
+        case 2:
+            break;
+        default:
+            ASMCMP_COMMON_ASSERT(0);
+            break;
+    }
     return 0;
 }

@@ -26,6 +26,8 @@ pseudo_operations_table_t T_POP[NPOP] = {
 
 };
 
+/* Function handles pseudo operation 'DC'
+ * on the first and the second phases */
 static int FDC(int entry)
 {
     switch (entry)
@@ -33,29 +35,41 @@ static int FDC(int entry)
         case 1:
             if ('Y' == PRNMET)
             {
-                if ('F' == TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[0])
+                switch (TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[0])
                 {
-                    T_SYM[ITSYM].DLSYM = 4;
-                    T_SYM[ITSYM].PRPER = 'R';
+                    case 'F':
+                        T_SYM[ITSYM].DLSYM = 4;
+                        T_SYM[ITSYM].PRPER = 'R';
 
-                    if (CHADR % 4)
-                    {
-                        CHADR = (CHADR/4 + 1)*4;
-                        T_SYM[ITSYM].ZNSYM = CHADR;
-                    }
+                        if (CHADR % 4)
+                        {
+                            CHADR = (CHADR / 4 + 1) * 4;
+                            T_SYM[ITSYM].ZNSYM = CHADR;
+                        }
 
-                    PRNMET = 'N';
-                }
-                else
-                {
-                    return 1;
+                        PRNMET = 'N';
+                        break;
+                    case 'C':
+                        T_SYM[ITSYM].DLSYM = atoi(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[1]);
+                        T_SYM[ITSYM].PRPER = 'R';
+
+                        if (CHADR % 4)
+                        {
+                            CHADR = (CHADR / 4 + 1) * 4;
+                            T_SYM[ITSYM].ZNSYM = CHADR;
+                        }
+
+                        PRNMET = 'N';
+                        break;
+                    default:
+                        return 1;
                 }
             }
             else
             {
                 if (CHADR % 4)
                 {
-                    CHADR = (CHADR /4 + 1) * 4;
+                    CHADR = (CHADR / 4 + 1) * 4;
                 }
 
                 CHADR = CHADR + 4;
@@ -75,6 +89,18 @@ static int FDC(int entry)
                 RAB = (char*)&RX.OP_RX.B2D2;
                 swab(RAB, RAB, 2);
             }
+            #if 0
+            else if (!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, "C", 1))
+            {
+                char *sym;
+                RAB = strtok(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND + 3, "'");
+                sym = RAB;
+                while (sym)
+                {
+
+                }
+            }
+            #endif
             else
             {
                 return 1;
@@ -91,6 +117,8 @@ static int FDC(int entry)
     return 0;
 }
 
+/* Function handles pseudo operation 'DS'
+ * on the first and the second phases */
 static int FDS(int entry)
 {
     switch (entry) 
@@ -150,6 +178,8 @@ static int FDS(int entry)
     return 0;
 }
 
+/* Function handles pseudo operation 'END'
+ * on the first and the second phases */
 static int FEND(int entry)
 {
     switch (entry)
@@ -168,6 +198,8 @@ static int FEND(int entry)
     return 100;
 }
 
+/* Function handles pseudo operation 'EQU'
+ * on the first and the second phases */
 static int FEQU(int entry)
 {
     switch (entry)
@@ -199,6 +231,8 @@ static int FEQU(int entry)
     return 0;
 }
 
+/* Function handles pseudo operation 'START'
+ * on the first and the second phases */
 static int FSTART(int entry)
 {
     switch (entry)
@@ -206,14 +240,16 @@ static int FSTART(int entry)
         case 1:
             CHADR = atoi(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND);
 
+            /* Operand must have a value a multiple of eight */ 
             if (CHADR % 8)
             {
-                CHADR = (CHADR + (8 - CHADR % 8));
+                CHADR += 8 - CHADR % 8;
             }
 
             T_SYM[ITSYM].ZNSYM = CHADR;
             T_SYM[ITSYM].DLSYM = 1;
             T_SYM[ITSYM].PRPER = 'R';
+
             PRNMET = 'N';
             break;
         case 2:
@@ -232,7 +268,7 @@ static int FSTART(int entry)
                 if (!strcmp(METKA, METKA1))
                 {
                     RAB = CHADR - T_SYM[J].ZNSYM;
-                    PTR = (char *)&RAB;
+                    PTR = (char*)&RAB;
                     swab(PTR, PTR, 2);
 
                     ESD.STR_ESD.DLPRG[0] = 0;
@@ -248,7 +284,7 @@ static int FSTART(int entry)
                     memcpy(ESD.STR_ESD.IMPR, METKA, strlen(METKA));
                     memcpy(ESD.STR_ESD.POLE11, METKA, strlen(METKA));
                     memcpy(OBJTEXT[ITCARD], ESD.BUF_ESD, 80);
-                    ITCARD += 1; 
+                    ++ITCARD; 
                     return 0;
                 }
             }
@@ -261,6 +297,8 @@ static int FSTART(int entry)
     return 0;
 }
 
+/* Subrountine handles pseudo operation 'USING'
+ * on the first and the second phases */
 static int FUSING(int entry)
 {
     switch (entry)

@@ -26,13 +26,14 @@ typedef union assembler_card_un {
     __assembler_card_t STRUCT_BUFCARD;                /*наложение шабл.на буфер */
 } assembler_card_t;
 
-/*
-***** ТАБЛИЦА символов
-*/
 
+/* Structure describes type of symbols table */
 typedef struct symbols_table_s {
+    /* symbol's name */
     char IMSYM[8];
+    /* symbol's value */
     int ZNSYM;
+    /* length in bytes of symbol's value */ 
     int DLSYM;
     char PRPER;
 } symbols_table_t;
