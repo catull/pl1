@@ -1,8 +1,9 @@
 /* encoding: UTF-8 */
 
-#include <ctype.h>
+#include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "asmcmp_common.h"
 #include "asmcmp_machine_oper.h"

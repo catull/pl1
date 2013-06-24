@@ -47,7 +47,6 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                             CHADR = (CHADR / 4 + 1) * 4;
                             T_SYM[ITSYM].ZNSYM = CHADR;
                         }
-
                         PRNMET = 'N';
                         break;
                     case 'C':
@@ -72,15 +71,12 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                         return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;
                 }
             }
-            else
+            else if (CHADR % 4)
             {
-                if (CHADR % 4)
-                {
-                    CHADR = (CHADR / 4 + 1) * 4;
-                }
-
-                CHADR = CHADR + 4;
+                CHADR = (CHADR / 4 + 1) * 4;
             }
+
+            CHADR = CHADR + 4;
             break;
         case 2:
         {
@@ -264,7 +260,6 @@ static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
             T_SYM[ITSYM].ZNSYM = CHADR;
             T_SYM[ITSYM].DLSYM = 1;
             T_SYM[ITSYM].PRPER = 'R';
-
             PRNMET = 'N';
             break;
         case 2:
@@ -296,8 +291,10 @@ static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
                     ESD.ADPRG[2] = *PTR;
                     ESD.ADPRG[1] = *(PTR + 1);
                     ESD.ADPRG[0] = '\x00';
+
                     memcpy(ESD.IMPR, METKA, strlen(METKA));
                     memcpy(ESD.POLE11, METKA, strlen(METKA));
+
                     memcpy(OBJTEXT[ITCARD], &ESD, 80);
                     ++ITCARD; 
                     return ASMCMP_PSEUDO_OPER_SUCCESS;

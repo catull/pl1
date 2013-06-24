@@ -1,6 +1,12 @@
-/*компиляция используя -lncurses
-например, gcc absgraph.c -o absgraph -lncurses
-*/
+/* encoding: UTF-8 */
+/* russian letter: KOI8 (Cyrillic) */
+
+/* for compilation use key '-lncurses'
+ * for example, gcc absgraph.c -o absgraph -lncurses */
+
+/* if you use pl1-project, it has already added for compilation
+ * simple start command 'make absload' */
+
 #include <stdio.h>                                /*подкл.библ.ф-й ст.в/выв */
 #include <string.h>                               /*подкл.библ.ф-й стр.симв.*/
 #include <stdlib.h>                               /*подкл.библ.ф-й преобр.д.*/
@@ -373,10 +379,10 @@ int sys(void)
   char wstr[80];
   int zizi = 0, tempI;
   
-  
   I = BAS_ADDR;			//установить текущий адрес
   				//равный начальному
-//нижнее поле     
+//нижнее поле    
+
   wmargenta = newwin(1, 80, 24, 0);
   wbkgd(wmargenta, COLOR_PAIR(COLOR_MAGENTA));
   waddstr(wmargenta, "\"PgUp\",\"PgDn\",\"Up\",\"Down\"->просмотр дампа; \"Enter\"->выполнить очередную команду");
@@ -560,6 +566,7 @@ SKIP:
 //..........................Инициализация curses..............................
 int InitCurses(void)
 {
+
   initscr();					//инициализация библиотеки curses
   curs_set(0);
   noecho();					//не показывать ввод
@@ -593,7 +600,6 @@ int main( int argc, char **argv )                /* п р о г р а м м а      */
   char *ptr;
 
 //main programm
-
 
   if ( argc != 2 )
   {
@@ -691,9 +697,6 @@ CONT2:
        OBLZ [ (int) J++ ] = TXT.STR_TXT.OPER [N]; /*об'ектной карты         */
      }
    }
-   
-
-
 
   InitCurses();
 
@@ -720,46 +723,46 @@ CONT2:
   
   endwin(); 
   END:
-  printf ("\n%s\n", "завершение обработки");
+  printf ("\n%s\n", "end processing");
 
   return 0;
 //Б Л О К  выдачи диагностических сообщений
 ERR1:
-  printf ("%s%s\n", "ошибка открытия файла со списком собираемых ", "модулей");
+  printf ("%s%s\n", "error opening of the files with list of the assembled ", "modules");
   goto END;
 
 ERR2:
-  printf ("%s\n", "пустой файл со списком собираемых модулей");
+  printf ("%s\n", "empty file with list of the assembled modules");
   goto END;
 
 ERR3:
   printf ("%s: %s\n" ,
-   "ошибка открытия файла" , SPISOK [I] );
+   "error opening of the file" , SPISOK [I] );
   goto END;
 
 ERR4:
   printf ("%s\n" ,
-   "переполнение списка собираемых модулей" );
+   "overflow list of the assembled modules" );
   goto END;
 
 ERR5:
   printf ("%s\n" ,
-   "переполнение буфера хранения об'ектных карт");
+   "overflow buffer of storage of object cards");
   goto END;
 
 ERR6:
   printf ("%s\n" ,
-   "недопустимый код команды" );
+   "illegal command's code" );
   goto END;
   
 ERR7:
-  printf("прерывание - ошибка адресации\n");
+  printf("interruption - error of addressing\n");
   goto END;
   
 ERR8:
   goto END;
 
 ERR9:
-  printf ( "%s\n", "Неверный тип файла с исходным текстом" );
+  printf ( "%s\n", "Wrong type of file with the source text" );
   goto END;
 }

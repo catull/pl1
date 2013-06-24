@@ -38,7 +38,7 @@ typedef struct base_registers_table_s {
     char PRDOST;
 } base_registers_table_t;
 
-typedef union esd_card_buffer_s {
+typedef struct esd_card_buffer_s {
     unsigned char POLE1;                    /*место для кода 0x02     */
     unsigned char POLE2[3];                    /*поле типа об'ектн.карты */
     unsigned char POLE3[6];                    /*пробелы                 */
@@ -54,7 +54,7 @@ typedef union esd_card_buffer_s {
     unsigned char POLE11[8];                    /*идентификационное поле  */
 } esd_card_buffer_t;
 
-typedef union txt_card_buffer_s {
+typedef struct txt_card_buffer_s {
     unsigned char POLE1;                    /*место для кода 0x02     */
     unsigned char POLE2[3];                    /*поле типа об'ектн.карты */
     unsigned char POLE3;                    /*пробел                  */
@@ -67,7 +67,7 @@ typedef union txt_card_buffer_s {
     unsigned char POLE9[8];                    /*идентификационное поле  */
 } txt_card_buffer_t;
 
-typedef union end_card_buffer_s {
+typedef struct end_card_buffer_s {
     unsigned char POLE1;                    /*место для кода 0x02     */
     unsigned char POLE2[3];                    /*поле типа об'ектн.карты */
     unsigned char POLE3[68];                    /*пробелы                 */
