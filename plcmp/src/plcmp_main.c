@@ -31,6 +31,8 @@ static char const* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code
             return "Error occured while reading file with the source text";
         case PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW:
             return "Overflow of the program buffer while reading file with the source text";
+        case PLCMP_MAIN_LEX_ANALYZER_ERROR:
+            return "Error in lexical analyzer";
         case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
             return "Error in syntax analyzer";
         case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
