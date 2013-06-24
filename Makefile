@@ -23,7 +23,7 @@ asmcmp: $(ASMCMP_OBJS)
 	$(CC) $(ASMCMP_OBJS) $(COMMON_OBJS) -o $(ASMCMP_BIN)
 
 absload: $(ABSLOAD_OBJS)
-	$(CC) $(ABSLOAD_OBJS) $(COMMON_OBJS) -o $(ABSLOAD_BIN)
+	$(CC) -lncurses $(ABSLOAD_OBJS) $(COMMON_OBJS) -o $(ABSLOAD_BIN)
 
 .PHONY: clean clean_plcmp clean_asmcmp clean_absload clean_all
 

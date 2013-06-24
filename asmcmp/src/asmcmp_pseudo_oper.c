@@ -175,20 +175,15 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
             CHADR = CHADR + 4;
             break;
         case 2:
-        /*
-            RX.OP = 0;
-            RX.R1X2 = 0;
-        */
             switch (TEK_ISX_KARTA.OPERAND[0])
             {
                 case 'F':
-                    //RX.B2D2 = 0;
+                    break;
+                case 'C':
                     break;
                 default:
                     return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;    
             }
-
-            //asmcmp_common_save_data_tex_card(4);
             break;
         default:
             ASMCMP_COMMON_ASSERT(0);
