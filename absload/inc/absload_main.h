@@ -1,0 +1,25 @@
+/* encoding: UTF-8 */
+
+#ifndef ABSLOAD_MAIN_H
+#define ABSLOAD_MAIN_H
+
+typedef enum absload_main_error_code_e {
+    ABSLOAD_MAIN_SUCCESS = 0,
+    ABSLOAD_MAIN_WRONG_NUM_CLI_PAR,
+    ABSLOAD_MAIN_WRONG_INPUT_MOD_FILE_PATH,
+    ABSLOAD_MAIN_WRONG_INPUT_MOD_FILE_EXTENSION,
+    ABSLOAD_MAIN_NOT_FOUND_INPUT_MOD_FILE,
+    ABSLOAD_MAIN_LIST_MODULES_OVERFLOW,
+    ABSLOAD_MAIN_EMPTY_LIST_MODULES,
+    ABSLOAD_MAIN_NOT_FOUND_READ_TEX_FILE,
+    ABSLOAD_MAIN_OBJ_CARDS_BUFFER_OVERFLOW,
+    ABSLOAD_MAIN_ILLEGAL_OPERATION_CODE,
+    ABSLOAD_MAIN_ADDRESSING_ERROR,
+    ABSLOAD_MAIN_FAILURE
+} absload_main_error_code_t;
+
+typedef struct absload_main_error_data_s {
+    absload_main_error_code_t main_err_code;
+} absload_main_error_data_t;
+
+#endif

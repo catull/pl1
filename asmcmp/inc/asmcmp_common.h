@@ -153,7 +153,7 @@ typedef struct data_s {
  */
 #define ASMCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_fp_str_to, p_fp_str_from)              \
     do {                                                                                 \
-        ASMCMP_COMMON_MALLOC_MEM_FOR_STR(p_fp_str_to, strlen(p_fp_str_from));             \
+        ASMCMP_COMMON_MALLOC_MEM_FOR_STR(p_fp_str_to, strlen(p_fp_str_from));            \
         strcpy(p_fp_str_to, p_fp_str_from);                                              \
     } while(0)
 
