@@ -3,6 +3,8 @@
 #ifndef ASMCMP_GLOBAL_H
 #define ASMCMP_GLOBAL_H
 
+#include <ctype.h>
+
 #include "asmcmp_common.h"
 
 /*
@@ -35,17 +37,6 @@ typedef struct base_registers_table_s {
     int SMESH;
     char PRDOST;
 } base_registers_table_t;
-
-typedef struct oper_rr_s {
-    unsigned char OP;
-    unsigned char R1R2;
-} oper_rr_t;
-
-typedef struct oper_rx_s {
-    unsigned char OP;
-    unsigned char R1X2;
-    short int B2D2;
-} oper_rx_t;
 
 typedef union esd_card_buffer_s {
     unsigned char POLE1;                    /*место для кода 0x02     */
@@ -83,7 +74,7 @@ typedef union end_card_buffer_s {
     unsigned char POLE9[8];                    /*идентификационное поле  */
 } end_card_buffer_t;
 
-extern int CHADR;
+extern size_t CHADR;
 extern int ITSYM;
 extern symbols_table_t T_SYM[NSYM];
 extern assembler_card_t TEK_ISX_KARTA;
@@ -93,9 +84,6 @@ extern base_registers_table_t T_BASR[15];
 
 extern char OBJTEXT[DL_OBJTEXT][80];
 extern int ITCARD;
-
-extern oper_rr_t RR;
-extern oper_rx_t RX;
 
 extern esd_card_buffer_t ESD;
 extern txt_card_buffer_t TXT;

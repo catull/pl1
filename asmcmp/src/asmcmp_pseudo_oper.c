@@ -4,17 +4,18 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "asmcmp_common.h"
 #include "asmcmp_pseudo_oper.h"
 #include "asmcmp_global.h"
 
-static enum asmcmp_pseudo_oper_error_code_s FDC(int entry);
-static enum asmcmp_pseudo_oper_error_code_s FDS(int entry);
-static enum asmcmp_pseudo_oper_error_code_s FEND(int entry);
-static enum asmcmp_pseudo_oper_error_code_s FEQU(int entry);
-static enum asmcmp_pseudo_oper_error_code_s FSTART(int entry);
-static enum asmcmp_pseudo_oper_error_code_s FUSING(int entry);
+static enum asmcmp_pseudo_oper_error_code_e FDC(int entry);
+static enum asmcmp_pseudo_oper_error_code_e FDS(int entry);
+static enum asmcmp_pseudo_oper_error_code_e FEND(int entry);
+static enum asmcmp_pseudo_oper_error_code_e FEQU(int entry);
+static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry);
+static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry);
 
 /* Table of the pseudo operations */
 pseudo_operations_table_t T_POP[NPOP] = {
@@ -28,7 +29,7 @@ pseudo_operations_table_t T_POP[NPOP] = {
 
 /* Function handles pseudo operation 'DC'
  * on the first and the second phases */
-static enum asmcmp_pseudo_oper_error_code_s FDC(int entry)
+static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
 {
     switch (entry)
     {
@@ -83,29 +84,53 @@ static enum asmcmp_pseudo_oper_error_code_s FDC(int entry)
             break;
         case 2:
         {
-            char *RAB;
+            uint8_t *RAB;
 
-            RX.OP = 0;
-            RX.R1X2 = 0;
+            data_t data;
+            memset(&data, 0, sizeof(data_t));
 
-            if (!memcmp(TEK_ISX_KARTA.OPERAND, "F'", 2))
+            switch (TEK_ISX_KARTA.OPERAND[0])
             {
-                RAB = strtok(TEK_ISX_KARTA.OPERAND + 2, "'");
-                RX.B2D2 = atoi(RAB);
-                RAB = (char*)&RX.B2D2;
-                swab(RAB, RAB, 2);
-                STXT(4);
+                case 'F':
+                    data.data_type = DATA_FIXED_BIN;
+
+                    RAB = (uint8_t*)strtok(TEK_ISX_KARTA.OPERAND + 2, "'");
+                    data.data.fixed_bin = atoi((char*)RAB);
+
+                    RAB = (uint8_t*)&data.data.fixed_bin;
+                    asmcmp_common_swap_bytes(RAB, RAB, 4);
+
+                    asmcmp_common_save_data_tex_card(data);
+                    break;
+                case 'C':
+                {
+                    char buffer[2] = {'\0','\0'};
+                    size_t str_len;
+
+                    data.data_type = DATA_STRING;
+
+                    buffer[0] = TEK_ISX_KARTA.OPERAND[1];
+                    str_len = atoi(buffer);
+
+                    data.data.string_data.str_length = str_len;
+                    data.data.string_data.p_string = calloc(str_len + 1, sizeof(uint8_t));
+
+                    RAB = (uint8_t*)strtok(TEK_ISX_KARTA.OPERAND + 3, "'");
+                    strcpy((char*)data.data.string_data.p_string, (char*)RAB);
+
+                    RAB = (uint8_t*)data.data.string_data.p_string;
+                    asmcmp_common_swap_bytes(RAB, RAB, str_len);
+
+                    asmcmp_common_save_data_tex_card(data);
+
+                    free(data.data.string_data.p_string);
+                    data.data.string_data.p_string = NULL;
+
+                    break;
+                }
+                default:
+                    return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;
             }
-            else if (!memcmp(TEK_ISX_KARTA.OPERAND, "C", 1))
-            {
-                RAB = strtok(TEK_ISX_KARTA.OPERAND + 3, "'");
-                STXT(4);
-            }
-            else
-            {
-                return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;
-            }
-            
             break;
         }
         default:
@@ -118,7 +143,7 @@ static enum asmcmp_pseudo_oper_error_code_s FDC(int entry)
 
 /* Function handles pseudo operation 'DS'
  * on the first and the second phases */
-static enum asmcmp_pseudo_oper_error_code_s FDS(int entry)
+static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
 {
     switch (entry)
     {
@@ -151,19 +176,20 @@ static enum asmcmp_pseudo_oper_error_code_s FDS(int entry)
             CHADR = CHADR + 4;
             break;
         case 2:
+        /*
             RX.OP = 0;
             RX.R1X2 = 0;
-
+        */
             switch (TEK_ISX_KARTA.OPERAND[0])
             {
                 case 'F':
-                    RX.B2D2 = 0;
+                    //RX.B2D2 = 0;
                     break;
                 default:
                     return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;    
             }
 
-            STXT(4);
+            //asmcmp_common_save_data_tex_card(4);
             break;
         default:
             ASMCMP_COMMON_ASSERT(0);
@@ -175,7 +201,7 @@ static enum asmcmp_pseudo_oper_error_code_s FDS(int entry)
 
 /* Function handles pseudo operation 'END'
  * on the first and the second phases */
-static enum asmcmp_pseudo_oper_error_code_s FEND(int entry)
+static enum asmcmp_pseudo_oper_error_code_e FEND(int entry)
 {
     switch (entry)
     {
@@ -195,7 +221,7 @@ static enum asmcmp_pseudo_oper_error_code_s FEND(int entry)
 
 /* Function handles pseudo operation 'EQU'
  * on the first and the second phases */
-static enum asmcmp_pseudo_oper_error_code_s FEQU(int entry)
+static enum asmcmp_pseudo_oper_error_code_e FEQU(int entry)
 {
     switch (entry)
     {
@@ -228,7 +254,7 @@ static enum asmcmp_pseudo_oper_error_code_s FEQU(int entry)
 
 /* Function handles pseudo operation 'START'
  * on the first and the second phases */
-static enum asmcmp_pseudo_oper_error_code_s FSTART(int entry)
+static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
 {
     switch (entry)
     {
@@ -249,7 +275,10 @@ static enum asmcmp_pseudo_oper_error_code_s FSTART(int entry)
             break;
         case 2:
         {
+            uint8_t *PTR;
+            #if 0
             char *PTR;
+            #endif
             char *METKA;
             char *METKA1;
             int J;
@@ -263,15 +292,19 @@ static enum asmcmp_pseudo_oper_error_code_s FSTART(int entry)
                 if (!strcmp(METKA, METKA1))
                 {
                     RAB = CHADR - T_SYM[J].ZNSYM;
-                    PTR = (char*)&RAB;
+                    PTR = (uint8_t*)&RAB;
                     swab(PTR, PTR, 2);
+                    #if 0
+                    PTR = (char*)&RAB;
+                    asmcmp_common_swap_bytes(PTR, PTR, 2);
+                    #endif
 
                     ESD.DLPRG[0] = 0;
                     ESD.DLPRG[1] = *PTR;
                     ESD.DLPRG[2] = *(PTR + 1);
 
                     CHADR = T_SYM[J].ZNSYM;
-                    PTR = (char*)&CHADR;
+                    PTR = (uint8_t*)&CHADR;
 
                     ESD.ADPRG[2] = *PTR;
                     ESD.ADPRG[1] = *(PTR + 1);
@@ -294,7 +327,7 @@ static enum asmcmp_pseudo_oper_error_code_s FSTART(int entry)
 
 /* Subrountine handles pseudo operation 'USING'
  * on the first and the second phases */
-static enum asmcmp_pseudo_oper_error_code_s FUSING(int entry)
+static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
 {
     switch (entry)
     {

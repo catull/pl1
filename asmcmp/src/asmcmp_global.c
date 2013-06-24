@@ -1,12 +1,13 @@
 /* encoding: UTF-8 */
 
+#include <ctype.h>
 #include "asmcmp_global.h"
 
 /*
 ***** СЧЕТЧИК относительного адреса (смещешия относительно базы )
 */
 
-int CHADR;
+size_t CHADR;
 int ITSYM = -1;                                  /*инд.своб.стр. табл.симв.*/
 symbols_table_t T_SYM[NSYM];                        /*определение табл.симв.  */
 assembler_card_t TEK_ISX_KARTA;
@@ -39,9 +40,7 @@ base_registers_table_t T_BASR[15] = {
 */
 
 char OBJTEXT[DL_OBJTEXT][80];
-int ITCARD = 0;
-oper_rr_t RR;
-oper_rx_t RX;
+int ITCARD;
 
 esd_card_buffer_t ESD;
 txt_card_buffer_t TXT;

@@ -8,9 +8,9 @@
 #include "asmcmp_machine_oper.h"
 #include "asmcmp_global.h"
 
-static enum asmcmp_machine_oper_error_code_s FRR(int entry);
-static enum asmcmp_machine_oper_error_code_s FRX(int entry);
-static enum asmcmp_machine_oper_error_code_s FSS(int entry);
+static enum asmcmp_machine_oper_error_code_e FRR(int entry);
+static enum asmcmp_machine_oper_error_code_e FRX(int entry);
+static enum asmcmp_machine_oper_error_code_e FSS(int entry);
 
 /* Table of the machine operations */
 machine_operations_table_t T_MOP[NOP] = 
@@ -29,27 +29,36 @@ machine_operations_table_t T_MOP[NOP] =
 
 /* Function handles machine operation with type 'RR'
  * on the first and the second phases */
-static enum asmcmp_machine_oper_error_code_s FRR(int entry)
+static enum asmcmp_machine_oper_error_code_e FRR(int entry)
 {
     switch (entry)
     {
         case 1:
-            CHADR += 2;
+        {
+            size_t oper_len = sizeof(oper_rr_t);
+            CHADR += oper_len;
 
             if ('Y' == PRNMET)
             {
-                T_SYM[ITSYM].DLSYM = 2;
+                T_SYM[ITSYM].DLSYM = oper_len;
                 T_SYM[ITSYM].PRPER = 'R';
             }
             break;
+        }
         case 2:
         {
             char *METKA;
             char *METKA1;
             char *METKA2;
-            unsigned char R1R2;
             int J;
-            RR.OP = T_MOP[I3].CODOP;
+
+            uint8_t R1R2;
+
+            oper_t oper_rr;
+            memset(&oper_rr, 0, sizeof(oper_t));
+
+            oper_rr.oper_type = OPER_RR;
+            oper_rr.oper.rr.opcode = T_MOP[I3].CODOP;
 
             METKA1 = strtok(TEK_ISX_KARTA.OPERAND, ",");
             METKA2 = strtok(NULL, " ");
@@ -96,9 +105,9 @@ static enum asmcmp_machine_oper_error_code_s FRR(int entry)
 
             SRR2:
 
-            RR.R1R2 = R1R2;
+            oper_rr.oper.rr.R1R2 = R1R2;
 
-            STXT(2);
+            asmcmp_common_save_oper_tex_card(oper_rr);
             break;
         }
         default:
@@ -111,33 +120,43 @@ static enum asmcmp_machine_oper_error_code_s FRR(int entry)
 
 /* Function handles machine operation with type 'RX'
  * on the first and the second phases */
-static enum asmcmp_machine_oper_error_code_s FRX(int entry)
+static enum asmcmp_machine_oper_error_code_e FRX(int entry)
 {
     switch (entry)
     {
         case 1:
-            CHADR += 4;
+        {
+            size_t oper_len = sizeof(oper_rx_t);
+            CHADR += oper_len;
 
             if ('Y' == PRNMET)
             {
-                T_SYM[ITSYM].DLSYM = 4;
+                T_SYM[ITSYM].DLSYM = oper_len;
                 T_SYM[ITSYM].PRPER = 'R';
             }
             break;
+        }
         case 2:
         {
             char *METKA;
             char *METKA1;
             char *METKA2;
-            char *PTR;
+            uint8_t *PTR;
             int DELTA;
             int ZNSYM;
             int NBASRG;
             int J;
             int I;
-            unsigned char R1X2;
-            int B2D2;
-            RX.OP = T_MOP[I3].CODOP;
+
+            uint8_t R1X2;
+            uint16_t B2D2;
+
+            oper_t oper_rx;
+            memset(&oper_rx, 0, sizeof(oper_t));
+
+            oper_rx.oper_type = OPER_RX;
+            oper_rx.oper.rx.opcode = T_MOP[I3].CODOP;
+            
             METKA1 = strtok(TEK_ISX_KARTA.OPERAND, ",");
             METKA2 = strtok(NULL, " ");
             if (isalpha(*METKA1))
@@ -190,9 +209,9 @@ static enum asmcmp_machine_oper_error_code_s FRX(int entry)
                         {
                             B2D2 = NBASRG << 12;
                             B2D2 = B2D2 + DELTA;
-                            PTR = (char *)&B2D2;
-                            swab(PTR, PTR, 2);
-                            RX.B2D2 = B2D2;
+                            PTR = (uint8_t*)&B2D2;
+                            asmcmp_common_swap_bytes(PTR, PTR, 2);
+                            oper_rx.oper.rx.B2D2 = B2D2;
                         }
                         goto SRX2;
                     }
@@ -207,9 +226,9 @@ static enum asmcmp_machine_oper_error_code_s FRX(int entry)
 
             SRX2:
 
-            RX.R1X2 = R1X2;
+            oper_rx.oper.rx.R1X2 = R1X2;
 
-            STXT(4);
+            asmcmp_common_save_oper_tex_card(oper_rx);
             break;
         }
         default:
@@ -222,12 +241,22 @@ static enum asmcmp_machine_oper_error_code_s FRX(int entry)
 
 /* Function handles machine operation with type 'SS'
  * on the first and the second phases */
-static enum asmcmp_machine_oper_error_code_s FSS(int entry)
+static enum asmcmp_machine_oper_error_code_e FSS(int entry)
 {
     switch (entry)
     {
         case 1:
+        {
+            size_t oper_len = sizeof(oper_ss_t);
+            CHADR += oper_len;
+
+            if ('Y' == PRNMET)
+            {
+                T_SYM[ITSYM].DLSYM = oper_len;
+                T_SYM[ITSYM].PRPER = 'R';
+            }
             break;
+        }
         case 2:
             break;
         default:

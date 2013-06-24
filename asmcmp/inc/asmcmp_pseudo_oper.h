@@ -5,7 +5,7 @@
 
 #include "asmcmp_common.h"
 
-typedef enum asmcmp_pseudo_oper_error_code_s {
+typedef enum asmcmp_pseudo_oper_error_code_e {
     ASMCMP_PSEUDO_OPER_SUCCESS = 0,
     ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR,
     ASMCMP_PSEUDO_OPER_NOT_DECLARED_IDENT_ERROR,
@@ -19,7 +19,7 @@ typedef enum asmcmp_pseudo_oper_error_code_s {
 typedef struct pseudo_operations_table_s
 {
     unsigned char MNCPOP[5];
-    enum asmcmp_pseudo_oper_error_code_s (*BXPROG)(int entry);
+    enum asmcmp_pseudo_oper_error_code_e (*BXPROG)(int entry);
 } pseudo_operations_table_t;
 
 extern pseudo_operations_table_t T_POP[NPOP];

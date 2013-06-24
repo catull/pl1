@@ -311,6 +311,18 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
     return err_data;
 }
 
+/* This program organizes the sequential processing of the source text:
+ * - the first phase of processing assembler text
+ * - the second phase of processing assembler text, translate its to object text
+ * - recording object text to '.tex' file
+ * Successful result of this Assemler compiler is '.tex' object file
+ * Unsuccessful result is an error message with reason of interruption of translation
+ *
+ * Requirements of the input parameters:
+ * - 'argc' must be equal '2'
+ * - 'argv[0]' as always is path to current program
+ * - 'argv[1]' is the first parameter, it has to be the path of the Assembler-file
+ */
 int main(int const argc, char const *argv[])
 {
     char asm_src_text[DL_ASSTEXT][LINELEN];                  /* Content of the array of the source ASM-text */
