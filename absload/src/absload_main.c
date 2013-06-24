@@ -190,7 +190,6 @@ int P_ST(void)                                        /*  п р о г р а м м а     
     return 0;                                       /*успешное заверш.прогр.  */
 }
 
-/*..........................................................................*/
 
 int P_L(void)                                         /*  п р о г р а м м а     */
                           /*реализации семантики    */
@@ -226,7 +225,6 @@ int P_A(void)                                         /*  п р о г р а м м а     
     return 0;                                       /*успешное заверш. прогр. */
 }
 
-/*..........................................................................*/
 
 int P_S(void)                                         /* п р о г р а м м а      */
                                                   /* реализации семантики   */
@@ -274,46 +272,51 @@ int FRR(void)
 
     return 0; 
 }
-//...........................................................................
+
+
 int FRX(void)
 {
-  int i, j;
+    int i, j;
   
-  for (i = 0; i < NOP; i++)
-  {
-    if (INST[0] == T_MOP[i].CODOP)
+    for (i = 0; i < NOP; i++)
     {
-      waddstr(wgreen, "  ");
-      for (j = 0; j < 5; j++)
-        waddch(wgreen, T_MOP[i].MNCOP[j]);
-      waddstr(wgreen, " ");
-      
-      j = INST[1] >> 4;
-      R1 = j;
-      wprintw(wgreen, "%.1d, ", j);
-      
-      j = INST[2] % 16;
-      j = j * 256 + INST[3];
-      D = j;
-      wprintw(wgreen, "X'%.3X'(", j);
-      
-      j = INST[1] % 16;
-      X = j;
-      wprintw(wgreen, "%1d, ", j);
-      
-      j = INST[2] >> 4;
-      B = j;
-      wprintw(wgreen, "%1d)", j);
-      
-      ADDR = VR[B] + VR[X] + D;
-      wprintw(wgreen,"        %.06lX       \n", ADDR);
-      if (ADDR % 4 != 0)
-        return (7);
-      break;
+        if (INST[0] == T_MOP[i].CODOP)
+        {
+            waddstr(wgreen, "  ");
+            for (j = 0; j < 5; j++)
+            {
+                waddch(wgreen, T_MOP[i].MNCOP[j]);
+            }
+            waddstr(wgreen, " ");
+          
+            j = INST[1] >> 4;
+            R1 = j;
+            wprintw(wgreen, "%.1d, ", j);
+          
+            j = INST[2] % 16;
+            j = j * 256 + INST[3];
+            D = j;
+            wprintw(wgreen, "X'%.3X'(", j);
+          
+            j = INST[1] % 16;
+            X = j;
+            wprintw(wgreen, "%1d, ", j);
+          
+            j = INST[2] >> 4;
+            B = j;
+            wprintw(wgreen, "%1d)", j);
+          
+            ADDR = VR[B] + VR[X] + D;
+            wprintw(wgreen,"        %.06lX       \n", ADDR);
+            if (ADDR % 4 != 0)
+            {
+                return 7;
+            }
+            break;
+        }
     }
-  }
 
-  return 0;
+    return 0;
 } 
 
 
@@ -362,7 +365,7 @@ void wind(void)
     wclear(wred);             //очистка содержимого окна дампа
 }
 
-//---------------------------------------------------------------------------
+
 //программа покомандной интерпретпции(отладки)
 // загруженной программы
 static enum absload_main_error_code_e sys(void)           
