@@ -42,7 +42,6 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
             if ('Y' == PRNMET)
             {
                 T_SYM[ITSYM].DLSYM = oper_len;
-                T_SYM[ITSYM].PRPER = 'R';
             }
             break;
         }
@@ -133,7 +132,6 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
             if ('Y' == PRNMET)
             {
                 T_SYM[ITSYM].DLSYM = oper_len;
-                T_SYM[ITSYM].PRPER = 'R';
             }
             break;
         }
@@ -254,7 +252,6 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             if ('Y' == PRNMET)
             {
                 T_SYM[ITSYM].DLSYM = oper_len;
-                T_SYM[ITSYM].PRPER = 'R';
             }
             break;
         }

@@ -4,13 +4,13 @@
 
 #include "asmcmp_global.h"
 
-/*
-***** СЧЕТЧИК относительного адреса (смещешия относительно базы )
-*/
-
+/* Counter of displacement address */
 size_t CHADR;
-int ITSYM = -1;                                  /*инд.своб.стр. табл.симв.*/
-symbols_table_t T_SYM[NSYM];                        /*определение табл.симв.  */
+/* Symbols counter */
+int ITSYM = -1;
+/* Table of symbols */
+symbols_table_t T_SYM[NSYM];
+/* Template for read line of the assembler code */
 assembler_card_t TEK_ISX_KARTA;
 
 /* Indicator of detection of label */

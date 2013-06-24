@@ -1,11 +1,11 @@
 /* encoding: UTF-8 */
-/* russian letter: KOI8 (Cyrillic) */
+/* russian letters: KOI8 (Cyrillic) */
 
 /* for compilation use key '-lncurses'
  * for example, gcc absgraph.c -o absgraph -lncurses */
 
 /* if you use pl1-project, it has already added for compilation
- * simple start command 'make absload' */
+ * simply start command 'make absload' */
 
 #include <assert.h>
 
@@ -15,46 +15,42 @@
 #include <ctype.h>                                /*подкл.библ.ф-й преобр.с.*/
 #include <curses.h>
 
-#define  NSPIS  5                                 /*разм.списка загр.прогр. */
-#define  NOBJ   50                                /*разм.масс.об'ектных карт*/
-#define  DOBLZ  1024                              /*длина области загрузки  */
-#define  NOP 6                                    /*кол-во обрабатываемых   */
-                          /* команд                 */
-
-
-char NFIL [30] = "\x0";
-
-int  IOBJC   = 0;                                 /*инд.вакантн.стр. OBJCARD*/
-char OBJCARD [NOBJ][80];                          /*масс.хранен.об'ектн.карт*/
-
-int  ISPIS   = 0;                                 /*инд.вакантн.стр. SPISOK */
-char SPISOK  [NSPIS][80];                         /*масс.хранен.списка прогр*/
+#define NSPIS 5                                 /*разм.списка загр.прогр. */
+#define NOBJ 50                                /*разм.масс.об'ектных карт*/
+#define DOBLZ 1024                              /*длина области загрузки  */
+#define NOP 6                                    /*кол-во обрабатываемых   */
+                                                  /* команд                 */
+char NFIL[30] = "\x0";
+int IOBJC = 0;                                 /*инд.вакантн.стр. OBJCARD*/
+char OBJCARD[NOBJ][80];                          /*масс.хранен.об'ектн.карт*/
+int ISPIS = 0;                                 /*инд.вакантн.стр. SPISOK */
+char SPISOK[NSPIS][80];                         /*масс.хранен.списка прогр*/
 
 WINDOW *wblue, *wgreen, *wred, *wcyan, *wmargenta;
 
 struct STR_BUF_TXT                                /*структ.буфера карты TXT */
- {
-  unsigned char POLE1      ;                      /*место для кода 0x02     */
-  unsigned char POLE2  [ 3];                      /*поле типа об'ектн.карты */
-  unsigned char POLE3      ;                      /*пробел                  */
-  unsigned char ADOP   [ 3];                      /*относит.адрес опреации  */
-  unsigned char POLE5  [ 2];                      /*пробелы                 */
-  unsigned char DLNOP  [ 2];                      /*длина операции          */
-  unsigned char POLE7  [ 2];                      /*пробелы                 */
-  unsigned char POLE71 [ 2];                      /*внутренний идент.прогр. */
-  unsigned char OPER   [56];                      /*тело операции           */
-  unsigned char POLE9  [ 8];                      /*идентификационное поле  */
- };
+{
+    unsigned char POLE1      ;                      /*место для кода 0x02     */
+    unsigned char POLE2  [ 3];                      /*поле типа об'ектн.карты */
+    unsigned char POLE3      ;                      /*пробел                  */
+    unsigned char ADOP   [ 3];                      /*относит.адрес опреации  */
+    unsigned char POLE5  [ 2];                      /*пробелы                 */
+    unsigned char DLNOP  [ 2];                      /*длина операции          */
+    unsigned char POLE7  [ 2];                      /*пробелы                 */
+    unsigned char POLE71 [ 2];                      /*внутренний идент.прогр. */
+    unsigned char OPER   [56];                      /*тело операции           */
+    unsigned char POLE9  [ 8];                      /*идентификационное поле  */
+};
 
 
 union                                             /*определить об'единение  */
- {
-  struct STR_BUF_TXT STR_TXT;                     /*структура буфера        */
-  unsigned char BUF_TXT [80];                     /*буфер карты TXT         */
- } TXT;
+{
+    struct STR_BUF_TXT STR_TXT;                     /*структура буфера        */
+    unsigned char BUF_TXT [80];                     /*буфер карты TXT         */
+} TXT;
 
 
-unsigned char INST [6];                           /*массив, содерж. обрабат.*/
+unsigned char INST[6];                           /*массив, содерж. обрабат.*/
                           /*команду                 */
 
 
@@ -244,7 +240,7 @@ int P_S()                                         /* п р о г р а м м а      */
   ADDR = VR[B] + VR[X] + D;                       /*вычисление рабочего     */
   sm = ( int ) ( ADDR - I );                      /*адреса и смещения       */
 
-  ARG = OBLZ[BAS_IND + CUR_IND + sm] * 0x1000000L+/*формирование содержимого*/
+    ARG = OBLZ[BAS_IND + CUR_IND + sm] * 0x1000000L+/*формирование содержимого*/
      OBLZ[BAS_IND + CUR_IND + sm + 1] * 0x10000L +/*второго операнда в сог- */
      OBLZ[BAS_IND + CUR_IND + sm + 2] * 0x100 +   /*лашениях ЕС ЭВМ         */
      OBLZ[BAS_IND + CUR_IND + sm + 3];            /*                        */

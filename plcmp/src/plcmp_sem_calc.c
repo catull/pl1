@@ -13,7 +13,6 @@
 #include "plcmp_sem_calc.h"
 
 sym_t SYM[NSYM];
-/* текущий индекс таблицы имен */
 int ISYM = 0;
 
 /* */

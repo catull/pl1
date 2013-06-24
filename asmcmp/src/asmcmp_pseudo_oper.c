@@ -40,7 +40,6 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                 {
                     case 'F':
                         T_SYM[ITSYM].DLSYM = 4;
-                        T_SYM[ITSYM].PRPER = 'R';
 
                         if (CHADR % 4)
                         {
@@ -56,7 +55,6 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                         sprintf(buffer, "%c", TEK_ISX_KARTA.OPERAND[1]);
                         buffer[1] = '\0';
                         T_SYM[ITSYM].DLSYM = atoi(buffer);
-                        T_SYM[ITSYM].PRPER = 'R';
 
                         if (CHADR % 4)
                         {
@@ -149,7 +147,6 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
                 {
                     case 'F':
                         T_SYM[ITSYM].DLSYM = 4;
-                        T_SYM[ITSYM].PRPER = 'R';
 
                         if (CHADR % 4)
                         {
@@ -220,13 +217,11 @@ static enum asmcmp_pseudo_oper_error_code_e FEQU(int entry)
             {
                 T_SYM[ITSYM].ZNSYM = CHADR;
                 T_SYM[ITSYM].DLSYM = 1;
-                T_SYM[ITSYM].PRPER = 'R';
             }
             else
             {
                 T_SYM[ITSYM].ZNSYM = atoi(TEK_ISX_KARTA.OPERAND);
                 T_SYM[ITSYM].DLSYM = 1;
-                T_SYM[ITSYM].PRPER = 'A';
             }
 
             PRNMET = 'N';
@@ -259,7 +254,6 @@ static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
 
             T_SYM[ITSYM].ZNSYM = CHADR;
             T_SYM[ITSYM].DLSYM = 1;
-            T_SYM[ITSYM].PRPER = 'R';
             PRNMET = 'N';
             break;
         case 2:
