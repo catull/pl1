@@ -276,9 +276,6 @@ static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
         case 2:
         {
             uint8_t *PTR;
-            #if 0
-            char *PTR;
-            #endif
             char *METKA;
             char *METKA1;
             int J;
@@ -293,11 +290,7 @@ static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
                 {
                     RAB = CHADR - T_SYM[J].ZNSYM;
                     PTR = (uint8_t*)&RAB;
-                    swab(PTR, PTR, 2);
-                    #if 0
-                    PTR = (char*)&RAB;
                     asmcmp_common_swap_bytes(PTR, PTR, 2);
-                    #endif
 
                     ESD.DLPRG[0] = 0;
                     ESD.DLPRG[1] = *PTR;
