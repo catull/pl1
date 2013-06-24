@@ -202,6 +202,7 @@ int main(int const argc, char const *argv[])
     memset(&err_data, 0, sizeof(plcmp_main_error_data_t));
     err_data = (plcmp_main_error_data_t){ 
         .main_err_code = PLCMP_MAIN_SUCCESS,
+        .lex_analyzer_err_code = PLCMP_LEX_ANALYZER_SUCCESS,
         .synt_analyzer_err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS,
         .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
     };
