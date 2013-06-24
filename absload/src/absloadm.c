@@ -9,10 +9,10 @@
 
 #include <assert.h>
 
-#include <stdio.h>                                /*подкл.библ.ф-й ст.в/выв */
-#include <string.h>                               /*подкл.библ.ф-й стр.симв.*/
-#include <stdlib.h>                               /*подкл.библ.ф-й преобр.д.*/
-#include <ctype.h>                                /*подкл.библ.ф-й преобр.с.*/
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include <curses.h>
 
 #define NSPIS 5                                 /*разм.списка загр.прогр. */
@@ -28,27 +28,21 @@ char SPISOK[NSPIS][80];                         /*масс.хранен.списка прогр*/
 
 WINDOW *wblue, *wgreen, *wred, *wcyan, *wmargenta;
 
-struct STR_BUF_TXT                                /*структ.буфера карты TXT */
-{
-    unsigned char POLE1      ;                      /*место для кода 0x02     */
-    unsigned char POLE2  [ 3];                      /*поле типа об'ектн.карты */
-    unsigned char POLE3      ;                      /*пробел                  */
-    unsigned char ADOP   [ 3];                      /*относит.адрес опреации  */
-    unsigned char POLE5  [ 2];                      /*пробелы                 */
-    unsigned char DLNOP  [ 2];                      /*длина операции          */
-    unsigned char POLE7  [ 2];                      /*пробелы                 */
-    unsigned char POLE71 [ 2];                      /*внутренний идент.прогр. */
-    unsigned char OPER   [56];                      /*тело операции           */
-    unsigned char POLE9  [ 8];                      /*идентификационное поле  */
-};
+/* Structure describes content of the TXT-card */
+typedef struct txt_card_buffer_s {
+    unsigned char POLE1;
+    unsigned char POLE2[3];
+    unsigned char POLE3;
+    unsigned char ADOP[3];
+    unsigned char POLE5[2];
+    unsigned char DLNOP[2];
+    unsigned char POLE7[2];
+    unsigned char POLE71[2];
+    unsigned char OPER[56];
+    unsigned char POLE9[8];
+} txt_card_buffer_t;
 
-
-union                                             /*определить об'единение  */
-{
-    struct STR_BUF_TXT STR_TXT;                     /*структура буфера        */
-    unsigned char BUF_TXT [80];                     /*буфер карты TXT         */
-} TXT;
-
+txt_card_buffer_t TXT;
 
 unsigned char INST[6];                           /*массив, содерж. обрабат.*/
                           /*команду                 */
@@ -90,48 +84,45 @@ int CUR_IND;                                      /*индекс масс.обл.загр.,  */
 int BAS_IND;                                      /*индекс масс.обл.загр.,  */
                           /*соотв.первой ком-ды прог*/
 
-  union U1                                        /*постоянная часть шабло- */
-   {                                              /*на отсветки регистров на*/
+union U1                                        /*постоянная часть шабло- */
+{                                              /*на отсветки регистров на*/
     struct                                        /*экране консоли          */
-     {
-      char NOMREG  [ 3];
-      char ZNEQUEL [1];
-     } REGS_ASC [16];
-
+    {
+        char NOMREG  [ 3];
+        char ZNEQUEL [1];
+    } REGS_ASC [16];
     char BUFR [16][4];
-   }R_ASC;
+}R_ASC;
 
-  union u2                                        /*шаблон для расчета      */
-   {                                              /*элементов абсолютного   */
-    struct
-     {
-      unsigned int SMESH;
-      unsigned int SEGM;
-     } VAL_P;
-   unsigned char *P_OBLZ ;
-   } POINT;
+union u2 {                                       /*шаблон для расчета      */
+                                              /*элементов абсолютного   */
+    struct {
+        unsigned int SMESH;
+        unsigned int SEGM;
+    } VAL_P;
+    unsigned char *P_OBLZ ;
+} POINT;
 
-  unsigned char OBLZ [DOBLZ] ;                    /*область загрузки трас-  */
+unsigned char OBLZ [DOBLZ] ;                    /*область загрузки трас-  */
                           /*сируемой программы      */
 /*
 ***** ТАБЛИЦА машинных операций
 */
 
- struct TMOP                                      /*структ.стр.табл.маш.опер*/
-  {
-   unsigned char MNCOP [5];                       /*мнемокод операции       */
-   unsigned char CODOP    ;                       /*машинный код операции   */
-   unsigned char DLOP     ;                       /*длина операции в байтах */
-   int (*BXPROG)()        ;                       /*указатель на подпр.обраб*/
-  } T_MOP [NOP]  =                                /*об'явление табл.маш.опер*/
-    {
-{{'B' , 'A' , 'L' , 'R' , ' '} , '\x05', 2 , FRR},/*инициализация           */
-{{'B' , 'C' , 'R' , ' ' , ' '} , '\x07', 2 , FRR}, /*строк                   */
-{{'S' , 'T' , ' ' , ' ' , ' '} , '\x50', 4 , FRX}, /*таблицы                 */
-{{'L' , ' ' , ' ' , ' ' , ' '} , '\x58', 4 , FRX}, /*машинных                */
-{{'A' , ' ' , ' ' , ' ' , ' '} , '\x5A', 4 , FRX}, /*операций                */
-{{'S' , ' ' , ' ' , ' ' , ' '} , '\x5B', 4 , FRX}, /*                        */
-    };
+struct TMOP {                                      /*структ.стр.табл.маш.опер*/
+    unsigned char MNCOP [5];                       /*мнемокод операции       */
+    unsigned char CODOP    ;                       /*машинный код операции   */
+    unsigned char DLOP     ;                       /*длина операции в байтах */
+    int (*BXPROG)()        ;                       /*указатель на подпр.обраб*/
+} T_MOP [NOP] = {                               /*об'явление табл.маш.опер*/
+    {{'B' , 'A' , 'L' , 'R' , ' '} , '\x05', 2 , FRR},/*инициализация           */
+    {{'B' , 'C' , 'R' , ' ' , ' '} , '\x07', 2 , FRR}, /*строк                   */
+    {{'S' , 'T' , ' ' , ' ' , ' '} , '\x50', 4 , FRX}, /*таблицы                 */
+    {{'L' , ' ' , ' ' , ' ' , ' '} , '\x58', 4 , FRX}, /*машинных                */
+    {{'A' , ' ' , ' ' , ' ' , ' '} , '\x5A', 4 , FRX}, /*операций                */
+    {{'S' , ' ' , ' ' , ' ' , ' '} , '\x5B', 4 , FRX}, /*                        */
+};
+
 //..........................................................................
 //п р о г р а м м а реализации семантики команды BALR
 int P_BALR(void)
@@ -143,6 +134,7 @@ int P_BALR(void)
     
   return 0;
 }
+
 //..........................................................................
 //п р о г р а м м а реализации семантики команды BCR с маской 15
 int P_BCR(void)
@@ -168,6 +160,7 @@ int P_BCR(void)
 
   return ret;
 }
+
 /*..........................................................................*/
 
 int P_ST()                                        /*  п р о г р а м м а     */
@@ -212,7 +205,6 @@ int P_L()                                         /*  п р о г р а м м а     */
  }
 
 /*..........................................................................*/
-
 int P_A()                                         /*  п р о г р а м м а     */
                           /*реализации семантики    */
  {                                                /*команды A               */
@@ -233,8 +225,8 @@ int P_A()                                         /*  п р о г р а м м а     */
 /*..........................................................................*/
 
 int P_S()                                         /* п р о г р а м м а      */
-                          /* реализации семантики   */
- {                                                /* команды S              */
+                                                  /* реализации семантики   */
+{                                                /* команды S              */
   int sm;                                         /*рабочая переменная      */
 
   ADDR = VR[B] + VR[X] + D;                       /*вычисление рабочего     */
@@ -323,7 +315,7 @@ int FRX(void)
 //---------------------------------------------------------------------------
 int wind(void)
 {
-  int j1, k, temp;
+  int j1, k;
   
   x = 0;
   y = 16;
@@ -375,7 +367,6 @@ int sys(void)
   int ii = 0, jj = 0;
   int gr_y;
   char wstr[80];
-  int zizi = 0, tempI;
   
   I = BAS_ADDR;         //установить текущий адрес
                 //равный начальному
@@ -586,9 +577,10 @@ int InitCurses(void)
   
   return 0;
 }
-//...........................................................................
 
-int main(int const argc, const char *argv[])
+
+
+int main(int const argc, char const *argv[])
 {
     int I, K, N, J0, res;
     unsigned long J;
@@ -687,17 +679,17 @@ int main(int const argc, const char *argv[])
     {
         if (!memcmp(&OBJCARD[I][1], "TXT", 3))
         {
-            memcpy(TXT.BUF_TXT, OBJCARD[I], 80);
-            J = TXT.STR_TXT.ADOP [0];
-            J = (J << 8) + TXT.STR_TXT.ADOP[1];
-            J = (J << 8) + TXT.STR_TXT.ADOP[2];
+            memcpy(&TXT, OBJCARD[I], 80);
+            J = TXT.ADOP [0];
+            J = (J << 8) + TXT.ADOP[1];
+            J = (J << 8) + TXT.ADOP[2];
             J += BAS_IND;
-            K = TXT.STR_TXT.DLNOP[0];
-            K = (K << 8) + TXT.STR_TXT.DLNOP[1];
+            K = TXT.DLNOP[0];
+            K = (K << 8) + TXT.DLNOP[1];
 
             for (N = 0; N < K; N++)
             {
-                OBLZ[(int)J] = TXT.STR_TXT.OPER[N];
+                OBLZ[(int)J] = TXT.OPER[N];
                 J++;
             }
         }
