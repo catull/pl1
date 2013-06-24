@@ -3,7 +3,7 @@
 #ifndef ASMCMP_GLOBAL_H
 #define ASMCMP_GLOBAL_H
 
-#include <ctype.h>
+#include <stddef.h>
 
 #include "asmcmp_common.h"
 

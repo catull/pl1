@@ -107,7 +107,7 @@ static void plcmp_main_init_cards(void)
     TXT.POLE3 = 0x40;
     memset(TXT.ADOP, 0x00, 3);
     memset(TXT.POLE5, 0x40, 2);
-    memset(TXT.DLNOP, 0X00, 2);
+    memset(TXT.DLNOP, 0x00, 2);
     memset(TXT.POLE7, 0x40, 2);
     TXT.POLE71[0] = 0x00;
     TXT.POLE71[1] = 0x01;
