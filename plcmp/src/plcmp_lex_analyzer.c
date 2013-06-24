@@ -5,17 +5,14 @@
 #include "plcmp_common.h"
 #include "plcmp_lex_analyzer.h"
 
-/* Place of storage of compact source text */
-char compact_pl1_src_text[NSTROKA];
-
 /* Subroutine of primitive lexical analyzer 
  * It compresses the source text by removing all excess spaces and newline-symbols */
-void plcmp_lex_analyzer_compress_src_text(char compact_pl1_src_text[],
-                                          char pl1_src_text[][LINELEN],
-                                          size_t pl1_src_text_len)
+enum plcmp_lex_analyzer_error_code_e plcmp_lex_analyzer_compress_src_text(char compact_pl1_src_text[],
+                                                                          size_t compact_text_maxlen,
+                                                                          char pl1_src_text[][LINELEN],
+                                                                          size_t pl1_src_text_len)
 {
     int i1, i3 = 0;
-
     /* Last processed symbol in the compact source PL1-text */
     char prev_processed_symb = '\0';
 
@@ -88,11 +85,30 @@ void plcmp_lex_analyzer_compress_src_text(char compact_pl1_src_text[],
                 prev_processed_symb = pl1_src_text[i1][i2];
                 compact_pl1_src_text[i3] = prev_processed_symb;
                 i3++;
+                if (i3 == compact_text_maxlen)
+                {
+                    return PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW;
+                }
             }
             else
             {
                 break;
             }
         }
+    }
+
+    return PLCMP_LEX_ANALYZER_SUCCESS;
+}
+
+char const* plcmp_lex_analyzer_errmsg_by_errcode(plcmp_lex_analyzer_error_code_t err_code)
+{
+    switch (err_code)
+    {
+        case PLCMP_LEX_ANALYZER_SUCCESS:
+            return "No error occured";
+        case PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW:
+            return "Overflow of the compact text buffer while lexical analysis was processing";
+        default:
+            return "Unknown error code for generating error message";
     }
 }

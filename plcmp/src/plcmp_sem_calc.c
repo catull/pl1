@@ -19,6 +19,8 @@ int ISYM = 0;
 sym_t *p_char_syms[9];
 int char_syms_size = 0;
 
+static char const *g_p_compact_pl1_src_text;
+
 /* This struct is type of assembler card
  * It is template to generate the output file record by IBM 370 assembler */
 static struct assembler_card {
@@ -53,7 +55,7 @@ static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_da
             break;
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &compact_pl1_src_text[goal_achieved.DST2],
+                   &g_p_compact_pl1_src_text[goal_achieved.DST2],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
@@ -62,7 +64,7 @@ static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_da
             break;
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &compact_pl1_src_text[goal_achieved.DST2],
+                   &g_p_compact_pl1_src_text[goal_achieved.DST2],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
@@ -71,7 +73,7 @@ static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_da
             break;
         case PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &compact_pl1_src_text[goal_achieved.DST2],
+                   &g_p_compact_pl1_src_text[goal_achieved.DST2],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
@@ -83,18 +85,18 @@ static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_da
             size_t formt_len = strlen(FORMT[IFORMT - 1]);
             size_t oper_len = 0;
             memcpy(p_err_data->src_text_part,
-                   &compact_pl1_src_text[goal_achieved.DST2],
+                   &g_p_compact_pl1_src_text[goal_achieved.DST2],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
             p_err_data->data.operation[oper_len] = 
-                compact_pl1_src_text[goal_achieved.DST4 - formt_len];
+                g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len];
             ++oper_len;
-            if ('!' == compact_pl1_src_text[goal_achieved.DST4 - formt_len] &&
-                '!' == compact_pl1_src_text[goal_achieved.DST4 - formt_len + 1])
+            if ('!' == g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len] &&
+                '!' == g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len + 1])
             {
                 p_err_data->data.operation[oper_len] = 
-                    compact_pl1_src_text[goal_achieved.DST4 - formt_len + 1];
+                    g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len + 1];
                 ++oper_len;
             }
             p_err_data->data.operation[oper_len] = '\0';
@@ -103,7 +105,7 @@ static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_da
         }
         case PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &compact_pl1_src_text[goal_achieved.DST2],
+                   &g_p_compact_pl1_src_text[goal_achieved.DST2],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
@@ -181,24 +183,24 @@ static void FORM(goals_achieved_stack_t achieved_goal)
     for (i = j; i <= achieved_goal.DST4 + 1; i++)
     {
 
-        if ('\'' == compact_pl1_src_text[i] ||
-            ':'  == compact_pl1_src_text[i] ||
-            ' '  == compact_pl1_src_text[i] ||
-            '('  == compact_pl1_src_text[i] ||
-            ')'  == compact_pl1_src_text[i] ||
-            ';'  == compact_pl1_src_text[i] ||
-            '+'  == compact_pl1_src_text[i] ||
-            '-'  == compact_pl1_src_text[i] ||
-            '='  == compact_pl1_src_text[i] ||
-            '*'  == compact_pl1_src_text[i])
+        if ('\'' == g_p_compact_pl1_src_text[i] ||
+            ':'  == g_p_compact_pl1_src_text[i] ||
+            ' '  == g_p_compact_pl1_src_text[i] ||
+            '('  == g_p_compact_pl1_src_text[i] ||
+            ')'  == g_p_compact_pl1_src_text[i] ||
+            ';'  == g_p_compact_pl1_src_text[i] ||
+            '+'  == g_p_compact_pl1_src_text[i] ||
+            '-'  == g_p_compact_pl1_src_text[i] ||
+            '='  == g_p_compact_pl1_src_text[i] ||
+            '*'  == g_p_compact_pl1_src_text[i])
         {
             FORMT[IFORMT][i - j] = '\0';
             IFORMT++;
             j = i + 1;
             goto FORM1;
         }
-        else if ('!' == compact_pl1_src_text[i] &&
-                 '!' == compact_pl1_src_text[i + 1])
+        else if ('!' == g_p_compact_pl1_src_text[i] &&
+                 '!' == g_p_compact_pl1_src_text[i + 1])
         {
             FORMT[IFORMT][i - j] = '\0';
             IFORMT++;
@@ -208,7 +210,7 @@ static void FORM(goals_achieved_stack_t achieved_goal)
         else
         {
 
-            FORMT[IFORMT][i - j] = compact_pl1_src_text[i];
+            FORMT[IFORMT][i - j] = g_p_compact_pl1_src_text[i];
         }
     }
 
@@ -292,7 +294,7 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                         {
                             case 'B':
 
-                                switch (compact_pl1_src_text[goal_achieved.DST4 - formt_len])
+                                switch (g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len])
                                 {
                                     case '+':
                                         if (SYM[i].RAZR <= 15)
@@ -317,7 +319,7 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                                         break;
 
                                     case '!':
-                                        switch (compact_pl1_src_text[goal_achieved.DST4 - formt_len - 1])
+                                        switch (g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len - 1])
                                         {
                                             case '!':
                                                 break;
@@ -340,10 +342,10 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
 
                             case 'C':
 
-                                switch (compact_pl1_src_text[goal_achieved.DST4 - formt_len])
+                                switch (g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len])
                                 {
                                     case '!':
-                                        switch (compact_pl1_src_text[goal_achieved.DST4 - formt_len - 1])
+                                        switch (g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len - 1])
                                         {
                                             case '!':
                                                 p_char_syms[char_syms_size] = &SYM[i];
@@ -1261,10 +1263,14 @@ static enum plcmp_sem_calc_error_code_e STC(int entry, void const *param)
 /* Суть алгоритма управления в последовательной */
 /* интерпретации строк стека достижений в направлении от дна к вершине */
 struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name,
+                                                               char const compact_pl1_src_text[],
                                                                dst_t const *p_goals_achieved)
 {
     int sem_calc_phase;
     plcmp_sem_calc_error_data_t err_data;
+
+    /* Set global pointer to compact text for easier working with */
+    g_p_compact_pl1_src_text = compact_pl1_src_text;
 
     /* Clear error data structure for later using and set default successful error code */
     memset(&err_data, 0, sizeof(plcmp_sem_calc_error_data_t));
@@ -1339,11 +1345,15 @@ char* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_da
     switch (err_data->err_code)
     {
         case PLCMP_SEM_CALCULATOR_SUCCESS:
+        {
             strcpy(errmsg, "No error occured");
             break;
+        }
         case PLCMP_SEM_CALCULATOR_MISMATCH_PROC_NAME_PROL_EPIL_ERROR:
+        {
             strcpy(errmsg, "Mismatch of the name of the procedure in prologue-epilogue");
             break;
+        }
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
         {
             strcpy(errmsg, "Not allowed identifier type '");
@@ -1390,19 +1400,26 @@ char* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_da
             break;
         }
         case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
+        {
             strcpy(errmsg, "Can't write to assembler file");
             break;
+        }
         case PLCMP_SEM_CALCULATOR_CONCAT_ERROR:
+        {
             strcpy(errmsg, "Capacity of the destination string is less than "
                            "total length of strings which are being concatenated");
             break;
+        }
         case PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG:
+        {
             strcpy(errmsg, "String initializer is very long for this capacity");
             break;
+        }
         default:
+        {
             strcpy(errmsg, "Unknown error code for generating error message");
             break;
-
+        }
     }
     return errmsg;
 }

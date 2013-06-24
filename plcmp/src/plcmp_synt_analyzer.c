@@ -68,7 +68,8 @@ static void remove_last_goal_achieved(dst_t *p_goals_achieved)
 }
 
 /* Function of syntax analyzer. It constructs parse tree and return error data if it will be */
-struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(dst_t *p_goals_achieved)
+struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(char const compact_pl1_src_text[],
+                                                                            dst_t *p_goals_achieved)
 {
     /* It's stack of goals and pointer on it.
      * Later stack will be normally created by macro */
@@ -265,6 +266,11 @@ char* plcmp_synt_analyzer_errmsg_by_errdata(plcmp_synt_analyzer_error_data_t con
 {
     switch (err_data->err_code)
     {
+        case PLCMP_SYNT_ANALYZER_SUCCESS:
+        {
+            strcpy(errmsg, "No error occured");
+            break;
+        }
         case PLCMP_SYNT_ANALYZER_FAILURE:
         {
             strcpy(errmsg, "Error in syntax of the source text: ");
