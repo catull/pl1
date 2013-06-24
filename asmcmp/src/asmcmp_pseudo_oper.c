@@ -123,8 +123,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
 
                     asmcmp_common_save_data_tex_card(data);
 
-                    free(data.data.string_data.p_string);
-                    data.data.string_data.p_string = NULL;
+                    ASMCMP_COMMON_RELEASE_MEM(data.data.string_data.p_string);
 
                     break;
                 }
