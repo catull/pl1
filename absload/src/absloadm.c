@@ -161,7 +161,7 @@ int P_BCR(void)
     {
       if (R2 != 0)
       {
-        waddstr(wcyan, "переход по адресу = 0 или завершение трассировки программы после нажатия клавиши");
+        waddstr(wcyan, "jump to address = 0 or finishing trace of the program after key press");
 	wrefresh(wcyan);
 	ret = 1;
       }
@@ -385,7 +385,7 @@ int sys(void)
 
   wmargenta = newwin(1, 80, 24, 0);
   wbkgd(wmargenta, COLOR_PAIR(COLOR_MAGENTA));
-  waddstr(wmargenta, "\"PgUp\",\"PgDn\",\"Up\",\"Down\"->просмотр дампа; \"Enter\"->выполнить очередную команду");
+  waddstr(wmargenta, "\"PgUp\",\"PgDn\",\"Up\",\"Down\"->view dump; \"Enter\"->execute the next command");
       
 //строка состояния
   wcyan = newwin(1, 80, 23, 0);
@@ -477,8 +477,8 @@ l0:
   wrefresh(wblue);			//вывод на экран		  
   wclear(wblue);			//очистка окна регистров
   wind();   
-      
-  waddstr(wcyan, "готовность к выполнению очередной команды с адресом ");
+
+  waddstr(wcyan, "ready to execution the next command with address ");
   wprintw(wcyan, "%.06lX", I - T_MOP[k].DLOP);
   waddstr(wcyan, "\n");    				
   wrefresh(wcyan);
@@ -603,7 +603,7 @@ int main( int argc, char **argv )                /* п р о г р а м м а      */
 
   if ( argc != 2 )
   {
-    printf ( "%s\n", "Ошибка в командной строке" );
+    printf ( "%s\n", "Error in command-line" );
     return -1;
   }
  
