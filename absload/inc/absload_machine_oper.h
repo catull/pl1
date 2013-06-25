@@ -7,6 +7,8 @@
 #define OPER_RR_LEN 2
 #define OPER_RX_LEN 4
 #define OPER_SS_LEN 6
+/* Maximum length of operation */
+#define OPER_MAX_LEN OPER_SS_LEN
 
 typedef enum absload_machine_oper_error_code_e {
     ABSLOAD_MACHINE_OPER_SUCCESS = 0,

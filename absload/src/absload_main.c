@@ -66,8 +66,8 @@ int BAS_IND;                        /* индекс масс.обл.загр., соотв.первой ком-д
 /* постоянная часть шаблона отсветки регистров на экране консоли */
 union U1 {
     struct {
-        char NOMREG  [ 3];
-        char ZNEQUEL [1];
+        char NOMREG[3];
+        char ZNEQUEL[1];
     } REGS_ASC[16];
     char BUFR[16][4];
 }R_ASC;
@@ -122,6 +122,7 @@ static char* absload_main_errmsg_by_errdata(absload_main_error_data_t err_data, 
             break;
         case ABSLOAD_MAIN_FAILURE:
             strcpy(errmsg, "Unknown failure");
+            break;
         default:
             strcpy(errmsg, "Unknown error code for generating error message");
             break;
@@ -217,16 +218,17 @@ static enum absload_main_error_code_e sys(void)
 
     BEGIN:  
 
-    //все допустимые коды к-нд сравнить с текущей и при 
-    //совпадениизапомнить номер строки таблицы операций
+    //все допустимые коды к-нд сравнить с текущей, и при 
+    //совпадении запомнить номер строки таблицы операций
     for (i = 0; i < NOP; i++)
     {
         if (OBLZ[BAS_IND + CUR_IND] == T_MOP[i].CODOP)
         {
             k = i;
             wprintw(wgreen, "%.06lX: ", I);
+            
             //рисуем окно, выводим текст
-            for (j = 0; j < 6; j++)
+            for (j = 0; j < OPER_MAX_LEN; j++)
             {
                 if (j < T_MOP[i].DLOP)
                 {

@@ -40,6 +40,19 @@ extern int BAS_IND;                        /* индекс масс.обл.за�
 
 static enum absload_machine_oper_error_code_e FRR(void)
 {
+    /* RR operation has the next format on the
+     * IBM 370 side in accordance with Unified Agreement:
+     * 
+     *    opcode   R1   R2
+     * |xxxx xxxx|xxxx|xxxx|
+     *
+     * - opcode - operation code (8 bits)
+     * - R1R2 - byte containing numbers of 
+     * the first destination register (elder tetrad, 4 bits)
+     * and the second source register (lower tetrad, 4 bits) => total 8 bits
+     *
+     * Operation's length is 2 bytes (16 bits)
+     */
     int i;
   
     for (i = 0; i < NOP; i++)
@@ -53,15 +66,20 @@ static enum absload_machine_oper_error_code_e FRR(void)
             {
                 waddch(wgreen, T_MOP[i].MNCOP[j]);
             }
-            waddstr(wgreen, " "); 
-      
-            j = (INST[1] - (INST[1] % 0x10)) / 0x10;
-            R1 = j;
-            wprintw(wgreen, "%1d, ", j);
+            waddstr(wgreen, " ");
 
-            j = INST[1] % 0x10;
-            R2 = j;
-            wprintw(wgreen, "%1d\n", j);
+            /* INST[1] is byte with R1 and R2 registers numbers 
+             *               R1   R2
+             * INST[1] ==> |xxxx|xxxx|
+             */
+
+            /* get R1 using bitwise right shift */
+            R1 = INST[1] >> 4;
+            wprintw(wgreen, "%1d, ", R1);
+
+            /* get R2 using bitwise multiply */
+            R2 = INST[1] & 0x0F;
+            wprintw(wgreen, "%1d\n", R2);
 
             break;
         }
@@ -73,12 +91,37 @@ static enum absload_machine_oper_error_code_e FRR(void)
 
 static enum absload_machine_oper_error_code_e FRX(void)
 {
-    int i, j;
+    /* RX operation has the next format on the 
+     * IBM 370 side in accordance with Unified Agreement:
+     * 
+     *    opcode   R1   X2    D2(8)    B2  D2(4)
+     * |xxxx xxxx|xxxx|xxxx|xxxx xxxx|xxxx|xxxx|
+     *
+     * - opcode - operation code (8 bits)
+     * - R1X2 - byte containing number of 
+     * the destination register (elder tetrad, 4 bits) as the first operand
+     * and index value (lower tetrad, 4 bits) of the second operand => total 8 bits
+     * - D2(8) B2 D2(4) - double-byte containing number of
+     * the base register (4 bits) of the second operand
+     * and 12-bits length value of the address' displacement (12 bits)
+     * of the second operand => total 16 bits
+     *   - D2(8) - 8 lower bits (part of D2 12-bits value)
+     *   - D2(4) - 4 elder bits (part of D2 12-bits value)
+     * As you can see, B2D2 double-byte value was reverted for Unified Agreement
+     * (see assembler compiler, it reverts B2D2 double-byte value 
+     * for this Agreement before record next TXT-card)
+     * Thus it has been got D2(8 elder bits) B2 and D2 (4 lower bits) construction
+     *
+     * Operation's length is 4 bytes (32 bits)
+     */
+    int i;
   
     for (i = 0; i < NOP; i++)
     {
         if (INST[0] == T_MOP[i].CODOP)
         {
+            int j;
+
             waddstr(wgreen, "  ");
             for (j = 0; j < 5; j++)
             {
@@ -86,9 +129,8 @@ static enum absload_machine_oper_error_code_e FRX(void)
             }
             waddstr(wgreen, " ");
           
-            j = INST[1] >> 0x4;
-            R1 = j;
-            wprintw(wgreen, "%.1d, ", j);
+            R1 = INST[1] >> 4;
+            wprintw(wgreen, "%.1d, ", R1);
           
             j = INST[2] % 0x10;
             j = j * 256 + INST[3];
@@ -118,6 +160,38 @@ static enum absload_machine_oper_error_code_e FRX(void)
 
 static enum absload_machine_oper_error_code_e FSS(void)
 {
+    /* SS operation has the next format on the 
+     * IBM 370 side in accordance with Unified Agreement:
+     *
+     *    opcode      L      B1        D2        B2        D2
+     * |xxxx xxxx|xxxx xxxx|xxxx|xxxx xxxx xxxx|xxxx|xxxx xxxx xxxx|
+     *
+     * - opcode - operation code (8 bits)
+     * - L - byte containing length of the operands (8 bits)
+     * - B1D1 - double-byte containing number of 
+     * the base register (elder tetrad, 4 bits) of the first operand
+     * and 12-bit length value of the address' displacement 
+     * of the first operand (12 bits) => total 16 bits
+     *   - D1(8) - 8 lower bits (part of D1 12-bits value)
+     *   - D1(4) - 4 elder bits (part of D1 12-bits value)
+     * As you can see, B1D1 double-byte value was reverted for Unified Agreement
+     * (see assembler compiler, it reverts B1D1 double-byte value 
+     * for this Agreement before record next TXT-card)
+     * Thus it has been got D1(8 elder bits) B1 and D1 (4 lower bits) construction
+     *
+     * - B2D2 - double-byte containing number of
+     * the base register (elder tetrad, 4 bits) of the second operand
+     * and 12-bit length value of the address' displacement 
+     * of the second operand (12 bits) => total 16 bits
+     *   - D2(8) - 8 lower bits (part of D2 12-bits value)
+     *   - D2(4) - 4 elder bits (part of D2 12-bits value)
+     * As you can see, B2D2 double-byte value was reverted for Unified Agreement
+     * (see assembler compiler, it reverts B2D2 double-byte value 
+     * for this Agreement before record next TXT-card)
+     * Thus it has been got D2(8 elder bits) B2 and D2 (4 lower bits) construction
+     *
+     * Operation's length is 6 bytes (48 bits)
+     */
     return ABSLOAD_MACHINE_OPER_SUCCESS;
 }
 
