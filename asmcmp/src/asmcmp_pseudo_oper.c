@@ -34,12 +34,15 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
     switch (entry)
     {
         case 1:
+        {
+            size_t data_len = 4;
             if ('Y' == PRNMET)
             {
                 switch (TEK_ISX_KARTA.OPERAND[0])
                 {
                     case 'F':
-                        T_SYM[ITSYM].DLSYM = 4;
+                        data_len = 4;
+                        T_SYM[ITSYM].DLSYM = data_len;
 
                         if (CHADR % 4)
                         {
@@ -54,7 +57,9 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
 
                         sprintf(buffer, "%c", TEK_ISX_KARTA.OPERAND[1]);
                         buffer[1] = '\0';
-                        T_SYM[ITSYM].DLSYM = atoi(buffer);
+
+                        data_len = atoi(buffer);
+                        T_SYM[ITSYM].DLSYM = data_len;
 
                         if (CHADR % 4)
                         {
@@ -74,8 +79,9 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                 CHADR = (CHADR / 4 + 1) * 4;
             }
 
-            CHADR = CHADR + 4;
+            CHADR = CHADR + data_len;
             break;
+        }
         case 2:
         {
             uint8_t *RAB;
@@ -86,6 +92,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
             switch (TEK_ISX_KARTA.OPERAND[0])
             {
                 case 'F':
+                {
                     data.data_type = DATA_FIXED_BIN;
 
                     RAB = (uint8_t*)strtok(TEK_ISX_KARTA.OPERAND + 2, "'");
@@ -96,24 +103,25 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
 
                     asmcmp_common_save_data_tex_card(data);
                     break;
+                }
                 case 'C':
                 {
                     char buffer[2] = {'\0','\0'};
-                    size_t str_len;
+                    size_t data_len;
 
                     data.data_type = DATA_STRING;
 
                     buffer[0] = TEK_ISX_KARTA.OPERAND[1];
-                    str_len = atoi(buffer);
+                    data_len = atoi(buffer);
 
-                    data.data.string_data.str_length = str_len;
-                    data.data.string_data.p_string = calloc(str_len + 1, sizeof(uint8_t));
+                    data.data.string_data.str_length = data_len;
+                    data.data.string_data.p_string = calloc(data_len + 1, sizeof(uint8_t));
 
                     RAB = (uint8_t*)strtok(TEK_ISX_KARTA.OPERAND + 3, "'");
                     strcpy((char*)data.data.string_data.p_string, (char*)RAB);
 
                     RAB = (uint8_t*)data.data.string_data.p_string;
-                    asmcmp_common_swap_bytes(RAB, RAB, str_len);
+                    asmcmp_common_swap_bytes(RAB, RAB, data_len);
 
                     asmcmp_common_save_data_tex_card(data);
 
@@ -141,12 +149,16 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
     switch (entry)
     {
         case 1:
+        {
+            size_t data_len = 4;
             if ('Y' == PRNMET)
             {
                 switch (TEK_ISX_KARTA.OPERAND[0])
                 {
                     case 'F':
-                        T_SYM[ITSYM].DLSYM = 4;
+                    {
+                        data_len = 4;
+                        T_SYM[ITSYM].DLSYM = data_len;
 
                         if (CHADR % 4)
                         {
@@ -156,6 +168,26 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
 
                         PRNMET = 'N';
                         break;
+                    }
+                    case 'C':
+                    {
+                        char buffer[2];
+
+                        sprintf(buffer, "%c", TEK_ISX_KARTA.OPERAND[1]);
+                        buffer[1] = '\0';
+
+                        data_len = atoi(buffer);
+                        T_SYM[ITSYM].DLSYM = data_len;
+
+                        if (CHADR % 4)
+                        {
+                            CHADR = (CHADR / 4 + 1) * 4;
+                            T_SYM[ITSYM].ZNSYM = CHADR;
+                        }
+
+                        PRNMET = 'N';
+                        break;
+                    }
                     default:
                         return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;
                 }
@@ -165,19 +197,24 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
                 CHADR = (CHADR / 4 + 1) * 4;
             }
 
-            CHADR = CHADR + 4;
+            CHADR = CHADR + data_len;
             break;
+        }
         case 2:
+        {
             switch (TEK_ISX_KARTA.OPERAND[0])
             {
                 case 'F':
+                    /* TODO */
                     break;
                 case 'C':
+                    /* TODO */
                     break;
                 default:
                     return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;    
             }
             break;
+        }
         default:
             ASMCMP_COMMON_ASSERT(0);
             break;
@@ -323,7 +360,6 @@ static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
             METKA2 = strtok(NULL, " ");
             if (isalpha(*METKA2))
             {
-
                 for (J = 0; J <= ITSYM; J++)
                 {
                     METKA = strtok(T_SYM[J].IMSYM, " ");

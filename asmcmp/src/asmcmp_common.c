@@ -36,6 +36,10 @@ void asmcmp_common_save_oper_tex_card(oper_t oper)
             break;
         }
         case OPER_SS:
+            oper_len = sizeof(oper.oper.ss);
+            memset(TXT.OPER, 0x40, 56);
+            memcpy(TXT.OPER, &oper.oper.ss, oper_len);
+            TXT.DLNOP[1] = oper_len;
             break;
         default:
             ASMCMP_COMMON_ASSERT(0);

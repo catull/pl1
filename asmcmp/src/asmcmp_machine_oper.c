@@ -1,5 +1,6 @@
 /* encoding: UTF-8 */
 
+#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
@@ -186,6 +187,7 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
                     METKA = strtok(T_SYM[J].IMSYM, " ");
                     if(!strcmp(METKA, METKA2))
                     {
+
                         NBASRG = 0;
                         DELTA = 0xfff - 1;
                         ZNSYM = T_SYM[J].ZNSYM;
@@ -256,7 +258,146 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             break;
         }
         case 2:
+        {
+            uint8_t *PTR;
+            int DELTA;
+            int ZNSYM;
+            int NBASRG;
+            int J;
+            int I;
+
+            char *symbol;
+            char *D1;
+            char *B1;
+            uint16_t B1D1;
+
+            char *L_str;
+            uint8_t L;
+
+            char *D2;
+            uint16_t B2D2;
+
+            oper_t oper_ss;
+            memset(&oper_ss, 0, sizeof(oper_t));
+
+            oper_ss.oper_type = OPER_SS;
+            oper_ss.oper.ss.opcode = T_MOP[I3].CODOP;
+            
+            /* save D1 */
+            D1 = strtok(TEK_ISX_KARTA.OPERAND, "(");
+            if (isalpha(*D1))
+            {
+                for (J = 0; J <= ITSYM; J++)
+                {
+                    symbol = strtok(T_SYM[J].IMSYM, " ");
+                    if(!strcmp(symbol, D1))
+                    {
+                        B1D1 = T_SYM[J].ZNSYM;
+                        goto SSS1;
+                    }
+                }
+
+                return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
+            }
+            else
+            {
+                B1D1 = atoi(D1);
+            }
+
+            SSS1:
+
+            /* save L */
+            L_str = strtok(NULL, ",");
+            L = atoi(L_str);
+
+            /* save B1 */
+            B1 = strtok(NULL, ")");
+            D2 = strtok(NULL, ", ");
+            if (isalpha(*B1))
+            {
+                for (J = 0; J <= ITSYM; J++)
+                {
+                    symbol = strtok(T_SYM[J].IMSYM, " ");
+                    if(!strcmp(symbol, B1))
+                    {
+                        NBASRG = T_SYM[J].ZNSYM;
+                        if (0 == NBASRG || DELTA > 0xfff )
+                        {
+                            return ASMCMP_MACHINE_OPER_BASING_ERROR;
+                        }
+                        else
+                        {
+                            B1D1 += NBASRG << 12;
+                            PTR = (uint8_t*)&B1D1;
+                            asmcmp_common_swap_bytes(PTR, PTR, 2);
+                            oper_ss.oper.ss.B1D1 = B1D1;
+                        }
+                        goto SSS2;
+                    }
+                }
+
+                return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
+            }
+            else
+            {
+                return ASMCMP_MACHINE_OPER_SECOND_OPERAND_ERROR;
+            }
+
+            SSS2:
+
+            /* save B2 and D2 */
+            if (isalpha(*D2))
+            {
+                for (J = 0; J <= ITSYM; J++)
+                {
+                    symbol = strtok(T_SYM[J].IMSYM, " ");
+                    if(!strcmp(symbol, D2))
+                    {
+                        NBASRG = 0;
+                        DELTA = 0xfff - 1;
+                        ZNSYM = T_SYM[J].ZNSYM;
+                        for (I = 0; I < 15; I++)
+                        {
+                            if ((T_BASR[I].PRDOST == 'Y') &&
+                                (ZNSYM - T_BASR[I].SMESH >= 0) &&
+                                (ZNSYM - T_BASR[I].SMESH < DELTA))
+                            {
+                                NBASRG = I + 1;
+                                DELTA  = ZNSYM - T_BASR[I].SMESH;
+                            }
+                        }
+
+                        if (0 == NBASRG || DELTA > 0xfff )
+                        {
+                            return ASMCMP_MACHINE_OPER_BASING_ERROR;
+                        }
+                        else
+                        {
+                            B2D2 = NBASRG << 12;
+                            B2D2 = B2D2 + DELTA;
+                            PTR = (uint8_t*)&B2D2;
+                            asmcmp_common_swap_bytes(PTR, PTR, 2);
+                            oper_ss.oper.ss.B2D2 = B2D2;
+                        }
+                        goto SSS3;
+                    }
+                }
+
+                return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
+            }
+            else
+            {
+                return ASMCMP_MACHINE_OPER_SECOND_OPERAND_ERROR;
+            }
+
+            SSS3:
+            
+            oper_ss.oper.ss.L = L;
+            oper_ss.oper.ss.B1D1 = B1D1;
+
+            asmcmp_common_save_oper_tex_card(oper_ss);
             break;
+        }
         default:
             ASMCMP_COMMON_ASSERT(0);
             break;

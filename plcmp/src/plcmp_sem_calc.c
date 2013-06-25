@@ -947,7 +947,8 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                     ZKARD();
 
                                     memcpy(assembler_card.OPERAC, "LA", 2);
-                                    memcpy(assembler_card.OPERAND, "RRAC,D", 6);
+                                    strcpy(assembler_card.OPERAND, "RRAC,");
+                                    strcat(assembler_card.OPERAND, SYM[i].NAME);
                                     assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                                     memcpy(assembler_card.COMM, "Load operand's address to register", 34);
 
@@ -965,13 +966,6 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                 else
                                 {
                                     offset += str_len;
-                                    memcpy(assembler_card.OPERAC, "LER", 3);
-                                    memcpy(assembler_card.OPERAND, "RRAB,RBASE", 10);
-                                    assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
-                                    memcpy(assembler_card.COMM, "Load base address to register", 29);
-
-                                    ZKARD();
-
                                     memcpy(assembler_card.COMM, "Concat fir. and sec. strings. Result is in the first", 52);
                                 }
 
