@@ -5,6 +5,11 @@
 
 #include "asmcmp_common.h"
 
+/* Lengths of the machine operations in bytes */
+#define OPER_RR_LEN 2
+#define OPER_RX_LEN 4
+#define OPER_SS_LEN 6
+
 typedef enum asmcmp_machine_oper_error_code_e {
     ASMCMP_MACHINE_OPER_SUCCESS = 0,
     ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR,

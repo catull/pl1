@@ -37,17 +37,18 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
     {
         case 1:
         {
-            size_t oper_len = sizeof(oper_rr_t);
-            CHADR += oper_len;
+            CHADR += OPER_RR_LEN;
 
             if ('Y' == PRNMET)
             {
-                T_SYM[ITSYM].DLSYM = oper_len;
+                T_SYM[ITSYM].DLSYM = OPER_RR_LEN;
             }
             break;
         }
         case 2:
         {
+            ASMCMP_COMMON_ASSERT(OPER_RR_LEN == sizeof(oper_rr_t));
+
             char *METKA;
             char *METKA1;
             char *METKA2;
@@ -107,9 +108,11 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
             SRR2:
 
             oper_rr.oper.rr.R1R2 = R1R2;
+
             #ifdef DEBUG_MODE
             asmcmp_common_print_oper(oper_rr);
             #endif
+
             asmcmp_common_save_oper_tex_card(oper_rr);
             break;
         }
@@ -129,17 +132,18 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
     {
         case 1:
         {
-            size_t oper_len = sizeof(oper_rx_t);
-            CHADR += oper_len;
+            CHADR += OPER_RX_LEN;
 
             if ('Y' == PRNMET)
             {
-                T_SYM[ITSYM].DLSYM = oper_len;
+                T_SYM[ITSYM].DLSYM = OPER_RX_LEN;
             }
             break;
         }
         case 2:
         {
+            ASMCMP_COMMON_ASSERT(OPER_RX_LEN == sizeof(oper_rx_t));
+
             char *METKA;
             char *METKA1;
             char *METKA2;
@@ -252,17 +256,18 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
     {
         case 1:
         {
-            size_t oper_len = sizeof(oper_ss_t);
-            CHADR += oper_len;
+            CHADR += OPER_SS_LEN;
 
             if ('Y' == PRNMET)
             {
-                T_SYM[ITSYM].DLSYM = oper_len;
+                T_SYM[ITSYM].DLSYM = OPER_SS_LEN;
             }
             break;
         }
         case 2:
         {
+            ASMCMP_COMMON_ASSERT(OPER_SS_LEN == sizeof(oper_ss_t));
+
             uint8_t *PTR;
             int DELTA;
             int ZNSYM;
