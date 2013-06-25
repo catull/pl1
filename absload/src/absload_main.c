@@ -186,26 +186,27 @@ static enum absload_main_error_code_e sys(void)
     int gr_y;
     char wstr[80];
   
-    I = BAS_ADDR;         //установить текущий адрес, равный начальному
+    /* Set current address to starting address */
+    I = BAS_ADDR;
 
-    //нижнее поле    
+    //window below  
     wmargenta = newwin(1, 80, 24, 0);
     wbkgd(wmargenta, COLOR_PAIR(COLOR_MAGENTA));
     waddstr(wmargenta, "\"PgUp\",\"PgDn\",\"Up\",\"Down\"->view dump; \"Enter\"->execute the next command");
       
-    //строка состояния
+    //status bar window
     wcyan = newwin(1, 80, 23, 0);
     wbkgd(wcyan, COLOR_PAIR(COLOR_CYAN));
   
-    //дамп области загрузки
+    //boot area dump window
     wred = newwin(8, 67, 15, 0);
     wbkgd(wred, COLOR_PAIR(COLOR_RED));
   
-    //поле регистров
+    //registers' window
     wblue = newwin(16, 12, 0, 68);
     wbkgd(wblue, COLOR_PAIR(COLOR_BLUE));
   
-    //текст  
+    //current command window
     gr_pos_x = 0;
     gr_pos_y = 14; 
     gr_y = 11;
@@ -225,23 +226,23 @@ static enum absload_main_error_code_e sys(void)
             k = i;
             wprintw(wgreen, "%.06lX: ", I);
             //рисуем окно, выводим текст
-            for (j = 0; j < 6; j++)                     /*                        */
-            {                                        /*                        */
-                if (j < T_MOP[i].DLOP)                  /*                        */
-                {                                      /* выдать шестнадцатеричн.*/
+            for (j = 0; j < 6; j++)
+            {
+                if (j < T_MOP[i].DLOP)
+                {
                     wprintw(wgreen, "%.02X", OBLZ[BAS_IND + CUR_IND + j]);
-                                                        /* запомнить его же в     */
-                    INST[j] = OBLZ [BAS_IND + CUR_IND + j];/*                        */
-                }                                      /*                        */
+                    INST[j] = OBLZ[BAS_IND + CUR_IND + j];
+                }
                 else 
                 {
-                    INST [j] = '\x00';
+                    INST[j] = '\x00';
                 }
             }
 
-            if ((res = T_MOP[i].BXPROG()) != 0)
+            res = T_MOP[i].BXPROG();
+            if (0 != res)
             {
-                return (res);
+                return res;
             }
 
             goto l0;
@@ -350,12 +351,13 @@ static enum absload_main_error_code_e sys(void)
 
     SKIP:
 
-    switch (T_MOP[k].CODOP)                        //согласно  коду команды, 
-    {                                              //селектируемой сч.адреса 
-                          //выбрать подпрогр.интер- 
+    /* Look up current operation code 
+     * Choose appropriate handle */
+    switch ((unsigned int)T_MOP[k].CODOP)
+    {
         case '\x05':
-            P_BALR();                       //претации семантики      
-            break;                         //текущей команды        
+            P_BALR();
+            break;
         case '\x07': 
         { 
             i = P_BCR();
@@ -386,7 +388,7 @@ static enum absload_main_error_code_e sys(void)
         case '\x1A':
             P_AR();
             break;
-        case '\x7F':
+        case '\xD2':
             P_MVC();
             break;
     }
@@ -493,6 +495,8 @@ static enum absload_main_error_code_e absload_main_read_mod_file(char const *p_m
 
     return err_code;
 }
+
+
 /* 
  *
  * Requirements of the input parameters:
