@@ -89,6 +89,6 @@ extern esd_card_buffer_t ESD;
 extern txt_card_buffer_t TXT;
 extern end_card_buffer_t END;
 
-#endif
+#endif /* ASMCMP_GLOBAL_H */
  
 

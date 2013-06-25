@@ -55,4 +55,4 @@ typedef struct asmcmp_main_error_data_s {
         strcat(p_tex_fp_name, ".tex");                                                  \
     } while(0)
 
-#endif
+#endif /* ASMCMP_MAIN_H */

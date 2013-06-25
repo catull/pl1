@@ -29,4 +29,4 @@ extern machine_operations_table_t T_MOP[NOP];
 
 char const* asmcmp_machine_oper_errmsg_by_errcode(asmcmp_machine_oper_error_code_t err_code);
 
-#endif
+#endif /* ASMCMP_MACHINE_OPER_H */

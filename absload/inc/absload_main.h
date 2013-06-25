@@ -22,4 +22,4 @@ typedef struct absload_main_error_data_s {
     absload_main_error_code_t main_err_code;
 } absload_main_error_data_t;
 
-#endif
+#endif /* ABSLOAD_MAIN_H */

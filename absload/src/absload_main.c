@@ -7,8 +7,6 @@
 /* if you use mine pl1-project, key has already added for compilation;
  * simply start command 'make absload' from the root of the project */
 
-#include <assert.h>
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -17,7 +15,9 @@
 
 #include "absload_common.h"
 #include "absload_main.h"
+#include "absload_machine_oper.h"
 
+extern machine_operations_table_t T_MOP[NOP];
 
 int IOBJC = 0;                                 /*инд.вакантн.стр. OBJCARD*/
 char OBJCARD[NOBJ][80];                          /*масс.хранен.об'ектн.карт*/
@@ -103,23 +103,6 @@ union u2 {                                       /*шаблон для расчета      */
 
 unsigned char OBLZ [DOBLZ] ;                    /*область загрузки трас-  */
                           /*сируемой программы      */
-/*
-***** ТАБЛИЦА машинных операций
-*/
-
-struct TMOP {                                      /*структ.стр.табл.маш.опер*/
-    unsigned char MNCOP[5];                       /*мнемокод операции       */
-    unsigned char CODOP;                       /*машинный код операции   */
-    unsigned char DLOP;                       /*длина операции в байтах */
-    int (*BXPROG)(void);                       /*указатель на подпр.обраб*/
-} T_MOP [NOP] = {                               /*об'явление табл.маш.опер*/
-    {{'B' , 'A' , 'L' , 'R' , ' '} , '\x05', 2 , FRR},/*инициализация           */
-    {{'B' , 'C' , 'R' , ' ' , ' '} , '\x07', 2 , FRR}, /*строк                   */
-    {{'S' , 'T' , ' ' , ' ' , ' '} , '\x50', 4 , FRX}, /*таблицы                 */
-    {{'L' , ' ' , ' ' , ' ' , ' '} , '\x58', 4 , FRX}, /*машинных                */
-    {{'A' , ' ' , ' ' , ' ' , ' '} , '\x5A', 4 , FRX}, /*операций                */
-    {{'S' , ' ' , ' ' , ' ' , ' '} , '\x5B', 4 , FRX}, /*                        */
-};
 
 //п р о г р а м м а реализации семантики команды BALR
 int P_BALR(void)
@@ -242,82 +225,6 @@ int P_S(void)                                         /* п р о г р а м м а      
 
     return 0;                                       /*успешное заверш.прогр.  */
 }
-
-
-int FRR(void)
-{
-    int i, j;
-  
-    for (i = 0; i < NOP; i++)
-    {
-        if (INST[0] == T_MOP[i].CODOP)
-        {
-            waddstr(wgreen, "      ");
-            for (j = 0; j < 5; j++)
-            {
-                waddch(wgreen, T_MOP[i].MNCOP[j]);
-            }
-            waddstr(wgreen, " "); 
-      
-            j = (INST[1] - (INST[1] % 0x10)) / 0x10;
-            R1 = j;
-            wprintw(wgreen, "%1d, ", j);
-            j = INST[1] % 0x10;
-            R2 = j;
-            wprintw(wgreen, "%1d\n", j);
-            break;
-        }
-    }
-
-    return 0; 
-}
-
-
-int FRX(void)
-{
-    int i, j;
-  
-    for (i = 0; i < NOP; i++)
-    {
-        if (INST[0] == T_MOP[i].CODOP)
-        {
-            waddstr(wgreen, "  ");
-            for (j = 0; j < 5; j++)
-            {
-                waddch(wgreen, T_MOP[i].MNCOP[j]);
-            }
-            waddstr(wgreen, " ");
-          
-            j = INST[1] >> 4;
-            R1 = j;
-            wprintw(wgreen, "%.1d, ", j);
-          
-            j = INST[2] % 16;
-            j = j * 256 + INST[3];
-            D = j;
-            wprintw(wgreen, "X'%.3X'(", j);
-          
-            j = INST[1] % 16;
-            X = j;
-            wprintw(wgreen, "%1d, ", j);
-          
-            j = INST[2] >> 4;
-            B = j;
-            wprintw(wgreen, "%1d)", j);
-          
-            ADDR = VR[B] + VR[X] + D;
-            wprintw(wgreen,"        %.06lX       \n", ADDR);
-            if (ADDR % 4 != 0)
-            {
-                return 7;
-            }
-            break;
-        }
-    }
-
-    return 0;
-} 
-
 
 void wind(void)
 {
@@ -558,7 +465,7 @@ static enum absload_main_error_code_e sys(void)
             getch();
             if (i == 1)
             {
-                return 8;
+                return ABSLOAD_MAIN_SUCCESS;
             }
             break;
         }
@@ -727,8 +634,9 @@ static enum absload_main_error_code_e absload_main_read_mod_file(char const *p_m
 
     return err_code;
 }
-
-/* Requirements of the input parameters:
+/* 
+ *
+ * Requirements of the input parameters:
  * - 'argc' must be equal '2'
  * - 'argv[0]' as always is path to current program
  * - 'argv[1]' is the first parameter, it has to be the path of the '.mod'-file
@@ -824,7 +732,7 @@ int main(int const argc, char const *argv[])
                     endwin();
 
 
-                    /* I dunno but the first version of this 
+                    /* I dunno why but the first version of this 
                      * 'wonderful' absolute loader 
                      * was processing only the first file in the SPISOK.
                      * Therefore I made 'break' statement
@@ -841,7 +749,7 @@ int main(int const argc, char const *argv[])
 
     if (ABSLOAD_MAIN_SUCCESS == err_data.main_err_code)
     {
-        printf("Absolute loader has processed successfully");
+        printf("Absolute loader has processed successfully\n");
     }
     else
     {

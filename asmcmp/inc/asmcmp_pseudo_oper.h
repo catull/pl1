@@ -26,4 +26,4 @@ extern pseudo_operations_table_t T_POP[NPOP];
 
 char const* asmcmp_pseudo_oper_errmsg_by_errcode(asmcmp_pseudo_oper_error_code_t err_code);
 
-#endif
+#endif /* ASMCMP_PSEUDO_OPER_H */

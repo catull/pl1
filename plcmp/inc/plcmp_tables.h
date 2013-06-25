@@ -42,4 +42,3 @@ extern char TPR[NVXOD][NNETRM];
 unsigned int numb(const char *p_str_symbol, unsigned int symbol_str_len);
 
 #endif /* PLCMP_TABLES_H */
-
