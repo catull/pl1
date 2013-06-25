@@ -19,10 +19,10 @@
 
 extern machine_operations_table_t T_MOP[NOP];
 
-int IOBJC = 0;                                 /*инд.вакантн.стр. OBJCARD*/
-char OBJCARD[NOBJ][80];                          /*масс.хранен.об'ектн.карт*/
-int ISPIS = 0;                                 /*инд.вакантн.стр. SPISOK */
-char SPISOK[NSPIS][80];                         /*масс.хранен.списка прогр*/
+int IOBJC = 0;                      /* инд.вакантн.стр. OBJCARD */
+char OBJCARD[NOBJ][80];             /* масс.хранен.об'ектн.карт */
+int ISPIS = 0;                      /* инд.вакантн.стр. SPISOK */
+char SPISOK[NSPIS][80];             /* масс.хранен.списка прогр */
 
 WINDOW *wblue, *wgreen, *wred, *wcyan, *wmargenta;
 
@@ -42,188 +42,92 @@ typedef struct txt_card_buffer_s {
 
 txt_card_buffer_t TXT;
 
-unsigned char INST[6];                           /*массив, содерж. обрабат.*/
-                          /*команду                 */
+/* Current processing command */
+unsigned char INST[6];
 
+int X1 = 1;     /* X-coordinate init */
+int Y1 = 15;    /* Y-coordinate init */
+int R1;         /* Number of the first register in 'RR' and 'RX' operations */
+int R2;         /* Number of the second register in 'RR' operations */
+int D;          /* Displacement of the second operand in 'RX' operations */
+int X;          /* Number of the register which contains index for 'RX' oeprations */
+int B;          /* Number of the base register for 'RX' operations */
 
-/*..........................................................................*/
-                          /*п р о т о т и п  обращ.к*/
-int FRR();                                        /*подпр.обр.опер.RR-форм. */
+unsigned long I;                    /* Counter of the address of the current operation */
+unsigned long BAS_ADDR;             /* адрес начала обл.загруз. */
+unsigned long I1, ADDR, ARG, VS;    /* вспомогательные перем. */
+unsigned long VR[16];               /* Array contaning values of the registers */ 
+unsigned long LIGHTPTR;             /* адрес начала обл.отсвет. */
 
-/*..........................................................................*/
+int x, y, i, j, k, kk;              /* рабочие переменные */
+int CUR_IND;                        /* индекс масс.обл.загр., соотв.текущ.ком-де прогр */
+int BAS_IND;                        /* индекс масс.обл.загр., соотв.первой ком-ды прог */
 
-                          /*п р о т о т и п  обращ.к*/
-int FRX();                                        /*подпр.обр.опер.RX-форм. */
-/*..........................................................................*/
-
-
-int X1 = 1;                                       /* инициализация коорд.   */
-int Y1 = 15;                                      /* на экране              */
-int R1,                                           /*номер 1-го регистра-опе-*/
-                          /*ранда в форматах RR и RX*/
-    R2,                                           /*номер 2-го регистра-опе-*/
-                          /*ранда в формате RX      */
-    D,                                            /*смещение в формате RX   */
-    X,                                            /*номер индексн. регистра */
-                          /*в формате RX            */
-    B;                                            /*номер базового регистра */
-                          /*в формате RX            */
-unsigned long I,                                  /*счетчик адр.тек.ком-ды  */
-          BAS_ADDR,                           /*адрес начала обл.загруз.*/
-          I1,ADDR,ARG,VS;                     /*вспомогательные перем.  */
-unsigned long VR[16],                             /*массив,содерж.знач.рег. */
-          LIGHTPTR;                           /*адрес начала обл.отсвет.*/
-
-
-int x,y,i,j,k,kk;                                 /*рабочие переменные      */
-
-int CUR_IND;                                      /*индекс масс.обл.загр.,  */
-                          /*соотв.текущ.ком-де прогр*/
-int BAS_IND;                                      /*индекс масс.обл.загр.,  */
-                          /*соотв.первой ком-ды прог*/
-
-union U1                                        /*постоянная часть шабло- */
-{                                              /*на отсветки регистров на*/
-    struct                                        /*экране консоли          */
-    {
+/* постоянная часть шаблона отсветки регистров на экране консоли */
+union U1 {
+    struct {
         char NOMREG  [ 3];
         char ZNEQUEL [1];
-    } REGS_ASC [16];
-    char BUFR [16][4];
+    } REGS_ASC[16];
+    char BUFR[16][4];
 }R_ASC;
 
-union u2 {                                       /*шаблон для расчета      */
-                                              /*элементов абсолютного   */
+/* шаблон для расчета элементов абсолютного */
+union u2 {
     struct {
         unsigned int SMESH;
         unsigned int SEGM;
     } VAL_P;
-    unsigned char *P_OBLZ ;
+    unsigned char *P_OBLZ;
 } POINT;
 
-unsigned char OBLZ [DOBLZ] ;                    /*область загрузки трас-  */
-                          /*сируемой программы      */
+unsigned char OBLZ[DOBLZ];          /* область загрузки трассируемой программы */
 
-//п р о г р а м м а реализации семантики команды BALR
-int P_BALR(void)
+static char* absload_main_errmsg_by_errdata(absload_main_error_data_t err_data, char *errmsg)
 {
-    if (R2 != 0)
+    switch (err_data.main_err_code)
     {
-        I = VR[R2];
+        case ABSLOAD_MAIN_SUCCESS:
+            strcpy(errmsg, "No error occured");
+            break;
+        case ABSLOAD_MAIN_WRONG_NUM_CLI_PAR:
+            strcpy(errmsg, "Wrong number of command line parameters");
+            break;
+        case ABSLOAD_MAIN_WRONG_INPUT_MOD_FILE_PATH:
+            strcpy(errmsg, "Wrong path to MOD-file with list of the modules");
+            break;
+        case ABSLOAD_MAIN_WRONG_INPUT_MOD_FILE_EXTENSION:
+            strcpy(errmsg, "Wrong input file extension with list of the modules");
+            break;
+        case ABSLOAD_MAIN_NOT_FOUND_INPUT_MOD_FILE:
+            strcpy(errmsg, "Couldn't find mod-file with the list of the modules");
+            break;
+        case ABSLOAD_MAIN_LIST_MODULES_OVERFLOW:
+            strcpy(errmsg, "Overflow list of the assembled modules");
+            break;
+        case ABSLOAD_MAIN_EMPTY_LIST_MODULES:
+            strcpy(errmsg, "Empty file with list of the assembled modules");
+            break;
+        case ABSLOAD_MAIN_NOT_FOUND_READ_TEX_FILE:
+            strcpy(errmsg, "Couldn't find tex-file with the module binery code");
+            break;
+        case ABSLOAD_MAIN_OBJ_CARDS_BUFFER_OVERFLOW:
+            strcpy(errmsg, "Overflow buffer of storage of object cards");
+            break;
+        case ABSLOAD_MAIN_ILLEGAL_OPERATION_CODE:
+            strcpy(errmsg, "Illegal operation code");
+            break;
+        case ABSLOAD_MAIN_ADDRESSING_ERROR:
+            strcpy(errmsg, "Error of addressing");
+            break;
+        case ABSLOAD_MAIN_FAILURE:
+            strcpy(errmsg, "Unknown failure");
+        default:
+            strcpy(errmsg, "Unknown error code for generating error message");
+            break;
     }
 
-    if (R1 != 0)
-    {
-        VR[R1] = I;
-    }
-    
-    return 0;
-}
-
-//п р о г р а м м а реализации семантики команды BCR с маской 15
-int P_BCR(void)
-{
-    int ret;
-  
-    ret = 1;
-    if (R1 == 15)
-    {
-        ret = 0;
-        if ((VR[R2] != 0) && (R2 != 0))
-        {
-            I = VR[R2];
-        }
-        else
-        {
-            if (R2 != 0)
-            {
-                waddstr(wcyan, "jump to address = 0 or finishing trace of the program after key press");
-                wrefresh(wcyan);
-                ret = 1;
-            }
-        }
-    }  
-
-    return ret;
-}
-
-int P_ST(void)                                        /*  п р о г р а м м а     */
-                          /*реализации семантики    */
-{                                                /*команды ST              */
-    int sm,i;                                       /*рабочие                 */
-    char bytes[4];                                  /*переменные              */
-
-    ADDR = VR[B] + VR[X] + D;                       /*вычисление абс.адреса и */
-    sm = (int)(ADDR - I);                           /*смещения                */
-
-    bytes[0] = (VR[R1] -                            /*преобразование содержим.*/
-        VR[R1]% 0x1000000L)/0x1000000L;   /*РОН, использованного в  */
-    bytes[1] = ((VR[R1] -                           /*качестве первого оп-да, */
-        VR[R1]%0x10000L)/0x10000L)%0x100; /*к виду, принятому в     */
-    bytes[2] = ((VR[R1] % 0x10000L) -               /*ЕС ЭВМ                  */
-        ((VR[R1]%0x10000L)%0x100))/0x100; /*                        */
-    bytes[3] = (VR[R1] % 0x10000L) % 0x100;         /*                        */
-
-    for (i = 0; i < 4; i++)                             /*запись преобразованого  */
-    {
-        OBLZ[BAS_IND + CUR_IND + sm + i] = bytes[i];   /*значения по адресу 2-г  */
-    }
-                          /*операнда                */
-    return 0;                                       /*успешное заверш.прогр.  */
-}
-
-
-int P_L(void)                                         /*  п р о г р а м м а     */
-                          /*реализации семантики    */
-{                                                /*команды L               */
-    int sm;                                        /*рабочая переменная      */
-
-    ADDR = VR[B] + VR[X] + D;                      /*вычисление абс.адреса и */
-    sm = (int) ( ADDR - I );                       /*смещения                */
-    VR[R1] =                                       /*преобразование содержим.*/
-        OBLZ[BAS_IND + CUR_IND + sm] * 0x1000000L +   /*второго операнда к виду,*/
-        OBLZ[BAS_IND + CUR_IND + sm + 1] * 0x10000L + /*принятому в IBM PC, и   */
-        OBLZ[BAS_IND + CUR_IND + sm + 2] * 0x100 +    /*запись в РОН, использ.в */
-        OBLZ[BAS_IND + CUR_IND + sm + 3];             /*качестве 1-го операнда  */
-
-    return 0;                                      /*успешное заверш.прогр.  */
- }
-
-
-int P_A(void)                                         /*  п р о г р а м м а     */
-                          /*реализации семантики    */
-{                                                /*команды A               */
-    int sm;                                         /*рабочая переменная      */
-
-    ADDR = VR[B] + VR[X] + D;                       /*вычисление абс.адреса и */
-    sm = ( int ) ( ADDR -I );                       /*смещения                */
-    ARG = OBLZ[BAS_IND + CUR_IND + sm] * 0x1000000L+/*формирование содержимого*/
-    OBLZ[BAS_IND + CUR_IND + sm + 1] * 0x10000L +  /*второго операнда в сог- */
-    OBLZ[BAS_IND + CUR_IND + sm + 2] * 0x100 +     /*лашениях ЕС ЭВМ         */
-    OBLZ[BAS_IND + CUR_IND + sm + 3];              /*                        */
-                          /*и                       */
-    VR[R1] = VR[R1] + ARG;                          /*сложение с 1-м операндом*/
-
-    return 0;                                       /*успешное заверш. прогр. */
-}
-
-
-int P_S(void)                                         /* п р о г р а м м а      */
-                                                  /* реализации семантики   */
-{                                                /* команды S              */
-    int sm;                                         /*рабочая переменная      */
-
-    ADDR = VR[B] + VR[X] + D;                       /*вычисление рабочего     */
-    sm = (int)(ADDR - I);                      /*адреса и смещения       */
-
-    ARG = OBLZ[BAS_IND + CUR_IND + sm] * 0x1000000L+/*формирование содержимого*/
-    OBLZ[BAS_IND + CUR_IND + sm + 1] * 0x10000L +/*второго операнда в сог- */
-    OBLZ[BAS_IND + CUR_IND + sm + 2] * 0x100 +   /*лашениях ЕС ЭВМ         */
-    OBLZ[BAS_IND + CUR_IND + sm + 3];            /*                        */
-                          /* и                      */
-    VR[R1] = VR[R1] - ARG;                          /*выч-ие из 1-го операнда */
-
-    return 0;                                       /*успешное заверш.прогр.  */
+    return errmsg;
 }
 
 void wind(void)
@@ -271,9 +175,8 @@ void wind(void)
     wclear(wred);             //очистка содержимого окна дампа
 }
 
-
 //программа покомандной интерпретпции(отладки)
-// загруженной программы
+//загруженной программы
 static enum absload_main_error_code_e sys(void)           
 {
     int res, temp;
@@ -283,10 +186,9 @@ static enum absload_main_error_code_e sys(void)
     int gr_y;
     char wstr[80];
   
-    I = BAS_ADDR;         //установить текущий адрес
-                //равный начальному
-//нижнее поле    
+    I = BAS_ADDR;         //установить текущий адрес, равный начальному
 
+    //нижнее поле    
     wmargenta = newwin(1, 80, 24, 0);
     wbkgd(wmargenta, COLOR_PAIR(COLOR_MAGENTA));
     waddstr(wmargenta, "\"PgUp\",\"PgDn\",\"Up\",\"Down\"->view dump; \"Enter\"->execute the next command");
@@ -307,11 +209,10 @@ static enum absload_main_error_code_e sys(void)
     gr_pos_x = 0;
     gr_pos_y = 14; 
     gr_y = 11;
-    wgreen = newwin(gr_y, 67, gr_pos_y, gr_pos_x);    //создадим новое окно
-    wbkgd(wgreen, COLOR_PAIR(COLOR_GREEN));   //выбор цветовой пары
+    wgreen = newwin(gr_y, 67, gr_pos_y, gr_pos_x);      //создадим новое окно
+    wbkgd(wgreen, COLOR_PAIR(COLOR_GREEN));             //выбор цветовой пары
   
- 
-    keypad(wmargenta, TRUE);              //разрешить преобразование кодов клавиатуры
+    keypad(wmargenta, TRUE);                            //разрешить преобразование кодов клавиатуры
 
     BEGIN:  
 
@@ -413,9 +314,8 @@ static enum absload_main_error_code_e sys(void)
     {
         case 10:
         {
-          goto SKIP;
+            goto SKIP;
         }
-    
         case KEY_UP:
         {
             I1 = LIGHTPTR - 16;
@@ -423,7 +323,6 @@ static enum absload_main_error_code_e sys(void)
             wind();
             goto WAIT;
         }
-    
         case KEY_DOWN:
         {
             I1 = LIGHTPTR + 16;
@@ -431,7 +330,6 @@ static enum absload_main_error_code_e sys(void)
             wind();
             goto WAIT;      
         }
-    
         case KEY_PPAGE:
         {
             I1 = LIGHTPTR - 128;
@@ -439,7 +337,6 @@ static enum absload_main_error_code_e sys(void)
             wind();
             goto WAIT;
         }
-    
         case KEY_NPAGE:
         {
             I1 = LIGHTPTR + 128 ;
@@ -447,7 +344,7 @@ static enum absload_main_error_code_e sys(void)
             wind();
             goto WAIT;
         }
-  }
+    }
 
     goto WAIT;
 
@@ -480,6 +377,17 @@ static enum absload_main_error_code_e sys(void)
             break;
         case '\x5B':
             P_S();
+        case '\x38':
+            P_LER();
+            break;
+        case '\x41':
+            P_LA();
+            break;
+        case '\x1A':
+            P_AR();
+            break;
+        case '\x7F':
+            P_MVC();
             break;
     }
    
@@ -493,17 +401,15 @@ static enum absload_main_error_code_e sys(void)
     return ABSLOAD_MAIN_SUCCESS;
 }
 
-static void InitCurses(void)
+static void absload_main_init_curses(void)
 {
-    initscr();                    //инициализация библиотеки curses
+    initscr();                      /* Init curses library */
     curs_set(0);
-    noecho();                 //не показывать ввод
-    cbreak();                 //читать один символ 
-                                                //за раз, не ждать \n
-    keypad(stdscr, TRUE);             //разрешить преобразование кодов клавиатуры
+    noecho();                       /* Don't show input */
+    cbreak();                       /* Read one symbol, за раз, не ждать \n */
+    keypad(stdscr, TRUE);           /* allow transforming of keybord codes */
     start_color(); 
 
-  
     if (has_colors())
     {
         init_pair(COLOR_BLUE, COLOR_WHITE, COLOR_BLUE);
@@ -512,53 +418,6 @@ static void InitCurses(void)
         init_pair(COLOR_CYAN, COLOR_BLACK, COLOR_CYAN);
         init_pair(COLOR_MAGENTA, COLOR_WHITE, COLOR_MAGENTA);
     }
-}
-
-static char* absload_main_errmsg_by_errdata(absload_main_error_data_t err_data, char *errmsg)
-{
-    switch (err_data.main_err_code)
-    {
-        case ABSLOAD_MAIN_SUCCESS:
-            strcpy(errmsg, "No error occured");
-            break;
-        case ABSLOAD_MAIN_WRONG_NUM_CLI_PAR:
-            strcpy(errmsg, "Wrong number of command line parameters");
-            break;
-        case ABSLOAD_MAIN_WRONG_INPUT_MOD_FILE_PATH:
-            strcpy(errmsg, "Wrong path to MOD-file with list of the modules");
-            break;
-        case ABSLOAD_MAIN_WRONG_INPUT_MOD_FILE_EXTENSION:
-            strcpy(errmsg, "Wrong input file extension with list of the modules");
-            break;
-        case ABSLOAD_MAIN_NOT_FOUND_INPUT_MOD_FILE:
-            strcpy(errmsg, "Couldn't find mod-file with the list of the modules");
-            break;
-        case ABSLOAD_MAIN_LIST_MODULES_OVERFLOW:
-            strcpy(errmsg, "Overflow list of the assembled modules");
-            break;
-        case ABSLOAD_MAIN_EMPTY_LIST_MODULES:
-            strcpy(errmsg, "Empty file with list of the assembled modules");
-            break;
-        case ABSLOAD_MAIN_NOT_FOUND_READ_TEX_FILE:
-            strcpy(errmsg, "Couldn't find tex-file with the module binery code");
-            break;
-        case ABSLOAD_MAIN_OBJ_CARDS_BUFFER_OVERFLOW:
-            strcpy(errmsg, "Overflow buffer of storage of object cards");
-            break;
-        case ABSLOAD_MAIN_ILLEGAL_OPERATION_CODE:
-            strcpy(errmsg, "Illegal operation code");
-            break;
-        case ABSLOAD_MAIN_ADDRESSING_ERROR:
-            strcpy(errmsg, "Error of addressing");
-            break;
-        case ABSLOAD_MAIN_FAILURE:
-            strcpy(errmsg, "Unknown failure");
-        default:
-            strcpy(errmsg, "Unknown error code for generating error message");
-            break;
-    }
-
-    return errmsg;
 }
 
 static struct absload_main_error_data_s absload_main_read_tex_file(char const p_tex_fp_name[])
@@ -725,7 +584,7 @@ int main(int const argc, char const *argv[])
                         }
                     }
 
-                    InitCurses();
+                    absload_main_init_curses();
 
                     err_data.main_err_code = sys(); 
                   
