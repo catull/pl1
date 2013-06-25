@@ -36,11 +36,13 @@ void asmcmp_common_save_oper_tex_card(oper_t oper)
             break;
         }
         case OPER_SS:
+        {
             oper_len = sizeof(oper.oper.ss);
             memset(TXT.OPER, 0x40, 56);
             memcpy(TXT.OPER, &oper.oper.ss, oper_len);
             TXT.DLNOP[1] = oper_len;
             break;
+        }
         default:
             ASMCMP_COMMON_ASSERT(0);
             break;
@@ -48,6 +50,7 @@ void asmcmp_common_save_oper_tex_card(oper_t oper)
 
     memcpy(TXT.POLE9, ESD.POLE11, 8);
     memcpy(OBJTEXT[ITCARD], &TXT, 80);
+
     ++ITCARD;
     CHADR = CHADR + oper_len;
 }
@@ -87,6 +90,7 @@ void asmcmp_common_save_data_tex_card(data_t data)
 
     memcpy(TXT.POLE9, ESD.POLE11, 8);
     memcpy(OBJTEXT[ITCARD], &TXT, 80);
+    
     ++ITCARD;
     CHADR = CHADR + data_len;
 }

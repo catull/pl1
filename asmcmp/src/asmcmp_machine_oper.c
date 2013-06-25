@@ -395,6 +395,10 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             oper_ss.oper.ss.L = L;
             oper_ss.oper.ss.B1D1 = B1D1;
 
+            #if 0
+            printf ("%#x %d %#x %#x\n", oper_ss.oper.ss.opcode, oper_ss.oper.ss.L, oper_ss.oper.ss.B1D1, oper_ss.oper.ss.B2D2);
+            #endif
+            
             asmcmp_common_save_oper_tex_card(oper_ss);
             break;
         }
