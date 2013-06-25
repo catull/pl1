@@ -52,10 +52,14 @@ int R2;         /* Number of the second register in 'RR' operations */
 int D;          /* Displacement of the second operand in 'RX' operations */
 int X;          /* Number of the register which contains index for 'RX' oeprations */
 int B;          /* Number of the base register for 'RX' operations */
+int L;          /* Length of the operands in 'SS' operations */
+int D1, D2;
+int B1, B2;
 
 unsigned long I;                    /* Counter of the address of the current operation */
 unsigned long BAS_ADDR;             /* адрес начала обл.загруз. */
 unsigned long I1, ADDR, ARG, VS;    /* вспомогательные перем. */
+unsigned long ADDR1, ADDR2;
 unsigned long VR[16];               /* Array contaning values of the registers */ 
 unsigned long LIGHTPTR;             /* адрес начала обл.отсвет. */
 
@@ -277,7 +281,7 @@ static enum absload_main_error_code_e sys(void)
     wrefresh(wgreen);
   
     I += T_MOP[k].DLOP;                            /*коррекция счет-ка.адреса*/
-    CUR_IND = (int)( I - BAS_ADDR );            /*уст-ка текущ. индекса   */
+    CUR_IND = (int)(I - BAS_ADDR);            /*уст-ка текущ. индекса   */
                           /*в массиве OBLZ          */
     I1 = I;                                        /*установка адреса начала */
                           /*области отсветки        */
@@ -585,7 +589,7 @@ int main(int const argc, char const *argv[])
                             for (N = 0; N < K; N++)
                             {
                                 OBLZ[(int)J] = TXT.OPER[N];
-                                J++;
+                                ++J;
                             }
                         }
                     }

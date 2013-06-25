@@ -1,6 +1,8 @@
 /* encoding: UTF-8 */
 
 #include <curses.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 #include "absload_common.h"
 #include "absload_machine_oper.h"
@@ -28,9 +30,11 @@ extern unsigned long I;
 extern unsigned char INST[6];
 extern WINDOW *wblue, *wgreen, *wred, *wcyan, *wmargenta;
 extern int R1, R2;
-extern int B, X, D;
+extern int B, X, D, L;
 extern unsigned long ADDR;
 extern unsigned long VR[16];
+extern int B1, B2, D1, D2;
+extern unsigned long ADDR1, ADDR2;
 
 extern unsigned long ARG;
 
@@ -57,6 +61,9 @@ static enum absload_machine_oper_error_code_e FRR(void)
   
     for (i = 0; i < NOP; i++)
     {
+        /*               opcode
+         * INST[0] => |xxxx xxxx|
+         */
         if (INST[0] == T_MOP[i].CODOP)
         {
             int j;
@@ -68,16 +75,15 @@ static enum absload_machine_oper_error_code_e FRR(void)
             }
             waddstr(wgreen, " ");
 
-            /* INST[1] is byte with R1 and R2 registers numbers 
-             *               R1   R2
+            /*               R1   R2
              * INST[1] ==> |xxxx|xxxx|
              */
 
-            /* get R1 using bitwise right shift */
+            /* get R1 using bitwise right shift (get elder tetrad of INST[1])*/
             R1 = INST[1] >> 4;
             wprintw(wgreen, "%1d, ", R1);
 
-            /* get R2 using bitwise multiply */
+            /* get R2 using bitwise multiply on 0x0F (get lower tetrad of INST[1])*/
             R2 = INST[1] & 0x0F;
             wprintw(wgreen, "%1d\n", R2);
 
@@ -94,23 +100,19 @@ static enum absload_machine_oper_error_code_e FRX(void)
     /* RX operation has the next format on the 
      * IBM 370 side in accordance with Unified Agreement:
      * 
-     *    opcode   R1   X2    D2(8)    B2  D2(4)
-     * |xxxx xxxx|xxxx|xxxx|xxxx xxxx|xxxx|xxxx|
+     *    opcode   R1   X2   B2        D2
+     * |xxxx xxxx|xxxx|xxxx|xxxx|xxxx xxxx xxxx|
      *
      * - opcode - operation code (8 bits)
+     *
      * - R1X2 - byte containing number of 
      * the destination register (elder tetrad, 4 bits) as the first operand
      * and index value (lower tetrad, 4 bits) of the second operand => total 8 bits
-     * - D2(8) B2 D2(4) - double-byte containing number of
+     *
+     * - B2D2 - double-byte containing number of
      * the base register (4 bits) of the second operand
      * and 12-bits length value of the address' displacement (12 bits)
      * of the second operand => total 16 bits
-     *   - D2(8) - 8 lower bits (part of D2 12-bits value)
-     *   - D2(4) - 4 elder bits (part of D2 12-bits value)
-     * As you can see, B2D2 double-byte value was reverted for Unified Agreement
-     * (see assembler compiler, it reverts B2D2 double-byte value 
-     * for this Agreement before record next TXT-card)
-     * Thus it has been got D2(8 elder bits) B2 and D2 (4 lower bits) construction
      *
      * Operation's length is 4 bytes (32 bits)
      */
@@ -118,6 +120,9 @@ static enum absload_machine_oper_error_code_e FRX(void)
   
     for (i = 0; i < NOP; i++)
     {
+        /*               opcode
+         * INST[0] => |xxxx xxxx|
+         */
         if (INST[0] == T_MOP[i].CODOP)
         {
             int j;
@@ -128,22 +133,33 @@ static enum absload_machine_oper_error_code_e FRX(void)
                 waddch(wgreen, T_MOP[i].MNCOP[j]);
             }
             waddstr(wgreen, " ");
+
+            /*              R1   X2
+             * INST[1] => |xxxx|xxxx|
+             */
           
+            /* get R1 using bitwise right shift (get elder tetrad of INST[1]) */
             R1 = INST[1] >> 4;
             wprintw(wgreen, "%.1d, ", R1);
           
-            j = INST[2] % 0x10;
-            j = j * 256 + INST[3];
-            D = j;
-            wprintw(wgreen, "X'%.3X'(", j);
+            /*
+             *              B2  D2(4) (4 elder bits of D2 value)
+             * INST[2] => |xxxx|xxxx| 
+             *               D2(8)    (8 lower bits of D2 value)
+             * INST[3] => |xxxx xxxx|
+             */
+
+            /* Make D value: transmit 4 elder bits to the place before 8 lower bits */
+            D = (((int)INST[2] << 8) & 0x0F00) + INST[3];
+            wprintw(wgreen, "X'%.3X'(", D);
           
-            j = INST[1] % 0x10;
-            X = j;
-            wprintw(wgreen, "%1d, ", j);
+            /* get X using multyply on 0x0F (get lower tetrad of INST[1]) */
+            X = INST[1] & 0x0F;
+            wprintw(wgreen, "%1d, ", X);
           
-            j = INST[2] >> 0x4;
-            B = j;
-            wprintw(wgreen, "%1d)", j);
+            /* get B using bitwise right shift (get elder tetrad of INST[2]) */
+            B = INST[2] >> 4;
+            wprintw(wgreen, "%1d)", B);
           
             ADDR = VR[B] + VR[X] + D;
             wprintw(wgreen,"        %.06lX       \n", ADDR);
@@ -167,43 +183,103 @@ static enum absload_machine_oper_error_code_e FSS(void)
      * |xxxx xxxx|xxxx xxxx|xxxx|xxxx xxxx xxxx|xxxx|xxxx xxxx xxxx|
      *
      * - opcode - operation code (8 bits)
+     *
      * - L - byte containing length of the operands (8 bits)
+     *
      * - B1D1 - double-byte containing number of 
      * the base register (elder tetrad, 4 bits) of the first operand
      * and 12-bit length value of the address' displacement 
      * of the first operand (12 bits) => total 16 bits
-     *   - D1(8) - 8 lower bits (part of D1 12-bits value)
-     *   - D1(4) - 4 elder bits (part of D1 12-bits value)
-     * As you can see, B1D1 double-byte value was reverted for Unified Agreement
-     * (see assembler compiler, it reverts B1D1 double-byte value 
-     * for this Agreement before record next TXT-card)
-     * Thus it has been got D1(8 elder bits) B1 and D1 (4 lower bits) construction
      *
      * - B2D2 - double-byte containing number of
      * the base register (elder tetrad, 4 bits) of the second operand
      * and 12-bit length value of the address' displacement 
      * of the second operand (12 bits) => total 16 bits
-     *   - D2(8) - 8 lower bits (part of D2 12-bits value)
-     *   - D2(4) - 4 elder bits (part of D2 12-bits value)
-     * As you can see, B2D2 double-byte value was reverted for Unified Agreement
-     * (see assembler compiler, it reverts B2D2 double-byte value 
-     * for this Agreement before record next TXT-card)
-     * Thus it has been got D2(8 elder bits) B2 and D2 (4 lower bits) construction
      *
      * Operation's length is 6 bytes (48 bits)
      */
+
+    int i;
+  
+    for (i = 0; i < NOP; i++)
+    {
+        /*               opcode
+         * INST[0] => |xxxx xxxx|
+         */
+        if (INST[0] == T_MOP[i].CODOP)
+        {
+            int j;
+
+            waddstr(wgreen, "  ");
+            for (j = 0; j < 5; j++)
+            {
+                waddch(wgreen, T_MOP[i].MNCOP[j]);
+            }
+            waddstr(wgreen, " ");
+
+            /*
+             *              B1  D1(4) (4 elder bits of D1 value)
+             * INST[2] => |xxxx|xxxx| 
+             *               D1(8)    (8 lower bits of D1 value)
+             * INST[3] => |xxxx xxxx|
+             */
+
+            /* Make D1 value: transmit 4 elder bits to the place before 8 lower bits */
+            D1 = (((int)INST[2] << 8) & 0x0F00) + INST[3];
+            wprintw(wgreen, "X'%.3X'(", D);
+
+            /*                 L
+             * INST[1] => |xxxx xxxx|
+             */
+            L = INST[1];
+            wprintw(wgreen, "%.1d, ", R1);
+          
+            B1 = INST[2] >> 4;
+            wprintw(wgreen, "%1d),", B1);
+          
+            if (ADDR1 % 0x4 != 0)
+            {
+                return ABSLOAD_MACHINE_OPER_WRONG_ADDR_ALIGMENT_ERROR;
+            }
+
+            /*
+             *              B2  D2(4) (4 elder bits of D2 value)
+             * INST[4] => |xxxx|xxxx| 
+             *               D2(8)    (8 lower bits of D2 value)
+             * INST[5] => |xxxx xxxx|
+             */
+
+            /* Make D1 value: transmit 4 elder bits to the place before 8 lower bits */
+            D2 = (((int)INST[4] << 8) & 0x0F00) + INST[5];
+            wprintw(wgreen, "X'%.3X'(", D2);
+          
+            B2 = INST[4] >> 4;
+            wprintw(wgreen, "%1d)", B2);
+          
+            ADDR2 = VR[B2] + D2;
+            wprintw(wgreen,"dst %.06lX src %.06lX \n", ADDR1, ADDR2);
+
+            if (ADDR2 % 0x4 != 0)
+            {
+                return ABSLOAD_MACHINE_OPER_WRONG_ADDR_ALIGMENT_ERROR;
+            }
+
+            break;
+        }
+    }
+
     return ABSLOAD_MACHINE_OPER_SUCCESS;
 }
 
 /* Subroutine realizes semantic of the machine operation 'BALR' */
 int P_BALR(void)
 {
-    if (R2 != 0)
+    if (0 != R2)
     {
         I = VR[R2];
     }
 
-    if (R1 != 0)
+    if (0 != R1)
     {
         VR[R1] = I;
     }
