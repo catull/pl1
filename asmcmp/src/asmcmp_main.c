@@ -202,7 +202,7 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
             ++ITSYM;
             PRNMET = 'Y';
             memcpy(T_SYM[ITSYM].IMSYM, TEK_ISX_KARTA.METKA, 8);
-            T_SYM[ITSYM].ZNSYM = CHADR;
+            T_SYM[ITSYM].sym_value = CHADR;
         }
 
         /* Check if the current assembler command is one of the pseudo operations */

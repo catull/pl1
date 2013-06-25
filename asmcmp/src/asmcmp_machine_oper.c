@@ -74,7 +74,7 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
                         char *symbol = strtok(T_SYM[j].IMSYM, " ");
                         if (!strcmp(symbol, REG_str[i]))
                         {
-                            R1R2 = (0 == i) ? T_SYM[j].ZNSYM << 4 : R1R2 + T_SYM[j].ZNSYM;
+                            R1R2 = (0 == i) ? T_SYM[j].sym_value << 4 : R1R2 + T_SYM[j].sym_value;
                             goto SRR1;
                         }
                     }
@@ -153,7 +153,7 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
                     symbol = strtok(T_SYM[j].IMSYM, " ");
                     if(!strcmp(symbol, REG_str))
                     {
-                        R1X2 = T_SYM[j].ZNSYM << 4;
+                        R1X2 = T_SYM[j].sym_value << 4;
                         goto SRX1;
                     }
                 }
@@ -176,17 +176,17 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
                     {
                         int NBASRG = 0;
                         int DELTA = 0xfff - 1;
-                        int ZNSYM = T_SYM[j].ZNSYM;
+                        int sym_value = T_SYM[j].sym_value;
                         int i;
 
                         for (i = 0; i < BASE_REGISTERS_COUNT; i++)
                         {
                             if ((T_BASR[i].PRDOST == 'Y') &&
-                                (ZNSYM - T_BASR[i].offset >= 0) &&
-                                (ZNSYM - T_BASR[i].offset < DELTA))
+                                (sym_value - T_BASR[i].offset >= 0) &&
+                                (sym_value - T_BASR[i].offset < DELTA))
                             {
                                 NBASRG = i + 1;
-                                DELTA  = ZNSYM - T_BASR[i].offset;
+                                DELTA  = sym_value - T_BASR[i].offset;
                             }
                         }
 
@@ -289,7 +289,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
                     symbol = strtok(T_SYM[j].IMSYM, " ");
                     if(!strcmp(symbol, D1_str))
                     {
-                        B1D1 = T_SYM[j].ZNSYM;
+                        B1D1 = T_SYM[j].sym_value;
                         goto SSS1;
                     }
                 }
@@ -318,7 +318,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
                     symbol = strtok(T_SYM[j].IMSYM, " ");
                     if(!strcmp(symbol, B1_str))
                     {
-                        NBASRG = T_SYM[j].ZNSYM;
+                        NBASRG = T_SYM[j].sym_value;
                         if (0 == NBASRG)
                         {
                             return ASMCMP_MACHINE_OPER_BASING_ERROR;
@@ -354,7 +354,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
                     if(!strcmp(symbol, D2_str))
                     {
                         int DELTA = 0xfff - 1;
-                        int ZNSYM = T_SYM[j].ZNSYM;
+                        int sym_value = T_SYM[j].sym_value;
                         int i;
 
                         NBASRG = 0;
@@ -362,11 +362,11 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
                         for (i = 0; i < BASE_REGISTERS_COUNT; i++)
                         {
                             if ((T_BASR[i].PRDOST == 'Y') &&
-                                (ZNSYM - T_BASR[i].offset >= 0) &&
-                                (ZNSYM - T_BASR[i].offset < DELTA))
+                                (sym_value - T_BASR[i].offset >= 0) &&
+                                (sym_value - T_BASR[i].offset < DELTA))
                             {
                                 NBASRG = i + 1;
-                                DELTA  = ZNSYM - T_BASR[i].offset;
+                                DELTA  = sym_value - T_BASR[i].offset;
                             }
                         }
 

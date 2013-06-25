@@ -26,7 +26,7 @@ typedef struct assembler_card_s {
 /* Structure describes type of symbols table */
 typedef struct symbols_table_s {
     char IMSYM[8];          /* symbol's name */
-    int ZNSYM;              /* symbol's value */
+    int sym_value;              /* symbol's value */
     int DLSYM;              /* length in bytes of symbol's value */
 } symbols_table_t;
 

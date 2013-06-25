@@ -47,7 +47,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                         if (CHADR % 4)
                         {
                             CHADR = (CHADR / 4 + 1) * 4;
-                            T_SYM[ITSYM].ZNSYM = CHADR;
+                            T_SYM[ITSYM].sym_value = CHADR;
                         }
                         PRNMET = 'N';
                         break;
@@ -64,7 +64,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                         if (CHADR % 4)
                         {
                             CHADR = (CHADR / 4 + 1) * 4;
-                            T_SYM[ITSYM].ZNSYM = CHADR;
+                            T_SYM[ITSYM].sym_value = CHADR;
                         }
 
                         PRNMET = 'N';
@@ -166,7 +166,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
                         if (CHADR % 4)
                         {
                             CHADR = (CHADR / 4 + 1) * 4;
-                            T_SYM[ITSYM].ZNSYM = CHADR;
+                            T_SYM[ITSYM].sym_value = CHADR;
                         }
 
                         PRNMET = 'N';
@@ -185,7 +185,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
                         if (CHADR % 4)
                         {
                             CHADR = (CHADR / 4 + 1) * 4;
-                            T_SYM[ITSYM].ZNSYM = CHADR;
+                            T_SYM[ITSYM].sym_value = CHADR;
                         }
 
                         PRNMET = 'N';
@@ -255,12 +255,12 @@ static enum asmcmp_pseudo_oper_error_code_e FEQU(int entry)
         case 1:
             if ('*' == TEK_ISX_KARTA.OPERAND[0])
             {
-                T_SYM[ITSYM].ZNSYM = CHADR;
+                T_SYM[ITSYM].sym_value = CHADR;
                 T_SYM[ITSYM].DLSYM = 1;
             }
             else
             {
-                T_SYM[ITSYM].ZNSYM = atoi(TEK_ISX_KARTA.OPERAND);
+                T_SYM[ITSYM].sym_value = atoi(TEK_ISX_KARTA.OPERAND);
                 T_SYM[ITSYM].DLSYM = 1;
             }
 
@@ -292,7 +292,7 @@ static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
                 CHADR += 8 - CHADR % 8;
             }
 
-            T_SYM[ITSYM].ZNSYM = CHADR;
+            T_SYM[ITSYM].sym_value = CHADR;
             T_SYM[ITSYM].DLSYM = 1;
             PRNMET = 'N';
             break;
@@ -311,7 +311,7 @@ static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
 
                 if (!strcmp(METKA, METKA1))
                 {
-                    RAB = CHADR - T_SYM[J].ZNSYM;
+                    RAB = CHADR - T_SYM[J].sym_value;
                     PTR = (uint8_t*)&RAB;
                     asmcmp_common_swap_bytes(PTR, PTR, 2);
 
@@ -319,7 +319,7 @@ static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
                     ESD.DLPRG[1] = *PTR;
                     ESD.DLPRG[2] = *(PTR + 1);
 
-                    CHADR = T_SYM[J].ZNSYM;
+                    CHADR = T_SYM[J].sym_value;
                     PTR = (uint8_t*)&CHADR;
 
                     ESD.ADPRG[2] = *PTR;
@@ -368,7 +368,7 @@ static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
                     METKA = strtok(T_SYM[J].IMSYM, " ");
                     if (!strcmp(METKA, METKA2))
                     {
-                        if ((NBASRG = T_SYM[J].ZNSYM) <= 0x0f)
+                        if ((NBASRG = T_SYM[J].sym_value) <= 0x0f)
                         {
                             goto USING1;            
                         }
@@ -385,7 +385,7 @@ static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
             else
             {
                 NBASRG = atoi(METKA2);
-                if ((NBASRG = T_SYM[J].ZNSYM) <= 0x0f)
+                if ((NBASRG = T_SYM[J].sym_value) <= 0x0f)
                 {
                     goto USING1;
                 }
@@ -409,7 +409,7 @@ static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
                     METKA = strtok(T_SYM[J].IMSYM, " ");
                     if (!strcmp(METKA, METKA1))
                     {
-                        T_BASR[NBASRG - 1].offset = T_SYM[J].ZNSYM;
+                        T_BASR[NBASRG - 1].offset = T_SYM[J].sym_value;
                     }
                 }
 
