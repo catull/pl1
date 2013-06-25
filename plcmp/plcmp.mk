@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 PLCMP_BIN := $(BIN_DIR)/plcmp
 
 PLCMP_INC_DIR := $(PLCMP_DIR)/inc

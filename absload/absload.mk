@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 ABSLOAD_BIN := $(BIN_DIR)/absload
 
 ABSLOAD_INC_DIR := $(ABSLOAD_DIR)/inc

@@ -19,7 +19,6 @@
 #include "absload_main.h"
 
 
-char NFIL[30] = "\x0";
 int IOBJC = 0;                                 /*инд.вакантн.стр. OBJCARD*/
 char OBJCARD[NOBJ][80];                          /*масс.хранен.об'ектн.карт*/
 int ISPIS = 0;                                 /*инд.вакантн.стр. SPISOK */

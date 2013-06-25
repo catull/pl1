@@ -17,16 +17,16 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry);
 /* Table of the machine operations */
 machine_operations_table_t T_MOP[NOP] = 
 {
-    { {'B','A','L','R',' '}, '\x05', 2, FRR },
-    { {'B','C','R',' ',' '}, '\x07', 2, FRR },
-    { {'S','T',' ',' ',' '}, '\x50', 4, FRX },
-    { {'L',' ',' ',' ',' '}, '\x58', 4, FRX },
-    { {'A',' ',' ',' ',' '}, '\x5A', 4, FRX },
-    { {'S',' ',' ',' ',' '}, '\x5B', 4, FRX },
-    { {'L','E','R',' ',' '}, '\x38', 2, FRR },
-    { {'L','A',' ',' ',' '}, '\x41', 4, FRX },
-    { {'A','R',' ',' ',' '}, '\x1A', 2, FRR },
-    { {'M','V','C',' ',' '}, '\xD2', 6, FSS }
+    { {'B','A','L','R',' '}, '\x05', FRR },
+    { {'B','C','R',' ',' '}, '\x07', FRR },
+    { {'S','T',' ',' ',' '}, '\x50', FRX },
+    { {'L',' ',' ',' ',' '}, '\x58', FRX },
+    { {'A',' ',' ',' ',' '}, '\x5A', FRX },
+    { {'S',' ',' ',' ',' '}, '\x5B', FRX },
+    { {'L','E','R',' ',' '}, '\x38', FRR },
+    { {'L','A',' ',' ',' '}, '\x41', FRX },
+    { {'A','R',' ',' ',' '}, '\x1A', FRR },
+    { {'M','V','C',' ',' '}, '\xD2', FSS }
 };
 
 /* Function handles machine operation with type 'RR'
@@ -107,7 +107,9 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
             SRR2:
 
             oper_rr.oper.rr.R1R2 = R1R2;
-
+            #ifdef DEBUG_MODE
+            asmcmp_common_print_oper(oper_rr);
+            #endif
             asmcmp_common_save_oper_tex_card(oper_rr);
             break;
         }
@@ -228,7 +230,9 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
             SRX2:
 
             oper_rx.oper.rx.R1X2 = R1X2;
-
+            #ifdef DEBUG_MODE
+            asmcmp_common_print_oper(oper_rx);
+            #endif
             asmcmp_common_save_oper_tex_card(oper_rx);
             break;
         }
@@ -395,10 +399,9 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             oper_ss.oper.ss.L = L;
             oper_ss.oper.ss.B1D1 = B1D1;
 
-            #if 0
-            printf ("%#x %d %#x %#x\n", oper_ss.oper.ss.opcode, oper_ss.oper.ss.L, oper_ss.oper.ss.B1D1, oper_ss.oper.ss.B2D2);
+            #ifdef DEBUG_MODE
+            asmcmp_common_print_oper(oper_ss);
             #endif
-            
             asmcmp_common_save_oper_tex_card(oper_ss);
             break;
         }

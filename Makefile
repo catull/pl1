@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 COMMON_DIR := common
 PLCMP_DIR := plcmp
 ASMCMP_DIR := asmcmp

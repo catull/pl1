@@ -1,11 +1,37 @@
 /* encoding: UTF-8 */
 
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdint.h>
 
 #include "asmcmp_common.h"
 #include "asmcmp_global.h"
+
+void asmcmp_common_print_oper(oper_t oper)
+{
+    switch (oper.oper_type)
+    {
+        case OPER_RR:
+            printf("RR: %#.2x %#.2x\n",
+                   oper.oper.rr.opcode,
+                   oper.oper.rr.R1R2);
+            break;
+        case OPER_RX:
+            printf("RX: %#.2x %#.2x %#.4x\n",
+                   oper.oper.rx.opcode,
+                   oper.oper.rx.R1X2,
+                   oper.oper.rx.B2D2);
+            break;
+        case OPER_SS:
+            printf("SS: %#.2x %#.2x %#.4x %#.4x\n",
+                   oper.oper.ss.opcode,
+                   oper.oper.ss.L,
+                   oper.oper.ss.B1D1,
+                   oper.oper.ss.B2D2);
+            break;
+    }
+}
 
 void asmcmp_common_save_oper_tex_card(oper_t oper)
 {

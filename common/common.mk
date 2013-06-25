@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 COMMON_INC_DIR := $(COMMON_DIR)/inc
 COMMON_SRC_DIR := $(COMMON_DIR)/src
 COMMON_OBJ_DIR := $(COMMON_DIR)/obj

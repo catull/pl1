@@ -17,7 +17,6 @@ typedef enum asmcmp_machine_oper_error_code_e {
 typedef struct machine_operations_table_s {
     char MNCOP[5];
     unsigned char CODOP;
-    unsigned char DLOP;
     enum asmcmp_machine_oper_error_code_e (*BXPROG)(int entry);
 } machine_operations_table_t;
 

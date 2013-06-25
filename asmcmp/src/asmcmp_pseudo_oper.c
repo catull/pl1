@@ -117,8 +117,11 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                     data.data.string_data.str_length = data_len;
                     data.data.string_data.p_string = calloc(data_len + 1, sizeof(uint8_t));
 
-                    RAB = (uint8_t*)strtok(TEK_ISX_KARTA.OPERAND + 3, "'");
-                    strcpy((char*)data.data.string_data.p_string, (char*)RAB);
+                    if (!('\'' == TEK_ISX_KARTA.OPERAND[2] || '\'' == TEK_ISX_KARTA.OPERAND[3]))
+                    {
+                        RAB = (uint8_t*)strtok(TEK_ISX_KARTA.OPERAND + 3, "'");
+                        strcpy((char*)data.data.string_data.p_string, (char*)RAB);
+                    }
 
                     RAB = (uint8_t*)data.data.string_data.p_string;
                     asmcmp_common_swap_bytes(RAB, RAB, data_len);
