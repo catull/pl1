@@ -49,63 +49,45 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
         {
             ASMCMP_COMMON_ASSERT(OPER_RR_LEN == sizeof(oper_rr_t));
 
-            char *METKA;
-            char *METKA1;
-            char *METKA2;
-            int J;
-
+            char *REG_str[2];
+            int i;
             uint8_t R1R2;
-
             oper_t oper_rr;
+
             memset(&oper_rr, 0, sizeof(oper_t));
 
             oper_rr.oper_type = OPER_RR;
-            oper_rr.oper.rr.opcode = T_MOP[I3].CODOP;
+            oper_rr.oper.rr.opcode = T_MOP[I3].opcode;
 
-            METKA1 = strtok(TEK_ISX_KARTA.OPERAND, ",");
-            METKA2 = strtok(NULL, " ");
+            REG_str[0] = strtok(TEK_ISX_KARTA.OPERAND, ",");
+            REG_str[1] = strtok(NULL, " ");
 
-            if (isalpha(*METKA1))
+            for (i = 0; i < 2; i++)
             {
-                for (J = 0; J <= ITSYM; J++)
+                if (isalpha(REG_str[i][0]))
                 {
-                    METKA = strtok(T_SYM[J].IMSYM, " ");
-                    if (!strcmp(METKA, METKA1))
+                    int j;
+                    for (j = 0; j <= ITSYM; j++)
                     {
-                        R1R2 = T_SYM[J].ZNSYM << 4;
-                        goto SRR1;
+                        char *symbol = strtok(T_SYM[j].IMSYM, " ");
+                        if (!strcmp(symbol, REG_str[i]))
+                        {
+                            R1R2 = (0 == i) ? T_SYM[j].ZNSYM << 4 : R1R2 + T_SYM[j].ZNSYM;
+                            goto SRR1;
+                        }
                     }
+
+                    return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
+                }
+                else
+                {
+                    R1R2 = (0 == i) ? atoi(REG_str[i]) << 4 : R1R2 + atoi(REG_str[i]);
                 }
 
-                return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
-            }
-            else
-            {
-                R1R2 = atoi(METKA1) << 4;
-            }
+                SRR1:
 
-            SRR1:
-
-            if (isalpha((int)*METKA2))
-            {
-                for (J = 0; J <= ITSYM; J++)
-                {
-                    METKA = strtok(T_SYM[J].IMSYM, " ");
-                    if (!strcmp(METKA, METKA2))
-                    {
-                        R1R2 = R1R2 + T_SYM[J].ZNSYM;
-                        goto SRR2;
-                    }
-                }
-
-                return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
+                continue;
             }
-            else
-            {
-                R1R2 = R1R2 + atoi(METKA2);
-            }
-
-            SRR2:
 
             oper_rr.oper.rr.R1R2 = R1R2;
 
@@ -161,7 +143,7 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
             memset(&oper_rx, 0, sizeof(oper_t));
 
             oper_rx.oper_type = OPER_RX;
-            oper_rx.oper.rx.opcode = T_MOP[I3].CODOP;
+            oper_rx.oper.rx.opcode = T_MOP[I3].opcode;
             
             METKA1 = strtok(TEK_ISX_KARTA.OPERAND, ",");
             METKA2 = strtok(NULL, " ");
@@ -234,9 +216,11 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
             SRX2:
 
             oper_rx.oper.rx.R1X2 = R1X2;
+
             #ifdef DEBUG_MODE
             asmcmp_common_print_oper(oper_rx);
             #endif
+
             asmcmp_common_save_oper_tex_card(oper_rx);
             break;
         }
@@ -290,7 +274,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             memset(&oper_ss, 0, sizeof(oper_t));
 
             oper_ss.oper_type = OPER_SS;
-            oper_ss.oper.ss.opcode = T_MOP[I3].CODOP;
+            oper_ss.oper.ss.opcode = T_MOP[I3].opcode;
             
             /* save D1 */
             D1 = strtok(TEK_ISX_KARTA.OPERAND, "(");
@@ -407,6 +391,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             #ifdef DEBUG_MODE
             asmcmp_common_print_oper(oper_ss);
             #endif
+            
             asmcmp_common_save_oper_tex_card(oper_ss);
             break;
         }

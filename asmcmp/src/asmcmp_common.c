@@ -7,6 +7,7 @@
 
 #include "asmcmp_common.h"
 #include "asmcmp_global.h"
+#include "asmcmp_machine_oper.h"
 
 void asmcmp_common_print_oper(oper_t oper)
 {
@@ -47,26 +48,32 @@ void asmcmp_common_save_oper_tex_card(oper_t oper)
     {
         case OPER_RR:
         {
-            oper_len = sizeof(oper.oper.rr);
+            ASMCMP_COMMON_ASSERT(OPER_RR_LEN == sizeof(oper_rr_t));
+
             memset(TXT.OPER, 0x40, 56);
-            memcpy(TXT.OPER, &oper.oper.rr, oper_len);
-            TXT.DLNOP[1] = oper_len;
+            memcpy(TXT.OPER, &oper.oper.rr, OPER_RR_LEN);
+            TXT.DLNOP[1] = OPER_RR_LEN;
+            oper_len = OPER_RR_LEN;
             break;
         }
         case OPER_RX:
         {
-            oper_len = sizeof(oper.oper.rx);
+            ASMCMP_COMMON_ASSERT(OPER_RX_LEN == sizeof(oper_rx_t));
+
             memset(TXT.OPER, 0x40, 56);
-            memcpy(TXT.OPER, &oper.oper.rx, oper_len);
-            TXT.DLNOP[1] = oper_len;
+            memcpy(TXT.OPER, &oper.oper.rx, OPER_RX_LEN);
+            TXT.DLNOP[1] = OPER_RX_LEN;
+            oper_len = OPER_RX_LEN;
             break;
         }
         case OPER_SS:
         {
-            oper_len = sizeof(oper.oper.ss);
+            ASMCMP_COMMON_ASSERT(OPER_SS_LEN == sizeof(oper_ss_t));
+
             memset(TXT.OPER, 0x40, 56);
-            memcpy(TXT.OPER, &oper.oper.ss, oper_len);
-            TXT.DLNOP[1] = oper_len;
+            memcpy(TXT.OPER, &oper.oper.ss, OPER_SS_LEN);
+            TXT.DLNOP[1] = OPER_SS_LEN;
+            oper_len = OPER_SS_LEN;
             break;
         }
         default:
