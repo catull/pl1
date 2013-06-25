@@ -11,6 +11,7 @@
 #include "asmcmp_machine_oper.h"
 #include "asmcmp_global.h"
 
+/* Function constructs error message by error data of main module */
 static char* asmcmp_main_errmsg_by_errdata(__asmcmp_main_error_data_t err_data, char *errmsg)
 {
     switch (err_data.main_err_code)

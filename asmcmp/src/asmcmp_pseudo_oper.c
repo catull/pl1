@@ -400,7 +400,7 @@ static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
             T_BASR[NBASRG - 1].PRDOST = 'Y';
             if ('*' == *METKA1)
             {
-                T_BASR[NBASRG - 1].SMESH = CHADR;
+                T_BASR[NBASRG - 1].offset = CHADR;
             }
             else
             {
@@ -409,7 +409,7 @@ static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
                     METKA = strtok(T_SYM[J].IMSYM, " ");
                     if (!strcmp(METKA, METKA1))
                     {
-                        T_BASR[NBASRG - 1].SMESH = T_SYM[J].ZNSYM;
+                        T_BASR[NBASRG - 1].offset = T_SYM[J].ZNSYM;
                     }
                 }
 

@@ -18,7 +18,7 @@ char PRNMET = 'N';
 int I3;
 
 /* Table of base registers */
-base_registers_table_t T_BASR[15] = {
+base_registers_table_t T_BASR[BASE_REGISTERS_COUNT] = {
     {0x00,'N'},
     {0x00,'N'},
     {0x00,'N'},

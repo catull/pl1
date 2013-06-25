@@ -7,6 +7,9 @@
 
 #include "asmcmp_common.h"
 
+
+#define BASE_REGISTERS_COUNT 15
+
 /* This struct is type of assembler card
  * It is template to read the input file written by IBM 370 assembler */
 typedef struct assembler_card_s {
@@ -28,7 +31,7 @@ typedef struct symbols_table_s {
 } symbols_table_t;
 
 typedef struct base_registers_table_s {
-    int SMESH;
+    int offset;
     char PRDOST;
 } base_registers_table_t;
 
@@ -77,7 +80,7 @@ extern symbols_table_t T_SYM[NSYM];
 extern assembler_card_t TEK_ISX_KARTA;
 extern int I3;
 extern char PRNMET;
-extern base_registers_table_t T_BASR[15];
+extern base_registers_table_t T_BASR[BASE_REGISTERS_COUNT];
 
 extern char OBJTEXT[DL_OBJTEXT][80];
 extern int ITCARD;

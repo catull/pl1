@@ -15,8 +15,7 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry);
 static enum asmcmp_machine_oper_error_code_e FSS(int entry);
 
 /* Table of the machine operations */
-machine_operations_table_t T_MOP[NOP] = 
-{
+machine_operations_table_t T_MOP[NOP] = {
     { {'B','A','L','R',' '}, '\x05', FRR },
     { {'B','C','R',' ',' '}, '\x07', FRR },
     { {'S','T',' ',' ',' '}, '\x50', FRX },
@@ -51,19 +50,22 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
 
             char *REG_str[2];
             int i;
-            uint8_t R1R2;
-            oper_t oper_rr;
 
+            uint8_t R1R2;
+
+            oper_t oper_rr;
             memset(&oper_rr, 0, sizeof(oper_t));
 
             oper_rr.oper_type = OPER_RR;
             oper_rr.oper.rr.opcode = T_MOP[I3].opcode;
 
+            /* Get labels or direct values from the OPERAND-field of assembler code line */
             REG_str[0] = strtok(TEK_ISX_KARTA.OPERAND, ",");
             REG_str[1] = strtok(NULL, " ");
 
             for (i = 0; i < 2; i++)
             {
+                /* REG_str[i] is label */
                 if (isalpha(REG_str[i][0]))
                 {
                     int j;
@@ -79,6 +81,7 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
 
                     return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
                 }
+                /* It is direct value */
                 else
                 {
                     R1R2 = (0 == i) ? atoi(REG_str[i]) << 4 : R1R2 + atoi(REG_str[i]);
@@ -126,15 +129,10 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
         {
             ASMCMP_COMMON_ASSERT(OPER_RX_LEN == sizeof(oper_rx_t));
 
-            char *METKA;
-            char *METKA1;
-            char *METKA2;
-            uint8_t *PTR;
-            int DELTA;
-            int ZNSYM;
-            int NBASRG;
-            int J;
-            int I;
+            char *symbol;
+            char *REG_str;
+            char *OPER_str;
+            int j;
 
             uint8_t R1X2;
             uint16_t B2D2;
@@ -145,16 +143,17 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
             oper_rx.oper_type = OPER_RX;
             oper_rx.oper.rx.opcode = T_MOP[I3].opcode;
             
-            METKA1 = strtok(TEK_ISX_KARTA.OPERAND, ",");
-            METKA2 = strtok(NULL, " ");
-            if (isalpha(*METKA1))
+            REG_str = strtok(TEK_ISX_KARTA.OPERAND, ",");
+            OPER_str = strtok(NULL, " ");
+
+            if (isalpha(REG_str[0]))
             {
-                for (J = 0; J <= ITSYM; J++)
+                for (j = 0; j <= ITSYM; j++)
                 {
-                    METKA = strtok(T_SYM[J].IMSYM, " ");
-                    if(!strcmp(METKA, METKA1))
+                    symbol = strtok(T_SYM[j].IMSYM, " ");
+                    if(!strcmp(symbol, REG_str))
                     {
-                        R1X2 = T_SYM[J].ZNSYM << 4;
+                        R1X2 = T_SYM[j].ZNSYM << 4;
                         goto SRX1;
                     }
                 }
@@ -163,30 +162,31 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
             }
             else
             {
-                R1X2 = atoi(METKA1) << 4;
+                R1X2 = atoi(REG_str) << 4;
             }
 
             SRX1:
 
-            if (isalpha(*METKA2))
+            if (isalpha(OPER_str[0]))
             {
-                for (J = 0; J <= ITSYM; J++)
+                for (j = 0; j <= ITSYM; j++)
                 {
-                    METKA = strtok(T_SYM[J].IMSYM, " ");
-                    if(!strcmp(METKA, METKA2))
+                    symbol = strtok(T_SYM[j].IMSYM, " ");
+                    if(!strcmp(symbol, OPER_str))
                     {
+                        int NBASRG = 0;
+                        int DELTA = 0xfff - 1;
+                        int ZNSYM = T_SYM[j].ZNSYM;
+                        int i;
 
-                        NBASRG = 0;
-                        DELTA = 0xfff - 1;
-                        ZNSYM = T_SYM[J].ZNSYM;
-                        for (I = 0; I < 15; I++)
+                        for (i = 0; i < BASE_REGISTERS_COUNT; i++)
                         {
-                            if ((T_BASR[I].PRDOST == 'Y') &&
-                                (ZNSYM - T_BASR[I].SMESH >= 0) &&
-                                (ZNSYM - T_BASR[I].SMESH < DELTA))
+                            if ((T_BASR[i].PRDOST == 'Y') &&
+                                (ZNSYM - T_BASR[i].offset >= 0) &&
+                                (ZNSYM - T_BASR[i].offset < DELTA))
                             {
-                                NBASRG = I + 1;
-                                DELTA  = ZNSYM - T_BASR[I].SMESH;
+                                NBASRG = i + 1;
+                                DELTA  = ZNSYM - T_BASR[i].offset;
                             }
                         }
 
@@ -196,14 +196,21 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
                         }
                         else
                         {
+                            uint8_t *PTR;
+
                             B2D2 = NBASRG << 12;
                             B2D2 = B2D2 + DELTA;
                             PTR = (uint8_t*)&B2D2;
+
                             asmcmp_common_swap_bytes(PTR, PTR, 2);
+
                             oper_rx.oper.rx.B2D2 = B2D2;
                         }
+
                         goto SRX2;
+
                     }
+
                 }
 
                 return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
@@ -253,22 +260,18 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             ASMCMP_COMMON_ASSERT(OPER_SS_LEN == sizeof(oper_ss_t));
 
             uint8_t *PTR;
-            int DELTA;
-            int ZNSYM;
             int NBASRG;
-            int J;
-            int I;
+            int j;
 
             char *symbol;
-            char *D1;
-            char *B1;
-            uint16_t B1D1;
-
+            char *D1_str;
             char *L_str;
-            uint8_t L;
+            char *B1_str;
+            char *D2_str;
 
-            char *D2;
+            uint8_t L;
             uint16_t B2D2;
+            uint16_t B1D1;
 
             oper_t oper_ss;
             memset(&oper_ss, 0, sizeof(oper_t));
@@ -277,24 +280,26 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             oper_ss.oper.ss.opcode = T_MOP[I3].opcode;
             
             /* save D1 */
-            D1 = strtok(TEK_ISX_KARTA.OPERAND, "(");
-            if (isalpha(*D1))
+            D1_str = strtok(TEK_ISX_KARTA.OPERAND, "(");
+            /* D1 is label */
+            if (isalpha(D1_str[0]))
             {
-                for (J = 0; J <= ITSYM; J++)
+                for (j = 0; j <= ITSYM; j++)
                 {
-                    symbol = strtok(T_SYM[J].IMSYM, " ");
-                    if(!strcmp(symbol, D1))
+                    symbol = strtok(T_SYM[j].IMSYM, " ");
+                    if(!strcmp(symbol, D1_str))
                     {
-                        B1D1 = T_SYM[J].ZNSYM;
+                        B1D1 = T_SYM[j].ZNSYM;
                         goto SSS1;
                     }
                 }
 
                 return ASMCMP_MACHINE_OPER_NOT_DECLARED_IDENT_ERROR;
             }
+            /* D1 is direct value */
             else
             {
-                B1D1 = atoi(D1);
+                B1D1 = atoi(D1_str);
             }
 
             SSS1:
@@ -304,17 +309,17 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             L = atoi(L_str);
 
             /* save B1 */
-            B1 = strtok(NULL, ")");
-            D2 = strtok(NULL, ", ");
-            if (isalpha(*B1))
+            B1_str = strtok(NULL, ")");
+            D2_str = strtok(NULL, ", ");
+            if (isalpha(B1_str[0]))
             {
-                for (J = 0; J <= ITSYM; J++)
+                for (j = 0; j <= ITSYM; j++)
                 {
-                    symbol = strtok(T_SYM[J].IMSYM, " ");
-                    if(!strcmp(symbol, B1))
+                    symbol = strtok(T_SYM[j].IMSYM, " ");
+                    if(!strcmp(symbol, B1_str))
                     {
-                        NBASRG = T_SYM[J].ZNSYM;
-                        if (0 == NBASRG || DELTA > 0xfff )
+                        NBASRG = T_SYM[j].ZNSYM;
+                        if (0 == NBASRG)
                         {
                             return ASMCMP_MACHINE_OPER_BASING_ERROR;
                         }
@@ -322,7 +327,9 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
                         {
                             B1D1 += NBASRG << 12;
                             PTR = (uint8_t*)&B1D1;
+
                             asmcmp_common_swap_bytes(PTR, PTR, 2);
+
                             oper_ss.oper.ss.B1D1 = B1D1;
                         }
                         goto SSS2;
@@ -339,24 +346,27 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             SSS2:
 
             /* save B2 and D2 */
-            if (isalpha(*D2))
+            if (isalpha(D2_str[0]))
             {
-                for (J = 0; J <= ITSYM; J++)
+                for (j = 0; j <= ITSYM; j++)
                 {
-                    symbol = strtok(T_SYM[J].IMSYM, " ");
-                    if(!strcmp(symbol, D2))
+                    symbol = strtok(T_SYM[j].IMSYM, " ");
+                    if(!strcmp(symbol, D2_str))
                     {
+                        int DELTA = 0xfff - 1;
+                        int ZNSYM = T_SYM[j].ZNSYM;
+                        int i;
+
                         NBASRG = 0;
-                        DELTA = 0xfff - 1;
-                        ZNSYM = T_SYM[J].ZNSYM;
-                        for (I = 0; I < 15; I++)
+
+                        for (i = 0; i < BASE_REGISTERS_COUNT; i++)
                         {
-                            if ((T_BASR[I].PRDOST == 'Y') &&
-                                (ZNSYM - T_BASR[I].SMESH >= 0) &&
-                                (ZNSYM - T_BASR[I].SMESH < DELTA))
+                            if ((T_BASR[i].PRDOST == 'Y') &&
+                                (ZNSYM - T_BASR[i].offset >= 0) &&
+                                (ZNSYM - T_BASR[i].offset < DELTA))
                             {
-                                NBASRG = I + 1;
-                                DELTA  = ZNSYM - T_BASR[I].SMESH;
+                                NBASRG = i + 1;
+                                DELTA  = ZNSYM - T_BASR[i].offset;
                             }
                         }
 
@@ -367,9 +377,11 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
                         else
                         {
                             B2D2 = NBASRG << 12;
-                            B2D2 = B2D2 + DELTA;
+                            B2D2 += DELTA;
                             PTR = (uint8_t*)&B2D2;
+
                             asmcmp_common_swap_bytes(PTR, PTR, 2);
+
                             oper_ss.oper.ss.B2D2 = B2D2;
                         }
                         goto SSS3;
@@ -386,12 +398,11 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             SSS3:
             
             oper_ss.oper.ss.L = L;
-            oper_ss.oper.ss.B1D1 = B1D1;
 
             #ifdef DEBUG_MODE
             asmcmp_common_print_oper(oper_ss);
             #endif
-            
+
             asmcmp_common_save_oper_tex_card(oper_ss);
             break;
         }
@@ -402,6 +413,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
     return ASMCMP_MACHINE_OPER_SUCCESS;
 }
 
+/* Function constructs error message by error code of 'asmcmp machine operations' module */
 char const* asmcmp_machine_oper_errmsg_by_errcode(asmcmp_machine_oper_error_code_t err_code)
 {
     switch (err_code)
