@@ -172,7 +172,7 @@ void wind(void)
             }
         }
 
-        waddstr(wred, " */");
+        waddstr(wred, "............. */");
         I1 += 16;
     }
 
@@ -204,18 +204,18 @@ static enum absload_main_error_code_e sys(void)
     wbkgd(wcyan, COLOR_PAIR(COLOR_CYAN));
   
     //boot area dump window
-    wred = newwin(8, 67, 15, 0);
+    wred = newwin(8, 80, 15, 0);
     wbkgd(wred, COLOR_PAIR(COLOR_RED));
   
     //registers' window
-    wblue = newwin(16, 12, 0, 68);
+    wblue = newwin(16, 12, 0, 85);
     wbkgd(wblue, COLOR_PAIR(COLOR_BLUE));
   
     //current command window
     gr_pos_x = 0;
     gr_pos_y = 14; 
     gr_y = 11;
-    wgreen = newwin(gr_y, 67, gr_pos_y, gr_pos_x);      //создадим новое окно
+    wgreen = newwin(gr_y, 80, gr_pos_y, gr_pos_x);      //создадим новое окно
     wbkgd(wgreen, COLOR_PAIR(COLOR_GREEN));             //выбор цветовой пары
   
     keypad(wmargenta, TRUE);                            //разрешить преобразование кодов клавиатуры
@@ -241,6 +241,7 @@ static enum absload_main_error_code_e sys(void)
                 }
                 else 
                 {
+                    wprintw(wgreen, "  ");
                     INST[j] = '\x00';
                 }
             }
@@ -286,7 +287,7 @@ static enum absload_main_error_code_e sys(void)
     I1 = I;                                        /*установка адреса начала */
                           /*области отсветки        */
       
-    for ( i = 0; i < 16; i++)
+    for (i = 0; i < 16; i++)
     {
         if (i < 10)
         {
@@ -359,12 +360,12 @@ static enum absload_main_error_code_e sys(void)
 
     /* Look up current operation code 
      * Choose appropriate handle */
-    switch ((unsigned int)T_MOP[k].CODOP)
+    switch (T_MOP[k].CODOP)
     {
-        case '\x05':
+        case 0x05:
             P_BALR();
             break;
-        case '\x07': 
+        case 0x07: 
         { 
             i = P_BCR();
             getch();
@@ -374,28 +375,32 @@ static enum absload_main_error_code_e sys(void)
             }
             break;
         }
-        case '\x50':
+        case 0x50:
             P_ST();
             break;
-        case '\x58':
+        case 0x58:
             P_L();
             break;
-        case '\x5A':
+        case 0x5A:
             P_A();
             break;
-        case '\x5B':
+        case 0x5B:
             P_S();
-        case '\x38':
+            break;
+        case 0x38:
             P_LER();
             break;
-        case '\x41':
+        case 0x41:
             P_LA();
             break;
-        case '\x1A':
+        case 0x1A:
             P_AR();
             break;
-        case '\xD2':
+        case 0xD2:
             P_MVC();
+            break;
+        default:
+            ABSLOAD_COMMON_ASSERT(0);
             break;
     }
    

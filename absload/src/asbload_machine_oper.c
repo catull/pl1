@@ -127,7 +127,7 @@ static enum absload_machine_oper_error_code_e FRX(void)
         {
             int j;
 
-            waddstr(wgreen, "  ");
+            waddstr(wgreen, "      ");
             for (j = 0; j < 5; j++)
             {
                 waddch(wgreen, T_MOP[i].MNCOP[j]);
@@ -210,7 +210,7 @@ static enum absload_machine_oper_error_code_e FSS(void)
         {
             int j;
 
-            waddstr(wgreen, "  ");
+            waddstr(wgreen, "      ");
             for (j = 0; j < 5; j++)
             {
                 waddch(wgreen, T_MOP[i].MNCOP[j]);
@@ -226,16 +226,18 @@ static enum absload_machine_oper_error_code_e FSS(void)
 
             /* Make D1 value: transmit 4 elder bits to the place before 8 lower bits */
             D1 = (((int)INST[2] << 8) & 0x0F00) + INST[3];
-            wprintw(wgreen, "X'%.3X'(", D);
+            wprintw(wgreen, "X'%.3X'(", D1);
 
             /*                 L
              * INST[1] => |xxxx xxxx|
              */
             L = INST[1];
-            wprintw(wgreen, "%.1d, ", R1);
+            wprintw(wgreen, "%.1d, ", L);
           
             B1 = INST[2] >> 4;
             wprintw(wgreen, "%1d),", B1);
+
+            ADDR1 = VR[B1] + D1;
           
             if (ADDR1 % 0x4 != 0)
             {
@@ -257,7 +259,7 @@ static enum absload_machine_oper_error_code_e FSS(void)
             wprintw(wgreen, "%1d)", B2);
           
             ADDR2 = VR[B2] + D2;
-            wprintw(wgreen,"dst %.06lX src %.06lX \n", ADDR1, ADDR2);
+            wprintw(wgreen, " dst %.06lX src %.06lX \n", ADDR1, ADDR2);
 
             if (ADDR2 % 0x4 != 0)
             {
@@ -371,7 +373,7 @@ int P_A(void)
     OBLZ[BAS_IND + CUR_IND + sm + 2] * 0x100 +
     OBLZ[BAS_IND + CUR_IND + sm + 3];
 
-    VR[R1] = VR[R1] + ARG;
+    VR[R1] += ARG;
 
     return 0;
 }
@@ -387,11 +389,11 @@ int P_S(void)
     /* формирование содержимого второго операнда в соглашениях ЕС ЭВМ 
      * и вычитание из 1-го операнда */
     ARG = OBLZ[BAS_IND + CUR_IND + sm] * 0x1000000L + 
-    OBLZ[BAS_IND + CUR_IND + sm + 1] * 0x10000L + 
-    OBLZ[BAS_IND + CUR_IND + sm + 2] * 0x100 + 
-    OBLZ[BAS_IND + CUR_IND + sm + 3];
+        OBLZ[BAS_IND + CUR_IND + sm + 1] * 0x10000L + 
+        OBLZ[BAS_IND + CUR_IND + sm + 2] * 0x100 + 
+        OBLZ[BAS_IND + CUR_IND + sm + 3];
 
-    VR[R1] = VR[R1] - ARG;
+    VR[R1] -= ARG;
 
     return 0;
 }
@@ -399,23 +401,39 @@ int P_S(void)
 /* Subroutine realizes semantic of the machine operation 'LER' */
 int P_LER(void)
 {
+    VR[R1] = VR[R2];
     return 0;
 }
 
 /* Subroutine realizes semantic of the machine operation 'P_LA' */
 int P_LA(void)
 {
+    VR[R1] = D;
     return 0;
 }
 
 /* Subroutine realizes semantic of the machine operation 'AR' */
 int P_AR(void)
 {
+    VR[R1] += VR[R2];
     return 0;
 }
 
 /* Subroutine realizes semantic of the machine operation 'MVC' */
 int P_MVC(void)
 {
+    int sm1, sm2, ind;
+
+    ADDR1 = VR[B1] + D1;
+    ADDR2 = VR[B2] + D2;
+
+    sm1 = (int)(ADDR1 - I);
+    sm2 = (int)(ADDR2 - I);
+
+    for (ind = 0; ind < L; ind++)
+    {
+        OBLZ[BAS_IND + CUR_IND + sm1 + ind] = OBLZ[BAS_IND + CUR_IND + sm2 + ind];
+    }
+
     return 0;
 }
