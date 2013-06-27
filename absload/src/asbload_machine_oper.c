@@ -12,16 +12,16 @@ static enum absload_machine_oper_error_code_e FRX(void);
 static enum absload_machine_oper_error_code_e FSS(void);
 
 machine_operations_table_t T_MOP[NOP] = {
-    {{'B', 'A', 'L', 'R', ' '}, '\x05', OPER_RR_LEN, FRR},
-    {{'B', 'C', 'R', ' ', ' '}, '\x07', OPER_RR_LEN, FRR},
-    {{'S', 'T', ' ', ' ', ' '}, '\x50', OPER_RX_LEN, FRX},
-    {{'L', ' ', ' ', ' ', ' '}, '\x58', OPER_RX_LEN, FRX},
-    {{'A', ' ', ' ', ' ', ' '}, '\x5A', OPER_RX_LEN, FRX},
-    {{'S', ' ', ' ', ' ', ' '}, '\x5B', OPER_RX_LEN, FRX},
-    {{'L', 'E', 'R', ' ', ' '}, '\x38', OPER_RR_LEN, FRR},
-    {{'L', 'A', ' ', ' ', ' '}, '\x41', OPER_RX_LEN, FRX},
-    {{'A', 'R', ' ', ' ', ' '}, '\x1A', OPER_RR_LEN, FRR},
-    {{'M', 'V', 'C', ' ', ' '}, '\xD2', OPER_SS_LEN, FSS}
+    {{'B', 'A', 'L', 'R', ' '}, 0x05, OPER_RR_LEN, FRR},
+    {{'B', 'C', 'R', ' ', ' '}, 0x07, OPER_RR_LEN, FRR},
+    {{'S', 'T', ' ', ' ', ' '}, 0x50, OPER_RX_LEN, FRX},
+    {{'L', ' ', ' ', ' ', ' '}, 0x58, OPER_RX_LEN, FRX},
+    {{'A', ' ', ' ', ' ', ' '}, 0x5A, OPER_RX_LEN, FRX},
+    {{'S', ' ', ' ', ' ', ' '}, 0x5B, OPER_RX_LEN, FRX},
+    {{'L', 'E', 'R', ' ', ' '}, 0x38, OPER_RR_LEN, FRR},
+    {{'L', 'A', ' ', ' ', ' '}, 0x41, OPER_RX_LEN, FRX},
+    {{'A', 'R', ' ', ' ', ' '}, 0x1A, OPER_RR_LEN, FRR},
+    {{'M', 'V', 'C', ' ', ' '}, 0xD2, OPER_SS_LEN, FSS}
 };
 
 extern unsigned char OBLZ[DOBLZ];
@@ -239,10 +239,12 @@ static enum absload_machine_oper_error_code_e FSS(void)
 
             ADDR1 = VR[B1] + D1;
           
+            #if 0
             if (ADDR1 % 0x4 != 0)
             {
                 return ABSLOAD_MACHINE_OPER_WRONG_ADDR_ALIGMENT_ERROR;
             }
+            #endif
 
             /*
              *              B2  D2(4) (4 elder bits of D2 value)

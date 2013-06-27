@@ -172,7 +172,7 @@ void wind(void)
             }
         }
 
-        waddstr(wred, "............. */");
+        waddstr(wred, "....................... */");
         I1 += 16;
     }
 
@@ -195,27 +195,27 @@ static enum absload_main_error_code_e sys(void)
     I = BAS_ADDR;
 
     //window below  
-    wmargenta = newwin(1, 80, 24, 0);
+    wmargenta = newwin(1, 90, 24, 0);
     wbkgd(wmargenta, COLOR_PAIR(COLOR_MAGENTA));
-    waddstr(wmargenta, "\"PgUp\",\"PgDn\",\"Up\",\"Down\"->view dump; \"Enter\"->execute the next command");
+    waddstr(wmargenta, "\"PgUp\", \"PgDn\", \"Up\", \"Down\" -> view dump; \"Enter\" -> execute the next command");
       
     //status bar window
-    wcyan = newwin(1, 80, 23, 0);
+    wcyan = newwin(1, 90, 23, 0);
     wbkgd(wcyan, COLOR_PAIR(COLOR_CYAN));
   
     //boot area dump window
-    wred = newwin(8, 80, 15, 0);
+    wred = newwin(8, 90, 15, 0);
     wbkgd(wred, COLOR_PAIR(COLOR_RED));
   
     //registers' window
-    wblue = newwin(16, 12, 0, 85);
+    wblue = newwin(16, 12, 0, 95);
     wbkgd(wblue, COLOR_PAIR(COLOR_BLUE));
   
     //current command window
     gr_pos_x = 0;
     gr_pos_y = 14; 
     gr_y = 11;
-    wgreen = newwin(gr_y, 80, gr_pos_y, gr_pos_x);      //создадим новое окно
+    wgreen = newwin(gr_y, 90, gr_pos_y, gr_pos_x);      //создадим новое окно
     wbkgd(wgreen, COLOR_PAIR(COLOR_GREEN));             //выбор цветовой пары
   
     keypad(wmargenta, TRUE);                            //разрешить преобразование кодов клавиатуры
