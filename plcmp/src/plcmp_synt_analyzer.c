@@ -4,7 +4,6 @@
 
 #include "plcmp_common.h"
 #include "plcmp_tables.h"
-#include "plcmp_lex_analyzer.h"
 #include "plcmp_synt_analyzer.h"
 
 /* Subroutine adds a new goal into stack of goals */

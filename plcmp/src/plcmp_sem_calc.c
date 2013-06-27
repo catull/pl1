@@ -1,29 +1,39 @@
-/* encoding: UTF-8 
- * russian letters: (Cyrillic) KOI8-U
- */
+/* encoding: UTF-8 */
  
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
 #include "plcmp_tables.h"
 #include "plcmp_common.h"
-#include "plcmp_lex_analyzer.h"
 #include "plcmp_sem_calc.h"
 
-sym_t SYM[NSYM];
-int ISYM = 0;
+/* This array of structures is the table of labels' names of variables
+ * which is being filled on the first process of semantic calculation
+ * and is being used on the second process of semantic calculation 
+ */
+struct sym_s
+{
+    char NAME[8];
+    char TYPE;
+    unsigned int RAZR;
+    char INIT[50];
+} SYM[NSYM];
 
-/* */
-sym_t *p_char_syms[9];
-int char_syms_size = 0;
+/* Count of SYM-s */
+static int ISYM = 0;
 
+/* Array of pointers to SYM-s for processing concat operation for string */
+static struct sym_s *p_char_syms[9];
+/* Count of 'p_char_syms' */
+static int char_syms_size = 0;
+
+/* Pointer to compact source text */
 static char const *g_p_compact_pl1_src_text;
 
-/* This struct is type of assembler card
+/* This struct is assembler card
  * It is template to generate the output file record by IBM 370 assembler */
-static struct assembler_card {
+static struct assembler_card_s {
     char METKA[8];
     char PROB1;
     char OPERAC[5];
@@ -35,19 +45,19 @@ static struct assembler_card {
 
 /* Array for formatted (a sequence of 9-th positional lines-tokens)
  * representation interpreted fragment for compact source text */
-char FORMT[MAXFORMT][9];
+static char FORMT[MAXFORMT][9];
 /* Formatted array index */
-int IFORMT;
+static int IFORMT;
 
 /* Array for storage of output text written in IBM 370 ASSEMBLER */
 static char assembler_out_text[MAXLTXT][80];
-/* Output array index */
+/* Output double array row index */
 static int IASSTXT;
 
 /* Subroutine prepares error data for sending its to caller
  * Error code in 'p_err_data->err_code' controls which data will be written */
-static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_data, 
-                                           goals_achieved_stack_t goal_achieved)
+static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data, 
+                            goals_achieved_stack_t goal_achieved)
 {
     switch (p_err_data->err_code)
     {
@@ -112,11 +122,11 @@ static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_da
             strcpy(p_err_data->data.identifier, FORMT[1]);
 
             break;
-        case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
+        case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE_ERROR:
             break;
         case PLCMP_SEM_CALCULATOR_CONCAT_ERROR:
             break;
-        case PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG:
+        case PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG_ERROR:
             break;
         default:
             break;
@@ -124,8 +134,9 @@ static void plcmp_sem_calc_cook_error_data(plcmp_sem_calc_error_data_t *p_err_da
 }
 
 
-/* Clear assembler card. Fresh card should contains ' ' (space symbols) */
-static void plcmp_sem_calc_clear_assembler_card(void)
+/* Subroutine clears assembler card.
+ * Fresh card should contains ' ' (space symbols) */
+static void clear_assembler_card(void)
 {
     memset(&assembler_card, ' ', sizeof(assembler_card));
 }
@@ -134,16 +145,16 @@ static void plcmp_sem_calc_clear_assembler_card(void)
 /* Record new assembler command by assembler card
  * into assembler commands' array 
  * and clear the temporary assembler card */
-static void ZKARD(void)
+static void record_assembler_card(void)
 {
     memcpy(assembler_out_text[IASSTXT], &assembler_card, 80);
     ++IASSTXT;
-    plcmp_sem_calc_clear_assembler_card();
+    clear_assembler_card();
 }
 
 /* Function translates 'long int' value written as string of ASCII-code
  * into normal 'long int' internal representation of machine */
-static long int li_str_to_li(char const *str_long_value)
+static long int long_int_str_to_long_int(char const *str_long_value)
 {
     long int long_value = 0;
     int i = 0;
@@ -161,11 +172,6 @@ static long int li_str_to_li(char const *str_long_value)
     return long_value;
 }
 
-/* п р о г р а м м а */
-/* представления фрагмента*/
-/* плотного текста в виде */
-/* массива 9-ти символьных*/
-/* лексем */
 static void FORM(goals_achieved_stack_t achieved_goal)
 {
     int i, j;
@@ -217,17 +223,11 @@ static void FORM(goals_achieved_stack_t achieved_goal)
     return;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала AVI на пер-*/
-/* вом проходе.   Здесь   */
-/* AVI -   "арифм.выраж." */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала AVI на вто-*/
-/* ром проходе.   Здесь   */
-/* AVI -   "арифм.выраж." */
+/* Subroutine is for semantic calculation 
+ * non-terminal "AVI" on the first and
+ * the second phases of semantic calculation 
+ * Here "AVI" is "arithmetic expression"
+ */
 static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
 {
     switch (entry)
@@ -264,7 +264,7 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                                 strcat(assembler_card.OPERAND, FORMT[0]);
                                 assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                                 memcpy(assembler_card.COMM, "Load variable into register", 27);
-                                ZKARD();
+                                record_assembler_card();
 
                                 return PLCMP_SEM_CALCULATOR_SUCCESS;
 
@@ -336,7 +336,7 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                                 strcat(assembler_card.OPERAND, FORMT[IFORMT - 1]);
                                 assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                                 memcpy(assembler_card.COMM, "Formation of intermediate value", 31);
-                                ZKARD();
+                                record_assembler_card();
 
                                 return PLCMP_SEM_CALCULATOR_SUCCESS;
 
@@ -382,17 +382,11 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала BUK на пер-*/
-/* вом проходе.   Здесь   */
-/* BUK -   "буква"        */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала BUK на вто-*/
-/* ром проходе.   Здесь   */
-/* BUK -   "буква"        */
+/* Subroutine is for semantic calculation 
+ * non-terminal "BUK" on the first and
+ * the second phases of semantic calculation 
+ * Here "BUK" is "letter"
+ */
 static enum plcmp_sem_calc_error_code_e BUK(int entry, void const *param)
 {
     switch (entry)
@@ -407,17 +401,11 @@ static enum plcmp_sem_calc_error_code_e BUK(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала CIF на пер-*/
-/* вом проходе.   Здесь   */
-/* CIF -   "цифра"        */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала CIF на вто-*/
-/* ром проходе.   Здесь   */
-/* CIF -   "цифра"        */
+/* Subroutine is for semantic calculation 
+ * non-terminal "CIF" on the first and
+ * the second phases of semantic calculation 
+ * Here "CIF" is "digit" 
+ */
 static enum plcmp_sem_calc_error_code_e CIF(int entry, void const *param)
 {
     switch (entry)
@@ -432,17 +420,11 @@ static enum plcmp_sem_calc_error_code_e CIF(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала IDE на пер-*/
-/* вом проходе.   Здесь   */
-/* IDE -   "идентификатор"*/
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала IDE на вто-*/
-/* ром проходе.   Здесь   */
-/* IDE -   "идентификатор"*/
+/* Subroutine is for semantic calculation 
+ * non-terminal "IDE" on the first and
+ * the second phases of semantic calculation 
+ * Here "IDE" is "identifier"
+ */
 static enum plcmp_sem_calc_error_code_e IDE(int entry, void const *param)
 {
     switch (entry)
@@ -457,17 +439,11 @@ static enum plcmp_sem_calc_error_code_e IDE(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала IPE на пер-*/
-/* вом проходе.   Здесь   */
-/* IPE - "имя переменной" */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала IPE на вто-*/
-/* ром проходе.   Здесь   */
-/* IPE - "имя переменной" */
+/* Subroutine is for semantic calculation 
+ * non-terminal "IPE" on the first and
+ * the second phases of semantic calculation 
+ * Here "IPE" is "variable name"
+ */
 static enum plcmp_sem_calc_error_code_e IPE(int entry, void const *param)
 {
     switch (entry)
@@ -482,17 +458,11 @@ static enum plcmp_sem_calc_error_code_e IPE(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала IPR на пер-*/
-/* вом проходе.   Здесь   */
-/* IPR -   "имя программы" */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала IPR на вто-*/
-/* ром проходе.   Здесь   */
-/* IPR -   "имя программы" */
+/* Subroutine is for semantic calculation 
+ * non-terminal "IPR" on the first and
+ * the second phases of semantic calculation 
+ * Here "IPR" is "program name"
+ */
 static enum plcmp_sem_calc_error_code_e IPR(int entry, void const *param)
 {
     switch (entry)
@@ -507,17 +477,11 @@ static enum plcmp_sem_calc_error_code_e IPR(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала LIT на пер-*/
-/* вом проходе.   Здесь   */
-/* LIT -   "литерал"      */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала LIT на вто-*/
-/* ром проходе.   Здесь   */
-/* LIT -   "литерал"      */
+/* Subroutine is for semantic calculation 
+ * non-terminal "LIT" on the first and
+ * the second phases of semantic calculation 
+ * Here "LIT" is "literal"
+ */
 static enum plcmp_sem_calc_error_code_e LIT(int entry, void const *param)
 {
     switch (entry)
@@ -532,17 +496,11 @@ static enum plcmp_sem_calc_error_code_e LIT(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала MAN на пер-*/
-/* вом проходе.   Здесь   */
-/* MAN -   "мантисса"     */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала MAN на вто-*/
-/* ром проходе.   Здесь   */
-/* MAN -   "мантисса"     */
+/* Subroutine is for semantic calculation 
+ * non-terminal "MAN" on the first and
+ * the second phases of semantic calculation 
+ * Here "MAN" is "mantissa"
+ */
 static enum plcmp_sem_calc_error_code_e MAN(int entry, void const *param)
 {
     switch (entry)
@@ -557,17 +515,11 @@ static enum plcmp_sem_calc_error_code_e MAN(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала ODC на пер-*/
-/* вом проходе.   Здесь   */
-/* ODC - "операт.ПЛ1- DCL"*/
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала ODC на вто-*/
-/* ром проходе.   Здесь   */
-/* ODC - "операт.ПЛ1- DCL"*/
+/* Subroutine is for semantic calculation 
+ * non-terminal "ODC" on the first and
+ * the second phases of semantic calculation 
+ * Here "ODC" is "PL1 operator of variable declaration 'DCL' "
+ */
 static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
 {
     switch (entry)
@@ -623,7 +575,7 @@ static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
 
                         if (SYM[ISYM].RAZR < strlen(FORMT[init_value_pos]))
                         {
-                            return PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG;
+                            return PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG_ERROR;
                         }
 
                         strcpy(SYM[ISYM].INIT, FORMT[init_value_pos]);
@@ -667,22 +619,11 @@ static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала OEN на пер-*/
-/* вом проходе.   Здесь   */
-/* OEN - "операт.ПЛ1-END" */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала OEN на вто-*/
-/* ром проходе.   Здесь   */
-/* OEN - "операт.ПЛ1-END" */
-/* программа    формирует */
-/* эпилог ассемблеровского*/
-/* эквивалента ПЛ1-прог-  */
-/* раммы                  */
-
+/* Subroutine is for semantic calculation 
+ * non-terminal "OEN" on the first and
+ * the second phases of semantic calculation 
+ * Here "OEN" is "PL1 operator of epilogue 'END' of program "
+ */
 static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
 {
     goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
@@ -724,7 +665,7 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
             memcpy(assembler_card.COMM, "Exit from the program", 21);
 
             /* запомнить опреацию Ассемблера */
-            ZKARD();
+            record_assembler_card();
 
             /* далее идет блок формирования декларативных
              * псевдоопераций DC для каждого идентификатора
@@ -746,7 +687,7 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
                     {
                         case 'B':
                             strcpy(assembler_card.OPERAND, SYM[i].RAZR <= 15 ? "H\'" : "F\'");
-                            strcat(assembler_card.OPERAND, gcvt(li_str_to_li(SYM[i].INIT), 10, &RAB[0]));
+                            strcat(assembler_card.OPERAND, gcvt(long_int_str_to_long_int(SYM[i].INIT), 10, &RAB[0]));
                             break;
                         case 'C':
                         {
@@ -768,7 +709,7 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
                     {
                         assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = '\'';
                         memcpy(assembler_card.COMM, "Variable definition", 19);
-                        ZKARD();
+                        record_assembler_card();
                     }
                 }
             }
@@ -784,19 +725,19 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
             memcpy(assembler_card.OPERAC, "EQU", 3);
             memcpy(assembler_card.OPERAND, "6", 1);
 
-            ZKARD();
+            record_assembler_card();
 
             memcpy(assembler_card.METKA, "RRAC", 4);
             memcpy(assembler_card.OPERAC, "EQU", 3);
             memcpy(assembler_card.OPERAND, "5", 1);
 
-            ZKARD();
+            record_assembler_card();
 
             memcpy(assembler_card.METKA, "RRAB", 4);
             memcpy(assembler_card.OPERAC, "EQU", 3);
             memcpy(assembler_card.OPERAND, "4", 1);
 
-            ZKARD();
+            record_assembler_card();
 
             memcpy(assembler_card.OPERAC, "END", 3);
 
@@ -810,7 +751,7 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
 
             memcpy(assembler_card.COMM, "End of the program", 18);
 
-            ZKARD();
+            record_assembler_card();
 
             return PLCMP_SEM_CALCULATOR_SUCCESS;
         }
@@ -823,19 +764,11 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала OPA на пер-*/
-/* вом проходе.   Здесь   */
-/* OPA - "операт.присваи- */
-/* вания арифметический   */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала OPA на вто-*/
-/* ром проходе.   Здесь   */
-/* OPA - "операт.присваи- */
-/* вания арифметический   */
+/* Subroutine is for semantic calculation 
+ * non-terminal "OPA" on the first and
+ * the second phases of semantic calculation 
+ * Here "OPA" is "operator of arithmetic assignment"
+ */
 static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
 {
     switch (entry)
@@ -870,7 +803,7 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                             strcat(assembler_card.OPERAND, FORMT[0]);
                             assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                             memcpy(assembler_card.COMM, "Formation of value of the arithmetic expression", 47);
-                            ZKARD();
+                            record_assembler_card();
 
                             return PLCMP_SEM_CALCULATOR_SUCCESS;
 
@@ -947,7 +880,7 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                     assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                                     memcpy(assembler_card.COMM, "Load base address to register", 29);
 
-                                    ZKARD();
+                                    record_assembler_card();
 
                                     memcpy(assembler_card.OPERAC, "LA", 2);
                                     strcpy(assembler_card.OPERAND, "RRAC,");
@@ -955,14 +888,14 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                     assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                                     memcpy(assembler_card.COMM, "Load operand's address to register", 34);
 
-                                    ZKARD();
+                                    record_assembler_card();
 
                                     memcpy(assembler_card.OPERAC, "AR", 2);
                                     memcpy(assembler_card.OPERAND, "RRAB,RRAC", 10);
                                     assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                                     memcpy(assembler_card.COMM, "Add values of two registers, result is in the first", 51);
 
-                                    ZKARD();
+                                    record_assembler_card();
 
                                     memcpy(assembler_card.COMM, "Move second string to the first", 31);
                                 }
@@ -987,7 +920,7 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                 strcat(assembler_card.OPERAND, p_char_syms[j]->NAME);
                                 assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
 
-                                ZKARD();
+                                record_assembler_card();
 
                                 offset += str_len;
                                 p_char_syms[j] = NULL;
@@ -1013,21 +946,11 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала OPR на пер-*/
-/* вом проходе.   Здесь   */
-/* OPR - "операт.ПЛ1-PROC"*/
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала OPR на вто-*/
-/* ром проходе.   Здесь   */
-/* OPR - "операт.ПЛ1-PROC"*/
-/* программа    формирует */
-/* пролог ассемблеровского*/
-/* эквивалента  исходной  */
-/* ПЛ1-программы          */
+/* Subroutine is for semantic calculation 
+ * non-terminal "OPR" on the first and
+ * the second phases of semantic calculation 
+ * Here "OPR" is "PL1 operator of prologue 'PROC' of program "
+ */
 static enum plcmp_sem_calc_error_code_e OPR(int entry, void const *param)
 {
     goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
@@ -1075,7 +998,7 @@ static enum plcmp_sem_calc_error_code_e OPR(int entry, void const *param)
             memcpy(assembler_card.COMM, "Start of the program", 20);
 
             /* запоминаем карту Ассемблера */
-            ZKARD();
+            record_assembler_card();
 
             /* формируем BALR-операцию Ассемблера */
             memcpy(assembler_card.OPERAC, "BALR", 4 );
@@ -1083,7 +1006,7 @@ static enum plcmp_sem_calc_error_code_e OPR(int entry, void const *param)
             memcpy(assembler_card.COMM, "Load base register", 18);
 
             /* и запоминаем ее */
-            ZKARD();
+            record_assembler_card();
 
             /* формируем USING-псевдооперацию Ассемблера */
             memcpy(assembler_card.OPERAC, "USING", 5);
@@ -1091,7 +1014,7 @@ static enum plcmp_sem_calc_error_code_e OPR(int entry, void const *param)
             memcpy(assembler_card.COMM, "Assign base register", 20);
 
             /* и запоминаем ее */
-            ZKARD();
+            record_assembler_card();
             break;
         }
         default:
@@ -1102,18 +1025,11 @@ static enum plcmp_sem_calc_error_code_e OPR(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала PRO на пер-*/
-/* вом проходе.   Здесь   */
-/* PRO - "программа"      */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала PRO на вто-*/
-/* ром проходе.   Здесь   */
-/* PRO - "программа"      */
-/* прогр.формирует выходной файл */
+/* Subroutine is for semantic calculation 
+ * non-terminal "PRO" on the first and
+ * the second phases of semantic calculation 
+ * Here "PRO" is "program"
+ */
 static enum plcmp_sem_calc_error_code_e PRO(int entry, void const *param)
 {
     switch(entry)
@@ -1127,7 +1043,7 @@ static enum plcmp_sem_calc_error_code_e PRO(int entry, void const *param)
 
             if (NULL == p_asm_f)
             {
-                return PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE;
+                return PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE_ERROR;
             }
             else
             {
@@ -1149,17 +1065,11 @@ static enum plcmp_sem_calc_error_code_e PRO(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала RZR на пер-*/
-/* вом проходе.   Здесь   */
-/* RZR - "разрядность"    */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала RZR на вто-*/
-/* ром проходе.   Здесь   */
-/* RZR - "разрядность"    */
+/* Subroutine is for semantic calculation 
+ * non-terminal "RZR" on the first and
+ * the second phases of semantic calculation 
+ * Here "RZR" is "capacity"
+ */
 static enum plcmp_sem_calc_error_code_e RZR(int entry, void const *param)
 {
     switch (entry)
@@ -1175,18 +1085,11 @@ static enum plcmp_sem_calc_error_code_e RZR(int entry, void const *param)
 }
 
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала TEL на пер-*/
-/* вом проходе.   Здесь   */
-/* TEL - "тело программы" */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала TEL на вто-*/
-/* ром проходе.   Здесь   */
-/* TEL - "тело программы" */
-
+/* Subroutine is for semantic calculation 
+ * non-terminal "TEL" on the first and
+ * the second phases of semantic calculation 
+ * Here "TEL" is "body of the program"
+ */
 static enum plcmp_sem_calc_error_code_e TEL(int entry, void const *param)
 {
     switch (entry)
@@ -1201,18 +1104,11 @@ static enum plcmp_sem_calc_error_code_e TEL(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала ZNK на пер-*/
-/* вом проходе.   Здесь   */
-/* ZNK - "знак операции"  */
-
-/* п р о г р а м м а      */
-/* семантич. вычисления   */
-/* нетерминала ZNK на вто-*/
-/* ром проходе.   Здесь   */
-/* ZNK - "знак операции"  */
-
+/* Subroutine is for semantic calculation 
+ * non-terminal "ZNK" on the first and
+ * the second phases of semantic calculation 
+ * Here "ZNK" is "sign"
+ */
 static enum plcmp_sem_calc_error_code_e ZNK(int entry, void const *param)
 {
     switch (entry)
@@ -1227,11 +1123,11 @@ static enum plcmp_sem_calc_error_code_e ZNK(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/* Function for semantic calculation
- * of the non-ternimal STC on the first
- * and second phases of semantic calculation.
- * STC is "constant string enclosed into single quotation marks " */
-
+/* Subroutine for semantic calculation
+ * non-ternimal "STC" on the first and
+ * the second phases of semantic calculation.
+ * Here "STC" is "constant string enclosed into single quotation marks"
+ */
 static enum plcmp_sem_calc_error_code_e STC(int entry, void const *param)
 {
     switch (entry)
@@ -1246,18 +1142,8 @@ static enum plcmp_sem_calc_error_code_e STC(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
-/*  п р о г р а м м а     */
-/* управления абстрактной */
-/* ЭВМ  -  семантического */
-/* вычислителя, интерпре- */
-/* тирующего абстрактную  */
-/* программу, сформирован-*/
-/* ную синтаксическим ана-*/
-/* лизатором в стеке дос- */
-/* тигнутых целей.        */
-
-/* Суть алгоритма управления в последовательной */
-/* интерпретации строк стека достижений в направлении от дна к вершине */
+/* Subroutine for semantic calculation of the achieved goals made by syntax analyzer 
+ * and for generation output assembler file */
 struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name,
                                                                char const compact_pl1_src_text[],
                                                                dst_t const *p_goals_achieved)
@@ -1271,13 +1157,6 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
     /* Clear error data structure for later using and set default successful error code */
     memset(&err_data, 0, sizeof(plcmp_sem_calc_error_data_t));
     err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS;
-
-    /* При этом каждая строка воспринимается как команда абстрактной ЭВМ со  
-     * следующими полями: 
-     * - DST.DST1 - код операции
-     * - DST.DST2 - левая граница интерпретируемого фрагмента исх.текста;
-     * - DST.DST4 - правая граница интерпретируемого фрагмента исх.текста
-     */
 
     enum plcmp_sem_calc_error_code_e (*handler[NNETRM])(int, void const*) = {
         /*    1  */ AVI,
@@ -1300,7 +1179,7 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
     };
 
     /* Clear buffer string of the assembler output file */
-    plcmp_sem_calc_clear_assembler_card();
+    clear_assembler_card();
 
     /* First and second phases of semantic calculation */
     for (sem_calc_phase = 1; sem_calc_phase < 3; sem_calc_phase++)
@@ -1327,7 +1206,7 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
                  * of the functions of the goals achieved.
                  * Prepare and send error data to the caller 
                  */
-                plcmp_sem_calc_cook_error_data(&err_data, p_goals_achieved->dst_stack[dst_index]);
+                cook_error_data(&err_data, p_goals_achieved->dst_stack[dst_index]);
                 return err_data;
             }
         }
@@ -1336,6 +1215,7 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
     return err_data;
 }
 
+/* Subroutine constructs error message by error data of semantic calculator module */
 char* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_data, char *errmsg)
 {
     switch (err_data->err_code)
@@ -1395,7 +1275,7 @@ char* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_da
             strcat(errmsg, "'");
             break;
         }
-        case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE:
+        case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE_ERROR:
         {
             strcpy(errmsg, "Can't write to assembler file");
             break;
@@ -1406,7 +1286,7 @@ char* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_da
                            "total length of strings which are being concatenated");
             break;
         }
-        case PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG:
+        case PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG_ERROR:
         {
             strcpy(errmsg, "String initializer is very long for this capacity");
             break;

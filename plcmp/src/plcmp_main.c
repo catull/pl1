@@ -89,7 +89,7 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
     return err_code;
 }
 
-/* Function processes source PL1-text by calling 
+/* Subroutine processes source PL1-text by calling 
  * lexical and syntax analyzers and semantic calculator 
  * which translate PL1-text to text with assembler mnemonic commands */
 static struct plcmp_main_error_data_s plcmp_main_process_src_text(char pl1_src_text[][LINELEN],
@@ -160,7 +160,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(char pl1_src_t
  * Requirements of the input parameters:
  * - 'argc' must be equal '2'
  * - 'argv[0]' as always is path to current program
- * - 'argv[1]' is the first parameter, it has to be the path of the PL1-file
+ * - 'argv[1]' is the first parameter, it has to be the path to the PL1-file
  */
 int main(int const argc, char const *argv[])
 {
@@ -232,31 +232,25 @@ int main(int const argc, char const *argv[])
     }
     else
     {
+        char errmsg[100];
+
         error:
 
         printf("Translation is interrupted\nReason: %s\n", plcmp_main_errmsg_by_errcode(err_data.main_err_code));
         switch(err_data.main_err_code)
         {
             case PLCMP_MAIN_LEX_ANALYZER_ERROR:
-            {
                 printf("Lexical analyzer error message: %s\n",
                        plcmp_lex_analyzer_errmsg_by_errcode(err_data.lex_analyzer_err_code));
                 break;
-            }
             case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
-            {
-                char errmsg[100];
                 printf("Syntax analyzer error message: %s\n",
                        plcmp_synt_analyzer_errmsg_by_errdata(&err_data.synt_analyzer_err_data, errmsg));
                 break;
-            }
             case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
-            {
-                char errmsg[100];
                 printf("Semantic calculator error message: %s\n",
                        plcmp_sem_calc_errmsg_by_errdata(&err_data.sem_calc_err_data, errmsg));
                 break;
-            }
             default:
                 break;
         }

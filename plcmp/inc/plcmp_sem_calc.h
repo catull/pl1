@@ -3,16 +3,9 @@
 #ifndef PLCMP_SEM_CALC_H
 #define PLCMP_SEM_CALC_H
 
-#include "plcmp_common.h"
-
 #define PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN 20
 
-/* Array for formatted (a sequence of 9-th positional lines-tokens)
- * representation interpreted fragment for compact source text */
-extern char FORMT[MAXFORMT][9];
-/* Formatted array index */
-extern int IFORMT;
-
+/* Enumerate defines error codes of semantic calculator module */
 typedef enum plcmp_sem_calc_error_code_e {
     PLCMP_SEM_CALCULATOR_SUCCESS = 0,
     PLCMP_SEM_CALCULATOR_MISMATCH_PROC_NAME_PROL_EPIL_ERROR,
@@ -21,11 +14,12 @@ typedef enum plcmp_sem_calc_error_code_e {
     PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR,
     PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR,
     PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR,
-    PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE,
+    PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE_ERROR,
     PLCMP_SEM_CALCULATOR_CONCAT_ERROR,
-    PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG
+    PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG_ERROR
 } plcmp_sem_calc_error_code_t;
 
+/* Structure defines content of the error data of semantic calculator module */
 typedef struct plcmp_sem_calc_error_data_s {
     plcmp_sem_calc_error_code_t err_code;
     union {
@@ -36,23 +30,13 @@ typedef struct plcmp_sem_calc_error_data_s {
     char src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN + 1];
 } plcmp_sem_calc_error_data_t;
 
-
-/* This struct is type of the table of labels' names of variables
- * which is being filled on the first process of semantic calculation
- * and is being used on the second process of semantic calculation 
- */
-typedef struct sym_s
-{
-    char NAME[8];
-    char TYPE;
-    unsigned int RAZR;
-    char INIT[50];
-} sym_t;
-
+/* Subroutine for semantic calculation of the achieved goals made by syntax analyzer 
+ * and for generation output assembler file */
 struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name,
                                                                char const compact_pl1_src_text[],
                                                                dst_t const *p_goals_achieved);
 
+/* Subroutine constructs error message by error data of semantic calculator module */
 char* plcmp_sem_calc_errmsg_by_errdata(plcmp_sem_calc_error_data_t const *err_data, char *errmsg);
 
 #endif /* PLCMP_SEM_CALC_H */

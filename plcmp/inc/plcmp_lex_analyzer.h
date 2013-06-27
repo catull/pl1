@@ -17,6 +17,7 @@ enum plcmp_lex_analyzer_error_code_e plcmp_lex_analyzer_compress_src_text(char c
                                                                           char pl1_src_text[][LINELEN],
                                                                           size_t pl1_src_text_len);
 
+/* Subroutine constructs error message by error code of lixical analyzer module */
 char const* plcmp_lex_analyzer_errmsg_by_errcode(plcmp_lex_analyzer_error_code_t err_code);
 
 #endif /* PLCMP_LEX_ANALYZER_H */
