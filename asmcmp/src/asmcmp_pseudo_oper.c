@@ -106,7 +106,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                 }
                 case 'C':
                 {
-                    char buffer[2] = {'\0','\0'};
+                    char buffer[2] = {'\0', '\0'};
                     size_t data_len;
 
                     data.data_type = DATA_STRING;
@@ -117,14 +117,21 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                     data.data.string_data.str_length = data_len;
                     data.data.string_data.p_string = calloc(data_len + 1, sizeof(uint8_t));
 
-                    if (!('\'' == TEK_ISX_KARTA.OPERAND[2] || '\'' == TEK_ISX_KARTA.OPERAND[3]))
+                    if ('\'' == TEK_ISX_KARTA.OPERAND[2])
                     {
-                        RAB = (uint8_t*)strtok(TEK_ISX_KARTA.OPERAND + 3, "'");
-                        strcpy((char*)data.data.string_data.p_string, (char*)RAB);
+                        if ('\'' != TEK_ISX_KARTA.OPERAND[3])
+                        {
+                            RAB = (uint8_t*)strtok(TEK_ISX_KARTA.OPERAND + 3, "'");
+                            strcpy((char*)data.data.string_data.p_string, (char*)RAB);
+                        }
+                    }
+                    else
+                    {
+                        return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;
                     }
 
                     RAB = (uint8_t*)data.data.string_data.p_string;
-                    asmcmp_common_swap_bytes(RAB, RAB, data_len);
+                    /*asmcmp_common_swap_bytes(RAB, RAB, data_len);*/
 
                     asmcmp_common_save_data_tex_card(data);
 

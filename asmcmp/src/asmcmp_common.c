@@ -93,6 +93,11 @@ void asmcmp_common_save_data_tex_card(data_t data)
     char *PTR;
     size_t data_len;
 
+    if (CHADR % 4)
+    {
+        CHADR = (CHADR / 4 + 1) * 4;
+    }
+
     PTR = (char*)&CHADR;
     TXT.ADOP[2] = *PTR;
     TXT.ADOP[1] = *(PTR + 1);
