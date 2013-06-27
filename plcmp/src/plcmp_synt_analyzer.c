@@ -68,7 +68,7 @@ static void remove_last_goal_achieved(dst_t *p_goals_achieved)
 }
 
 /* Function of syntax analyzer. It constructs parse tree and return error data if it will be */
-struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(char const compact_pl1_src_text[],
+struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char const compact_pl1_src_text[],
                                                                             dst_t *p_goals_achieved)
 {
     /* It's stack of goals and pointer on it.

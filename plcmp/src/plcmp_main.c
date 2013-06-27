@@ -12,7 +12,7 @@
 #include "plcmp_synt_analyzer.h"
 #include "plcmp_sem_calc.h"
 
-/* Function constructs error message by error code of main module */
+/* Subroutine constructs error message by error code of main module */
 static char const* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code)
 {
     switch (err_code)
@@ -66,7 +66,7 @@ static void plcmp_main_build_tpr(void)
     }
 }
 
-/* Function of reading PL1-file of the source text with 'p_pl1_fp_name' file path name */
+/* Subroutine reads PL1-file of the source text with 'p_pl1_fp_name' file path name */
 static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_fp_name,
                                                              char pl1_src_text[][LINELEN],
                                                              size_t *p_pl1_src_text_len)
@@ -150,7 +150,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(char pl1_src_t
         PLCMP_MAIN_CREATE_GOALS_ACHIEVED_STACK(goals_achieved);
 
         /* Syntax analysis of the source text and filling stack of goals achived */
-        err_data.synt_analyzer_err_data = plcmp_synt_analyzer_syntax_analyzer(compact_pl1_src_text, &goals_achieved);
+        err_data.synt_analyzer_err_data = plcmp_synt_analyzer_syntax_analysis(compact_pl1_src_text, &goals_achieved);
         if (PLCMP_SYNT_ANALYZER_SUCCESS != err_data.synt_analyzer_err_data.err_code)
         {
             /* Error in syntax of the source PL1-text.
