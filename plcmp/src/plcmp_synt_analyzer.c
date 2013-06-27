@@ -91,8 +91,6 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analyzer(char
     memset(&err_data, 0, sizeof(plcmp_synt_analyzer_error_data_t));
     err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS;
 
-
-
     add_goal(p_goals, "PRO", i, 999);
 
     if (!TPR[numb(&compact_pl1_src_text[i], 1)][numb("PRO", 3)])

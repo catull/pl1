@@ -97,6 +97,8 @@ enum plcmp_lex_analyzer_error_code_e plcmp_lex_analyzer_compress_src_text(char c
         }
     }
 
+    compact_pl1_src_text[i3] = '\0';
+
     return PLCMP_LEX_ANALYZER_SUCCESS;
 }
 
