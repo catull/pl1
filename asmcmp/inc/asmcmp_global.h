@@ -14,11 +14,11 @@
  * It is template to read the input file written by IBM 370 assembler */
 typedef struct assembler_card_s {
     char METKA[8];
-    char PROBEL1[1];
+    char PROBEL1;
     char OPERAC[5];
-    char PROBEL2[1];
+    char PROBEL2;
     char OPERAND[12];
-    char PROBEL3[1];
+    char PROBEL3;
     char COMM[52];
 } assembler_card_t;
 
@@ -77,7 +77,7 @@ typedef struct end_card_buffer_s {
 extern size_t CHADR;
 extern int ITSYM;
 extern symbols_table_t T_SYM[NSYM];
-extern assembler_card_t TEK_ISX_KARTA;
+extern assembler_card_t g_current_asm_card;
 extern int I3;
 extern char PRNMET;
 extern base_registers_table_t T_BASR[BASE_REGISTERS_COUNT];

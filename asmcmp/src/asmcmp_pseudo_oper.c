@@ -10,6 +10,8 @@
 #include "asmcmp_pseudo_oper.h"
 #include "asmcmp_global.h"
 
+extern assembler_card_t g_current_asm_card;
+
 static enum asmcmp_pseudo_oper_error_code_e FDC(int entry);
 static enum asmcmp_pseudo_oper_error_code_e FDS(int entry);
 static enum asmcmp_pseudo_oper_error_code_e FEND(int entry);
@@ -27,7 +29,54 @@ pseudo_operations_table_t T_POP[NPOP] = {
     { {'U','S','I','N','G'}, FUSING }
 };
 
-/* Function handles pseudo operation 'DC'
+/* Subroutine records the next TXT-card with 
+ * new data to OBJTEXT-array */
+static void save_data_tex_card(data_t data)
+{
+    char *PTR;
+    size_t data_len;
+
+    if (CHADR % 4)
+    {
+        CHADR = (CHADR / 4 + 1) * 4;
+    }
+
+    PTR = (char*)&CHADR;
+    TXT.ADOP[2] = *PTR;
+    TXT.ADOP[1] = *(PTR + 1);
+    TXT.ADOP[0] = '\x00';
+
+    switch (data.data_type)
+    {
+        case DATA_FIXED_BIN:
+        {
+            data_len = sizeof(data.data.fixed_bin);
+            memset(TXT.OPER, 0x40, 56);
+            memcpy(TXT.OPER, &data.data.fixed_bin, data_len);
+            TXT.DLNOP[1] = data_len;
+            break;
+        }
+        case DATA_STRING:
+        {
+            data_len = data.data.string_data.str_length;
+            memset(TXT.OPER, 0x40, 56);
+            memcpy(TXT.OPER, data.data.string_data.p_string, data_len);
+            TXT.DLNOP[1] = data_len;
+            break;
+        }
+        default:
+            ASMCMP_COMMON_ASSERT(0);
+            break;
+    }
+
+    memcpy(TXT.POLE9, ESD.POLE11, 8);
+    memcpy(OBJTEXT[ITCARD], &TXT, 80);
+    
+    ++ITCARD;
+    CHADR = CHADR + data_len;
+}
+
+/* Subroutine handles pseudo operation 'DC'
  * on the first and the second phases */
 static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
 {
@@ -38,7 +87,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
             size_t data_len = 4;
             if ('Y' == PRNMET)
             {
-                switch (TEK_ISX_KARTA.OPERAND[0])
+                switch (g_current_asm_card.OPERAND[0])
                 {
                     case 'F':
                         data_len = 4;
@@ -55,7 +104,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                     {
                         char buffer[2];
 
-                        sprintf(buffer, "%c", TEK_ISX_KARTA.OPERAND[1]);
+                        sprintf(buffer, "%c", g_current_asm_card.OPERAND[1]);
                         buffer[1] = '\0';
 
                         data_len = atoi(buffer);
@@ -89,19 +138,19 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
             data_t data;
             memset(&data, 0, sizeof(data_t));
 
-            switch (TEK_ISX_KARTA.OPERAND[0])
+            switch (g_current_asm_card.OPERAND[0])
             {
                 case 'F':
                 {
                     data.data_type = DATA_FIXED_BIN;
 
-                    RAB = (uint8_t*)strtok(TEK_ISX_KARTA.OPERAND + 2, "'");
+                    RAB = (uint8_t*)strtok(g_current_asm_card.OPERAND + 2, "'");
                     data.data.fixed_bin = atoi((char*)RAB);
 
                     RAB = (uint8_t*)&data.data.fixed_bin;
                     asmcmp_common_swap_bytes(RAB, RAB, 4);
 
-                    asmcmp_common_save_data_tex_card(data);
+                    save_data_tex_card(data);
                     break;
                 }
                 case 'C':
@@ -111,17 +160,17 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
 
                     data.data_type = DATA_STRING;
 
-                    buffer[0] = TEK_ISX_KARTA.OPERAND[1];
+                    buffer[0] = g_current_asm_card.OPERAND[1];
                     data_len = atoi(buffer);
 
                     data.data.string_data.str_length = data_len;
                     data.data.string_data.p_string = calloc(data_len + 1, sizeof(uint8_t));
 
-                    if ('\'' == TEK_ISX_KARTA.OPERAND[2])
+                    if ('\'' == g_current_asm_card.OPERAND[2])
                     {
-                        if ('\'' != TEK_ISX_KARTA.OPERAND[3])
+                        if ('\'' != g_current_asm_card.OPERAND[3])
                         {
-                            RAB = (uint8_t*)strtok(TEK_ISX_KARTA.OPERAND + 3, "'");
+                            RAB = (uint8_t*)strtok(g_current_asm_card.OPERAND + 3, "'");
                             strcpy((char*)data.data.string_data.p_string, (char*)RAB);
                         }
                     }
@@ -133,7 +182,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                     RAB = (uint8_t*)data.data.string_data.p_string;
                     /*asmcmp_common_swap_bytes(RAB, RAB, data_len);*/
 
-                    asmcmp_common_save_data_tex_card(data);
+                    save_data_tex_card(data);
 
                     ASMCMP_COMMON_RELEASE_MEM(data.data.string_data.p_string);
 
@@ -152,7 +201,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
     return ASMCMP_PSEUDO_OPER_SUCCESS;
 }
 
-/* Function handles pseudo operation 'DS'
+/* Subroutine handles pseudo operation 'DS'
  * on the first and the second phases */
 static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
 {
@@ -163,7 +212,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
             size_t data_len = 4;
             if ('Y' == PRNMET)
             {
-                switch (TEK_ISX_KARTA.OPERAND[0])
+                switch (g_current_asm_card.OPERAND[0])
                 {
                     case 'F':
                     {
@@ -183,7 +232,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
                     {
                         char buffer[2];
 
-                        sprintf(buffer, "%c", TEK_ISX_KARTA.OPERAND[1]);
+                        sprintf(buffer, "%c", g_current_asm_card.OPERAND[1]);
                         buffer[1] = '\0';
 
                         data_len = atoi(buffer);
@@ -212,7 +261,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
         }
         case 2:
         {
-            switch (TEK_ISX_KARTA.OPERAND[0])
+            switch (g_current_asm_card.OPERAND[0])
             {
                 case 'F':
                     /* TODO */
@@ -233,7 +282,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
     return ASMCMP_PSEUDO_OPER_SUCCESS;
 }
 
-/* Function handles pseudo operation 'END'
+/* Subroutine handles pseudo operation 'END'
  * on the first and the second phases */
 static enum asmcmp_pseudo_oper_error_code_e FEND(int entry)
 {
@@ -253,21 +302,21 @@ static enum asmcmp_pseudo_oper_error_code_e FEND(int entry)
     return ASMCMP_PSEUDO_OPER_PHASE_PROCESSING_END;
 }
 
-/* Function handles pseudo operation 'EQU'
+/* Subroutine handles pseudo operation 'EQU'
  * on the first and the second phases */
 static enum asmcmp_pseudo_oper_error_code_e FEQU(int entry)
 {
     switch (entry)
     {
         case 1:
-            if ('*' == TEK_ISX_KARTA.OPERAND[0])
+            if ('*' == g_current_asm_card.OPERAND[0])
             {
                 T_SYM[ITSYM].sym_value = CHADR;
                 T_SYM[ITSYM].DLSYM = 1;
             }
             else
             {
-                T_SYM[ITSYM].sym_value = atoi(TEK_ISX_KARTA.OPERAND);
+                T_SYM[ITSYM].sym_value = atoi(g_current_asm_card.OPERAND);
                 T_SYM[ITSYM].DLSYM = 1;
             }
 
@@ -284,14 +333,14 @@ static enum asmcmp_pseudo_oper_error_code_e FEQU(int entry)
     return ASMCMP_PSEUDO_OPER_SUCCESS;
 }
 
-/* Function handles pseudo operation 'START'
+/* Subroutine handles pseudo operation 'START'
  * on the first and the second phases */
 static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
 {
     switch (entry)
     {
         case 1:
-            CHADR = atoi(TEK_ISX_KARTA.OPERAND);
+            CHADR = atoi(g_current_asm_card.OPERAND);
 
             /* Operand must have a value a multiple of eight */ 
             if (CHADR % 8)
@@ -311,7 +360,7 @@ static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
             int J;
             int RAB;
 
-            METKA1 = strtok(TEK_ISX_KARTA.METKA, " ");
+            METKA1 = strtok(g_current_asm_card.METKA, " ");
             for (J = 0; J <= ITSYM; J++)
             {
                 METKA = strtok(T_SYM[J].IMSYM, " ");
@@ -366,7 +415,7 @@ static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
             int J;
             int NBASRG;
 
-            METKA1 = strtok(TEK_ISX_KARTA.OPERAND, ",");
+            METKA1 = strtok(g_current_asm_card.OPERAND, ",");
             METKA2 = strtok(NULL, " ");
             if (isalpha(*METKA2))
             {
@@ -431,7 +480,7 @@ static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
     return ASMCMP_PSEUDO_OPER_SUCCESS;
 }
 
-
+/* Subroutine constructs error message by error code of 'asmcmp pseudo operations' module */
 char const* asmcmp_pseudo_oper_errmsg_by_errcode(asmcmp_pseudo_oper_error_code_t err_code)
 {
     switch(err_code)

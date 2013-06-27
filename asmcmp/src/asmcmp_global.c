@@ -11,7 +11,7 @@ int ITSYM = -1;
 /* Table of symbols */
 symbols_table_t T_SYM[NSYM];
 /* Template for read line of the assembler code */
-assembler_card_t TEK_ISX_KARTA;
+assembler_card_t g_current_asm_card;
 
 /* Indicator of detection of label */
 char PRNMET = 'N';

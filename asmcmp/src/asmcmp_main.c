@@ -11,6 +11,8 @@
 #include "asmcmp_machine_oper.h"
 #include "asmcmp_global.h"
 
+extern assembler_card_t g_current_asm_card;
+
 /* Subroutine constructs error message by error data of main module */
 static char* errmsg_by_errdata(__asmcmp_main_error_data_t err_data, char *errmsg)
 {
@@ -197,20 +199,20 @@ static struct asmcmp_main_error_data_s process_src_text(char asm_src_text[][LINE
     {
         int i2;
 
-        memcpy(&TEK_ISX_KARTA, asm_src_text[i1], 80);
+        memcpy(&g_current_asm_card, asm_src_text[i1], 80);
 
-        if (' ' != TEK_ISX_KARTA.METKA[0])
+        if (' ' != g_current_asm_card.METKA[0])
         {
             ++ITSYM;
             PRNMET = 'Y';
-            memcpy(T_SYM[ITSYM].IMSYM, TEK_ISX_KARTA.METKA, 8);
+            memcpy(T_SYM[ITSYM].IMSYM, g_current_asm_card.METKA, 8);
             T_SYM[ITSYM].sym_value = CHADR;
         }
 
         /* Check if the current assembler command is one of the pseudo operations */
         for (i2 = 0; i2 < NPOP; i2++)
         {
-            if(!memcmp(TEK_ISX_KARTA.OPERAC, T_POP[i2].MNCPOP, 5))
+            if(!memcmp(g_current_asm_card.OPERAC, T_POP[i2].MNCPOP, 5))
             {
                 err_data.pseudo_oper_err_code = T_POP[i2].BXPROG(1);
                 switch (err_data.pseudo_oper_err_code)
@@ -231,7 +233,7 @@ static struct asmcmp_main_error_data_s process_src_text(char asm_src_text[][LINE
         /* Check if the current assembler command is one of the machine operations */
         for (I3 = 0; I3 < NOP; I3++)
         {
-            if(!memcmp(TEK_ISX_KARTA.OPERAC, T_MOP[I3].MNCOP, 5))
+            if(!memcmp(g_current_asm_card.OPERAC, T_MOP[I3].MNCOP, 5))
             {
                 err_data.machine_oper_err_code = T_MOP[I3].BXPROG(1);
                 if (ASMCMP_MACHINE_OPER_SUCCESS != err_data.machine_oper_err_code)
@@ -258,11 +260,11 @@ static struct asmcmp_main_error_data_s process_src_text(char asm_src_text[][LINE
     for (i1 = 0; i1 < asm_src_text_len; i1++)
     {
         int i2;
-        memcpy(&TEK_ISX_KARTA, asm_src_text[i1], 80);
+        memcpy(&g_current_asm_card, asm_src_text[i1], 80);
 
         for (i2 = 0; i2 < NPOP; i2++)
         {
-            if(!memcmp(TEK_ISX_KARTA.OPERAC, T_POP[i2].MNCPOP, 5))
+            if(!memcmp(g_current_asm_card.OPERAC, T_POP[i2].MNCPOP, 5))
             {
                 err_data.pseudo_oper_err_code = T_POP[i2].BXPROG(2);
                 switch (err_data.pseudo_oper_err_code)
@@ -282,7 +284,7 @@ static struct asmcmp_main_error_data_s process_src_text(char asm_src_text[][LINE
 
         for (I3 = 0; I3 < NOP; I3++)
         {
-            if(!memcmp(TEK_ISX_KARTA.OPERAC, T_MOP[I3].MNCOP, 5))
+            if(!memcmp(g_current_asm_card.OPERAC, T_MOP[I3].MNCOP, 5))
             {
                 switch (T_MOP[I3].BXPROG(2))
                 {

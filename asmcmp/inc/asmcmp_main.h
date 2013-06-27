@@ -7,6 +7,7 @@
 #include "asmcmp_pseudo_oper.h"
 #include "asmcmp_machine_oper.h"
 
+/* Enumerate defines error codes of main module */
 typedef enum asmcmp_main_error_code_e {
     ASMCMP_MAIN_SUCCESS = 0, ASMCMP_MAIN_SUCCESSFUL_TRANSLATION = ASMCMP_MAIN_SUCCESS,
     ASMCMP_MAIN_WRONG_NUM_CLI_PAR,

@@ -10,6 +10,8 @@
 #include "asmcmp_machine_oper.h"
 #include "asmcmp_global.h"
 
+extern assembler_card_t g_current_asm_card;
+
 static enum asmcmp_machine_oper_error_code_e FRR(int entry);
 static enum asmcmp_machine_oper_error_code_e FRX(int entry);
 static enum asmcmp_machine_oper_error_code_e FSS(int entry);
@@ -28,7 +30,63 @@ machine_operations_table_t T_MOP[NOP] = {
     { {'M','V','C',' ',' '}, 0xD2, FSS }
 };
 
-/* Function handles machine operation with type 'RR'
+/* Subroutine records the next TXT-card with 
+ * new machine operation to OBJTEXT-array */
+static void save_oper_tex_card(oper_t oper)
+{
+    char *PTR;
+    size_t oper_len;
+
+    PTR = (char*)&CHADR;
+    TXT.ADOP[2] = *PTR;
+    TXT.ADOP[1] = *(PTR + 1);
+    TXT.ADOP[0] = '\x00';
+
+    switch (oper.oper_type)
+    {
+        case OPER_RR:
+        {
+            ASMCMP_COMMON_ASSERT(OPER_RR_LEN == sizeof(oper_rr_t));
+
+            memset(TXT.OPER, 0x40, 56);
+            memcpy(TXT.OPER, &oper.oper.rr, OPER_RR_LEN);
+            TXT.DLNOP[1] = OPER_RR_LEN;
+            oper_len = OPER_RR_LEN;
+            break;
+        }
+        case OPER_RX:
+        {
+            ASMCMP_COMMON_ASSERT(OPER_RX_LEN == sizeof(oper_rx_t));
+
+            memset(TXT.OPER, 0x40, 56);
+            memcpy(TXT.OPER, &oper.oper.rx, OPER_RX_LEN);
+            TXT.DLNOP[1] = OPER_RX_LEN;
+            oper_len = OPER_RX_LEN;
+            break;
+        }
+        case OPER_SS:
+        {
+            ASMCMP_COMMON_ASSERT(OPER_SS_LEN == sizeof(oper_ss_t));
+
+            memset(TXT.OPER, 0x40, 56);
+            memcpy(TXT.OPER, &oper.oper.ss, OPER_SS_LEN);
+            TXT.DLNOP[1] = OPER_SS_LEN;
+            oper_len = OPER_SS_LEN;
+            break;
+        }
+        default:
+            ASMCMP_COMMON_ASSERT(0);
+            break;
+    }
+
+    memcpy(TXT.POLE9, ESD.POLE11, 8);
+    memcpy(OBJTEXT[ITCARD], &TXT, 80);
+
+    ++ITCARD;
+    CHADR = CHADR + oper_len;
+}
+
+/* Subroutine handles machine operation with type 'RR'
  * on the first and the second phases */
 static enum asmcmp_machine_oper_error_code_e FRR(int entry)
 {
@@ -60,7 +118,7 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
             oper_rr.oper.rr.opcode = T_MOP[I3].opcode;
 
             /* Get labels or direct values from the OPERAND-field of assembler code line */
-            REG_str[0] = strtok(TEK_ISX_KARTA.OPERAND, ",");
+            REG_str[0] = strtok(g_current_asm_card.OPERAND, ",");
             REG_str[1] = strtok(NULL, " ");
 
             for (i = 0; i < 2; i++)
@@ -95,10 +153,10 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
             oper_rr.oper.rr.R1R2 = R1R2;
 
             #ifdef DEBUG_MODE
-            asmcmp_common_print_oper(oper_rr);
+            asmcmp_machine_oper_print_oper(oper_rr);
             #endif
 
-            asmcmp_common_save_oper_tex_card(oper_rr);
+            save_oper_tex_card(oper_rr);
             break;
         }
         default:
@@ -109,7 +167,7 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
     return ASMCMP_MACHINE_OPER_SUCCESS;
 }
 
-/* Function handles machine operation with type 'RX'
+/* Subroutine handles machine operation with type 'RX'
  * on the first and the second phases */
 static enum asmcmp_machine_oper_error_code_e FRX(int entry)
 {
@@ -143,7 +201,7 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
             oper_rx.oper_type = OPER_RX;
             oper_rx.oper.rx.opcode = T_MOP[I3].opcode;
             
-            REG_str = strtok(TEK_ISX_KARTA.OPERAND, ",");
+            REG_str = strtok(g_current_asm_card.OPERAND, ",");
             OPER_str = strtok(NULL, " ");
 
             if (isalpha(REG_str[0]))
@@ -225,10 +283,10 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
             oper_rx.oper.rx.R1X2 = R1X2;
 
             #ifdef DEBUG_MODE
-            asmcmp_common_print_oper(oper_rx);
+            asmcmp_machine_oper_print_oper(oper_rx);
             #endif
 
-            asmcmp_common_save_oper_tex_card(oper_rx);
+            save_oper_tex_card(oper_rx);
             break;
         }
         default:
@@ -239,7 +297,7 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
     return ASMCMP_MACHINE_OPER_SUCCESS;
 }
 
-/* Function handles machine operation with type 'SS'
+/* Subroutine handles machine operation with type 'SS'
  * on the first and the second phases */
 static enum asmcmp_machine_oper_error_code_e FSS(int entry)
 {
@@ -280,7 +338,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             oper_ss.oper.ss.opcode = T_MOP[I3].opcode;
             
             /* save D1 */
-            D1_str = strtok(TEK_ISX_KARTA.OPERAND, "(");
+            D1_str = strtok(g_current_asm_card.OPERAND, "(");
             /* D1 is label */
             if (isalpha(D1_str[0]))
             {
@@ -400,10 +458,10 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             oper_ss.oper.ss.L = L;
 
             #ifdef DEBUG_MODE
-            asmcmp_common_print_oper(oper_ss);
+            asmcmp_machine_oper_print_oper(oper_ss);
             #endif
 
-            asmcmp_common_save_oper_tex_card(oper_ss);
+            save_oper_tex_card(oper_ss);
             break;
         }
         default:
@@ -428,5 +486,31 @@ char const* asmcmp_machine_oper_errmsg_by_errcode(asmcmp_machine_oper_error_code
             return "Basing error";
         default:
             return "Unknown error code for generating error message";
+    }
+}
+
+/* Subroutine prints transmitted machine operation to STDOUT */
+void asmcmp_machine_oper_print_oper(oper_t oper)
+{
+    switch (oper.oper_type)
+    {
+        case OPER_RR:
+            printf("RR: %#.2x %#.2x\n",
+                   oper.oper.rr.opcode,
+                   oper.oper.rr.R1R2);
+            break;
+        case OPER_RX:
+            printf("RX: %#.2x %#.2x %#.4x\n",
+                   oper.oper.rx.opcode,
+                   oper.oper.rx.R1X2,
+                   oper.oper.rx.B2D2);
+            break;
+        case OPER_SS:
+            printf("SS: %#.2x %#.2x %#.4x %#.4x\n",
+                   oper.oper.ss.opcode,
+                   oper.oper.ss.L,
+                   oper.oper.ss.B1D1,
+                   oper.oper.ss.B2D2);
+            break;
     }
 }
