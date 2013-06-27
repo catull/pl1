@@ -419,7 +419,16 @@ char TPR[NVXOD][NNETRM] = {
     /*|_______________________________________________________________________|  */
 };
 
-unsigned int numb(char const *p_str_symbol, unsigned int symbol_str_len)
+/* Function finds necessary string with sought-for symbol in the VXOD-table 
+ * and returns string-index of VXOD-table.
+ * 
+ * @param1: const char *p_str_symbol
+ * C-string containing name of sought-for symbol
+ *
+ * @param2: unsigned int symbol_str_len
+ * Length of the string of sought-for symbol
+ */
+unsigned int plcmp_tables_sym_sint_ind(char const *p_str_symbol, unsigned int symbol_str_len)
 {
     unsigned int i;
     for (i = 0; i < NVXOD; i++)

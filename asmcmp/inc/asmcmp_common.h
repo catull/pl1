@@ -185,7 +185,6 @@ typedef struct data_s {
 
 void asmcmp_common_save_oper_tex_card(oper_t oper);
 void asmcmp_common_save_data_tex_card(data_t data);
-
 void asmcmp_common_swap_bytes(uint8_t *p_src, uint8_t *p_dst, size_t count_bytes);
 void asmcmp_common_print_oper(oper_t oper);
 

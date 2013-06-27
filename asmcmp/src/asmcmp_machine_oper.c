@@ -16,16 +16,16 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry);
 
 /* Table of the machine operations */
 machine_operations_table_t T_MOP[NOP] = {
-    { {'B','A','L','R',' '}, '\x05', FRR },
-    { {'B','C','R',' ',' '}, '\x07', FRR },
-    { {'S','T',' ',' ',' '}, '\x50', FRX },
-    { {'L',' ',' ',' ',' '}, '\x58', FRX },
-    { {'A',' ',' ',' ',' '}, '\x5A', FRX },
-    { {'S',' ',' ',' ',' '}, '\x5B', FRX },
-    { {'L','E','R',' ',' '}, '\x38', FRR },
-    { {'L','A',' ',' ',' '}, '\x41', FRX },
-    { {'A','R',' ',' ',' '}, '\x1A', FRR },
-    { {'M','V','C',' ',' '}, '\xD2', FSS }
+    { {'B','A','L','R',' '}, 0x05, FRR },
+    { {'B','C','R',' ',' '}, 0x07, FRR },
+    { {'S','T',' ',' ',' '}, 0x50, FRX },
+    { {'L',' ',' ',' ',' '}, 0x58, FRX },
+    { {'A',' ',' ',' ',' '}, 0x5A, FRX },
+    { {'S',' ',' ',' ',' '}, 0x5B, FRX },
+    { {'L','E','R',' ',' '}, 0x38, FRR },
+    { {'L','A',' ',' ',' '}, 0x41, FRX },
+    { {'A','R',' ',' ',' '}, 0x1A, FRR },
+    { {'M','V','C',' ',' '}, 0xD2, FSS }
 };
 
 /* Function handles machine operation with type 'RR'
@@ -413,7 +413,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
     return ASMCMP_MACHINE_OPER_SUCCESS;
 }
 
-/* Function constructs error message by error code of 'asmcmp machine operations' module */
+/* Subroutine constructs error message by error code of 'asmcmp machine operations' module */
 char const* asmcmp_machine_oper_errmsg_by_errcode(asmcmp_machine_oper_error_code_t err_code)
 {
     switch (err_code)

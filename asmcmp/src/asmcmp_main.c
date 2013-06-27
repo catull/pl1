@@ -11,8 +11,8 @@
 #include "asmcmp_machine_oper.h"
 #include "asmcmp_global.h"
 
-/* Function constructs error message by error data of main module */
-static char* asmcmp_main_errmsg_by_errdata(__asmcmp_main_error_data_t err_data, char *errmsg)
+/* Subroutine constructs error message by error data of main module */
+static char* errmsg_by_errdata(__asmcmp_main_error_data_t err_data, char *errmsg)
 {
     switch (err_data.main_err_code)
     {
@@ -65,9 +65,9 @@ static char* asmcmp_main_errmsg_by_errdata(__asmcmp_main_error_data_t err_data, 
     return errmsg;
 }
 
-/* Function constructs final '.tex' file. 
+/* Subroutine constructs final '.tex' file. 
  * 'p_tex_fp_name' is path to this file */
-static enum asmcmp_main_error_code_e asmcmp_main_make_tex_file(char const *p_tex_fp_name)
+static enum asmcmp_main_error_code_e make_tex_file(char const *p_tex_fp_name)
 {
     FILE *p_text_fp;
     unsigned int cards_written;
@@ -86,8 +86,9 @@ static enum asmcmp_main_error_code_e asmcmp_main_make_tex_file(char const *p_tex
     return (cards_written == ITCARD) ? ASMCMP_MAIN_SUCCESSFUL_TRANSLATION : ASMCMP_MAIN_WRONG_WRITE_TEX_FILE_ERROR;
 }
 
-
-static void plcmp_main_init_cards(void)
+/* Subroutine initializes ESD, TXT and END cards 
+ * for beginning translation assembler operations to binary code */
+static void init_cards(void)
 {
     ESD.POLE1 = 0x02;
     memcpy(ESD.POLE2, "ESD", 3);
@@ -123,10 +124,11 @@ static void plcmp_main_init_cards(void)
     memset(END.POLE9, 0x40, 8);
 }
 
-/* Function of reading ASM-file of the source text with 'p_asm_fp_name' file path name */
-static enum asmcmp_main_error_code_e asmcmp_main_read_asm_file(char const *p_asm_fp_name,
-                                                               char asm_src_text[][LINELEN],
-                                                               size_t *p_asm_src_text_len)
+/* Subroutine reads ASM-file of the source text.
+ * 'p_asm_fp_name' is a file path name */
+static enum asmcmp_main_error_code_e read_asm_file(char const *p_asm_fp_name,
+                                                   char asm_src_text[][LINELEN],
+                                                   size_t *p_asm_src_text_len)
 {
     FILE *p_asm_f;
     asmcmp_main_error_code_t err_code = ASMCMP_MAIN_SUCCESS;
@@ -170,10 +172,10 @@ static enum asmcmp_main_error_code_e asmcmp_main_read_asm_file(char const *p_asm
     return err_code;
 }
 
-/* Function processes source ASM-text */
-static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src_text[][LINELEN],
-                                                                    size_t asm_src_text_len,
-                                                                    char const *p_tex_fp_name)
+/* Subroutine processes source ASM-text */
+static struct asmcmp_main_error_data_s process_src_text(char asm_src_text[][LINELEN],
+                                                        size_t asm_src_text_len,
+                                                        char const *p_tex_fp_name)
 {
     int i1;
     asmcmp_main_error_data_t err_data;
@@ -302,7 +304,7 @@ static struct asmcmp_main_error_data_s asmcmp_main_process_src_text(char asm_src
 
     CONT5:
 
-    err_data.main_err_data.main_err_code = asmcmp_main_make_tex_file(p_tex_fp_name);
+    err_data.main_err_data.main_err_code = make_tex_file(p_tex_fp_name);
 
     error:
 
@@ -373,14 +375,14 @@ int main(int const argc, char const *argv[])
         /* Clear array for the source ASM-text before getting text from the ASM-file */
         memset(asm_src_text, '\0', sizeof(char)*DL_ASSTEXT*LINELEN);
 
-        err_data.main_err_data.main_err_code = asmcmp_main_read_asm_file(p_asm_fp_name, asm_src_text, &asm_src_text_len);
+        err_data.main_err_data.main_err_code = read_asm_file(p_asm_fp_name, asm_src_text, &asm_src_text_len);
         if (ASMCMP_MAIN_SUCCESS == err_data.main_err_data.main_err_code)
         {
             /* After successfully reading file proceed to translation of the source text */
-            plcmp_main_init_cards();
+            init_cards();
             ASMCMP_MAIN_MAKE_TEX_FILE_PATH_BY_ASM_FILE_PATH(p_tex_fp_name, p_asm_fp_name);
             ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
-            err_data = asmcmp_main_process_src_text(asm_src_text, asm_src_text_len, p_tex_fp_name);
+            err_data = process_src_text(asm_src_text, asm_src_text_len, p_tex_fp_name);
             ASMCMP_COMMON_RELEASE_MEM(p_tex_fp_name);
         }
         else
@@ -401,7 +403,7 @@ int main(int const argc, char const *argv[])
 
         error:
 
-        printf("Translation is interrupted\nReason: %s\n", asmcmp_main_errmsg_by_errdata(err_data.main_err_data, errmsg));
+        printf("Translation is interrupted\nReason: %s\n", errmsg_by_errdata(err_data.main_err_data, errmsg));
 
         switch (err_data.main_err_data.main_err_code)
         {

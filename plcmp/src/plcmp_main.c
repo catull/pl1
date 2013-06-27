@@ -13,7 +13,7 @@
 #include "plcmp_sem_calc.h"
 
 /* Subroutine constructs error message by error code of main module */
-static char const* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code)
+static char const* errmsg_by_errcode(plcmp_main_error_code_t err_code)
 {
     switch (err_code)
     {
@@ -43,9 +43,9 @@ static char const* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code
 }
 
 /* Subroutine reads PL1-file of the source text with 'p_pl1_fp_name' file path name */
-static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_fp_name,
-                                                             char pl1_src_text[][LINELEN],
-                                                             size_t *p_pl1_src_text_len)
+static enum plcmp_main_error_code_e read_pl1_file(char const *p_pl1_fp_name,
+                                                  char pl1_src_text[][LINELEN],
+                                                  size_t *p_pl1_src_text_len)
 {
     FILE *p_pl1_f;
     plcmp_main_error_code_t err_code = PLCMP_MAIN_SUCCESS;
@@ -92,9 +92,9 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
 /* Subroutine processes source PL1-text by calling 
  * lexical and syntax analyzers and semantic calculator 
  * which translate PL1-text to text with assembler mnemonic commands */
-static struct plcmp_main_error_data_s plcmp_main_process_src_text(char pl1_src_text[][LINELEN],
-                                                                  size_t pl1_src_text_len,
-                                                                  char const *p_asm_fp_name)
+static struct plcmp_main_error_data_s process_src_text(char pl1_src_text[][LINELEN],
+                                                       size_t pl1_src_text_len,
+                                                       char const *p_asm_fp_name)
 {
     /* Compact source text */
     char compact_pl1_src_text[NSTROKA];
@@ -210,13 +210,13 @@ int main(int const argc, char const *argv[])
         /* Clear array for the source PL1-text before getting text from the PL1-file */
         memset(pl1_src_text, '\0', sizeof(char)*MAXNISXTXT*LINELEN);
 
-        err_data.main_err_code = plcmp_main_read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
+        err_data.main_err_code = read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
         if (PLCMP_MAIN_SUCCESS == err_data.main_err_code)
         {
             /* After successfully reading file proceed to compression and translation of the source text */
             PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name, p_pl1_fp_name);
             PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name);
-            err_data = plcmp_main_process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
+            err_data = process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
             PLCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
         }
         else
@@ -236,7 +236,7 @@ int main(int const argc, char const *argv[])
 
         error:
 
-        printf("Translation is interrupted\nReason: %s\n", plcmp_main_errmsg_by_errcode(err_data.main_err_code));
+        printf("Translation is interrupted\nReason: %s\n", errmsg_by_errcode(err_data.main_err_code));
         switch(err_data.main_err_code)
         {
             case PLCMP_MAIN_LEX_ANALYZER_ERROR:

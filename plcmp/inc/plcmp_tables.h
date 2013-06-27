@@ -39,6 +39,6 @@ extern char TPR[NVXOD][NNETRM];
  * @param2: unsigned int symbol_str_len
  * Length of the string of sought-for symbol
  */
-unsigned int numb(const char *p_str_symbol, unsigned int symbol_str_len);
+unsigned int plcmp_tables_sym_sint_ind(const char *p_str_symbol, unsigned int symbol_str_len);
 
 #endif /* PLCMP_TABLES_H */

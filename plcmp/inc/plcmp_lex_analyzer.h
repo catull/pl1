@@ -5,6 +5,7 @@
 
 #include "plcmp_common.h"
 
+/* Enumerate defines error codes of lexical analyzer module */
 typedef enum plcmp_lex_analyzer_error_code_e {
     PLCMP_LEX_ANALYZER_SUCCESS = 0,
     PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW

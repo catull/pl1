@@ -1187,7 +1187,7 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
         int dst_index;
         for (dst_index = 0; dst_index < p_goals_achieved->count; dst_index++)
         {
-            int hand_num = numb(p_goals_achieved->dst_stack[dst_index].DST1, 3);
+            int hand_num = plcmp_tables_sym_sint_ind(p_goals_achieved->dst_stack[dst_index].DST1, 3);
             switch(hand_num + 1)
             {
                 /* PRO */
