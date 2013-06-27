@@ -102,7 +102,7 @@ enum plcmp_lex_analyzer_error_code_e plcmp_lex_analyzer_compress_src_text(char c
     return PLCMP_LEX_ANALYZER_SUCCESS;
 }
 
-/* Subroutine constructs error message by error code of lixical analyzer module */
+/* Subroutine constructs error message by error code of lexical analyzer module */
 char const* plcmp_lex_analyzer_errmsg_by_errcode(plcmp_lex_analyzer_error_code_t err_code)
 {
     switch (err_code)
