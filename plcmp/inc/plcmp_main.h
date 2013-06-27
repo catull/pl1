@@ -8,6 +8,7 @@
 #include "plcmp_synt_analyzer.h"
 #include "plcmp_sem_calc.h"
 
+/* Enumerate defines error codes of main module */
 typedef enum plcmp_main_error_code_e {
     PLCMP_MAIN_SUCCESS = 0, PLCMP_MAIN_SUCCESSFUL_TRANSLATION = 0,
     PLCMP_MAIN_WRONG_NUM_CLI_PAR,
@@ -21,7 +22,7 @@ typedef enum plcmp_main_error_code_e {
     PLCMP_MAIN_SEM_CALCULATOR_ERROR
 } plcmp_main_error_code_t;
 
-
+/* Structure defines content of the error data of main module */
 typedef struct plcmp_main_error_data_s {
     plcmp_main_error_code_t main_err_code;
     plcmp_lex_analyzer_error_code_t lex_analyzer_err_code;
@@ -55,8 +56,8 @@ typedef struct plcmp_main_error_data_s {
  * by syntax analyzer (parser) and semantic calculator 
  * 
  * @param1:
- * 'goals_achieved' has type 'dst_t'
- * Its field 'dst_stack' has to be NULL-pointer
+ * 'goals_achieved' has type 'dst_t'. Its field 'dst_stack'
+ * has to be NULL-pointer
  *
  */
 #define PLCMP_MAIN_CREATE_GOALS_ACHIEVED_STACK(goals_achieved)                          \
@@ -75,7 +76,7 @@ typedef struct plcmp_main_error_data_s {
  * Macro destroys stack of goals achieved
  * 
  * @param1:
- * 'goals_achieved' has type 'dst_t'
+ * 'goals_achieved' has type 'dst_t'. 
  * Its field 'dst_stack' hasn't to be 'NULL'-pointer
  *
  */
