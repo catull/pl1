@@ -889,8 +889,11 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                 return PLCMP_SEM_CALCULATOR_CONCAT_ERROR;
                             }
 
+                            size_t offset = 0;
+
                             for (j = 0; j < char_syms_size; j++)
                             {
+
                                 /* For example consider PL1-command: C = A !! B (concatenation)
                                  * First phase: move 'A' to 'C'
                                  * Second phase: move 'B' to the address equal to address 'C' plus length of the operand 'A'
@@ -934,7 +937,7 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                  * as in the second phase
                                  */
 
-                                size_t offset = 0, str_len;
+                                size_t str_len;
                                 char buffer[10];
 
                                 if (0 == j)
@@ -965,7 +968,6 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                 }
                                 else
                                 {
-                                    offset += str_len;
                                     memcpy(assembler_card.COMM, "Concat fir. and sec. strings. Result is in the first", 52);
                                 }
 
