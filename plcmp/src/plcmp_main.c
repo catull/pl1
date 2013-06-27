@@ -19,17 +19,17 @@ static char const* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code
     {
         case PLCMP_MAIN_SUCCESS:
             return "No error occured";
-        case PLCMP_MAIN_WRONG_NUM_CLI_PAR:
+        case PLCMP_MAIN_WRONG_NUM_CLI_PAR_ERROR:
             return "Wrong number of command line parameters";
-        case PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH:
+        case PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH_ERROR:
             return "Wrong path to PL1-file with the source text";
-        case PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION:
+        case PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION_ERROR:
             return "Wrong input file extension with the source text";
-        case PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE:
+        case PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE_ERROR:
             return "Couldn't find file with the source text";
-        case PLCMP_MAIN_ERROR_READING_PL1_FILE:
+        case PLCMP_MAIN_READING_PL1_FILE_ERROR:
             return "Error occured while reading file with the source text";
-        case PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW:
+        case PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW_ERROR:
             return "Overflow of the program buffer while reading file with the source text";
         case PLCMP_MAIN_LEX_ANALYZER_ERROR:
             return "Error in lexical analyzer";
@@ -39,30 +39,6 @@ static char const* plcmp_main_errmsg_by_errcode(plcmp_main_error_code_t err_code
             return "Error in semantic calculator";
         default:
             return "Unknown error code for generating error message";
-    }
-}
-
-/* Subroutine constructs table of the
- * successors of the adjacency matrix
- * of the Uorshell's algorithm
- */
-static void plcmp_main_build_tpr(void)
-{
-    int i1;
-    for (i1 = 0; i1 < NNETRM; i1++)
-    {
-        int i2;
-        for (i2 = 0; i2 < NVXOD; i2++)
-        {
-            if (TPR[i2][i1] && (i1 != i2))
-            {
-                int i3;
-                for (i3 = 0; i3 < NNETRM; i3++)
-                {
-                    TPR[i2][i3] |= TPR[i1][i3];
-                }
-            }
-        }
     }
 }
 
@@ -77,7 +53,7 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
     p_pl1_f = fopen(p_pl1_fp_name , "rb");
     if (NULL == p_pl1_f)
     {
-        err_code = PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE;
+        err_code = PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE_ERROR;
     }
     else
     {
@@ -94,7 +70,7 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
                 }
                 else
                 {
-                    err_code = PLCMP_MAIN_ERROR_READING_PL1_FILE;
+                    err_code = PLCMP_MAIN_READING_PL1_FILE_ERROR;
                     break;
                 }
             }
@@ -103,7 +79,7 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(char const *p_pl1_f
         if (MAXNISXTXT == pl1_src_text_len)
         {
             /* Buffer is overflowed */
-            err_code = PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW;
+            err_code = PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW_ERROR;
         }
 
         *p_pl1_src_text_len = pl1_src_text_len;
@@ -140,11 +116,8 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(char pl1_src_t
         plcmp_lex_analyzer_compress_src_text(compact_pl1_src_text, NSTROKA, pl1_src_text, pl1_src_text_len);
     if (PLCMP_LEX_ANALYZER_SUCCESS == err_data.lex_analyzer_err_code)
     {
-        /* It's stack of goals achieved. Later its content will be created by macro */
+        /* Stack of goals achieved */
         dst_t goals_achieved;
-
-        /* Construct adjacency matrix */
-        plcmp_main_build_tpr();
 
         /* Create stack of achieved goals */
         PLCMP_MAIN_CREATE_GOALS_ACHIEVED_STACK(goals_achieved);
@@ -210,7 +183,7 @@ int main(int const argc, char const *argv[])
     /* Current program must contains one real parameter */
     if (argc != 2)
     {
-        err_data.main_err_code = PLCMP_MAIN_WRONG_NUM_CLI_PAR;
+        err_data.main_err_code = PLCMP_MAIN_WRONG_NUM_CLI_PAR_ERROR;
         goto error;
     }
 
@@ -222,14 +195,14 @@ int main(int const argc, char const *argv[])
     pl1_fp_len = strlen(p_pl1_fp_name);
     if (pl1_fp_len < 4)
     {
-        err_data.main_err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH;
+        err_data.main_err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH_ERROR;
         goto error;
     }
 
     /* Input file for translation must be with 'pli' extension */
     if (strcmp(&p_pl1_fp_name[pl1_fp_len - 4], ".pli"))
     {
-        err_data.main_err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION;
+        err_data.main_err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION_ERROR;
         goto error;
     }
     else

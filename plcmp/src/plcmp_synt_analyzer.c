@@ -8,13 +8,16 @@
 #include "plcmp_synt_analyzer.h"
 
 /* Subroutine adds a new goal into stack of goals */
-static void add_goal(cel_t *p_goals, char *T1, int T2, int T3)
+static void add_goal(cel_t *p_goals,
+                     char const *goal_name,
+                     int src_text_begin_index,
+                     int src_text_end_index)
 {
     #define new p_goals->count
 
-    strcpy(p_goals->cel_stack[new].CEL1, T1);
-    p_goals->cel_stack[new].CEL2 = T2;
-    p_goals->cel_stack[new].CEL3 = T3;
+    strcpy(p_goals->cel_stack[new].CEL1, goal_name);
+    p_goals->cel_stack[new].CEL2 = src_text_begin_index;
+    p_goals->cel_stack[new].CEL3 = src_text_end_index;
 
     #undef new
 
@@ -36,15 +39,20 @@ static void remove_last_goal(cel_t *p_goals)
 }
 
 /* Subroutine adds a goal achieved into stack of goals achieved */
-static void add_goal_achieved(dst_t *p_goals_achieved, char *T1, int T2, int T3, int T4, int T5)
+static void add_goal_achieved(dst_t *p_goals_achieved,
+                              char const *goal_achieved_name,
+                              int src_text_begin_index,
+                              int sint_index,
+                              int src_text_end_index,
+                              int next_goal_sint_index)
 {
     #define new p_goals_achieved->count
 
-    strcpy(p_goals_achieved->dst_stack[new].DST1, T1);
-    p_goals_achieved->dst_stack[new].DST2 = T2;
-    p_goals_achieved->dst_stack[new].DST3 = T3;
-    p_goals_achieved->dst_stack[new].DST4 = T4;
-    p_goals_achieved->dst_stack[new].DST5 = T5;
+    strcpy(p_goals_achieved->dst_stack[new].DST1, goal_achieved_name);
+    p_goals_achieved->dst_stack[new].DST2 = src_text_begin_index;
+    p_goals_achieved->dst_stack[new].DST3 = sint_index;
+    p_goals_achieved->dst_stack[new].DST4 = src_text_end_index;
+    p_goals_achieved->dst_stack[new].DST5 = next_goal_sint_index;
 
     #undef new
 
@@ -67,7 +75,31 @@ static void remove_last_goal_achieved(dst_t *p_goals_achieved)
     --p_goals_achieved->count;
 }
 
-/* Function of syntax analyzer. It constructs parse tree and return error data if it will be */
+/* Subroutine constructs table of the
+ * successors of the adjacency matrix
+ * of the Uorshell's algorithm
+ */
+static void plcmp_synt_analyzer_build_tpr(void)
+{
+    int i1;
+    for (i1 = 0; i1 < NNETRM; i1++)
+    {
+        int i2;
+        for (i2 = 0; i2 < NVXOD; i2++)
+        {
+            if (TPR[i2][i1] && (i1 != i2))
+            {
+                int i3;
+                for (i3 = 0; i3 < NNETRM; i3++)
+                {
+                    TPR[i2][i3] |= TPR[i1][i3];
+                }
+            }
+        }
+    }
+}
+
+/* Subroutine of syntax analyzer. It constructs parse tree and returns error data if it will be */
 struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char const compact_pl1_src_text[],
                                                                             dst_t *p_goals_achieved)
 {
@@ -76,13 +108,14 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
     cel_t goals, *p_goals = &goals;
 
     plcmp_synt_analyzer_error_data_t err_data;
+
     /* Current index in the compact text */
     int i = 0;
     /* Current index in the table of grammar rules */
     int j;
     /* Maximum index of processed compact source text 
      * It needs for sending part of source text if error will occur */
-    int i4 = 0;
+    int i_max = 0;
 
     /* Create stack of goals */
     PLCMP_SYNT_ANALYZER_CREATE_GOALS_STACK(goals);
@@ -91,6 +124,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
     memset(&err_data, 0, sizeof(plcmp_synt_analyzer_error_data_t));
     err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS;
 
+    /* Construct adjacency matrix */
+    plcmp_synt_analyzer_build_tpr();
+
     add_goal(p_goals, "PRO", i, 999);
 
     if (!TPR[numb(&compact_pl1_src_text[i], 1)][numb("PRO", 3)])
@@ -98,9 +134,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
         PLCMP_SYNT_ANALYZER_DESTROY_GOALS_STACK(goals);
 
         /* Prepare error data for return to main module */
-        err_data.err_code = PLCMP_SYNT_ANALYZER_FAILURE;
+        err_data.err_code = PLCMP_SYNT_ANALYZER_SYNTAX_ERROR;
 
-        memcpy(err_data.src_text_part, &compact_pl1_src_text[i4], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
+        memcpy(err_data.src_text_part, &compact_pl1_src_text[i_max], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
         err_data.src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN] = '\0';
 
         return err_data;
@@ -118,9 +154,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
 
     ++i;
 
-    if (i > i4)
+    if (i > i_max)
     {
-        i4 = i;
+        i_max = i;
     }
 
     if ('T' == VXOD[numb(SINT[j].DER, 3)].TYP)
@@ -223,7 +259,8 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
     if ((VXOD[numb(SINT[j].DER, 3)].TYP == 'N' ) && (SINT[j].PRED == 0))
     {
 
-        if (!strcmp(p_goals->cel_stack[p_goals->count - 1].CEL1, p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST1))
+        if (!strcmp(p_goals->cel_stack[p_goals->count - 1].CEL1,
+                    p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST1))
         {
             goto L6;
         }
@@ -247,9 +284,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
         PLCMP_SYNT_ANALYZER_DESTROY_GOALS_STACK(goals);
 
         /* Prepare error data for return to main module */
-        err_data.err_code = PLCMP_SYNT_ANALYZER_FAILURE;
+        err_data.err_code = PLCMP_SYNT_ANALYZER_SYNTAX_ERROR;
         
-        memcpy(err_data.src_text_part, &compact_pl1_src_text[i4], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
+        memcpy(err_data.src_text_part, &compact_pl1_src_text[i_max], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
         err_data.src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN] = '\0';
 
         return err_data;
@@ -260,26 +297,21 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
     }
 }
 
+/* Subroutine constructs error message by error data of syntax analyzer module */
 char* plcmp_synt_analyzer_errmsg_by_errdata(plcmp_synt_analyzer_error_data_t const *err_data, char *errmsg)
 {
     switch (err_data->err_code)
     {
         case PLCMP_SYNT_ANALYZER_SUCCESS:
-        {
             strcpy(errmsg, "No error occured");
             break;
-        }
-        case PLCMP_SYNT_ANALYZER_FAILURE:
-        {
+        case PLCMP_SYNT_ANALYZER_SYNTAX_ERROR:
             strcpy(errmsg, "Error in syntax of the source text: ");
             strcat(errmsg, err_data->src_text_part);
             break;
-        }
         default:
-        {
             strcpy(errmsg, "Unknown error code in error data for generating error message");
             break;
-        }
     }
     return errmsg;
 }
