@@ -573,7 +573,7 @@ static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
                         #define init_value_pos (init_pos + 2)
                         #define init_value_len strlen(FORMT[init_value_pos])
 
-                        if (SYM[ISYM].RAZR < strlen(FORMT[init_value_pos]))
+                        if (SYM[ISYM].RAZR < init_value_len)
                         {
                             return PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG_ERROR;
                         }
