@@ -230,21 +230,21 @@ static enum absload_machine_oper_error_code_e FSS(void)
 
             /*                 L
              * INST[1] => |xxxx xxxx|
+             *
+             * IBM370 architecture demands 
+             * to specify in SS operations 
+             * length of the operands one less. (see assembler compiler)
+             * 
+             * Therefore we restore real value of length
+             * of the operands by adding one 
              */
-            L = INST[1];
+            L = INST[1] + 0x1;
             wprintw(wgreen, "%.1d, ", L);
           
             B1 = INST[2] >> 4;
             wprintw(wgreen, "%1d),", B1);
 
             ADDR1 = VR[B1] + D1;
-          
-            #if 0
-            if (ADDR1 % 0x4 != 0)
-            {
-                return ABSLOAD_MACHINE_OPER_WRONG_ADDR_ALIGMENT_ERROR;
-            }
-            #endif
 
             /*
              *              B2  D2(4) (4 elder bits of D2 value)

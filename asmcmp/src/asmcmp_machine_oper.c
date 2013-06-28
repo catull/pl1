@@ -455,7 +455,11 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
 
             SSS3:
             
-            oper_ss.oper.ss.L = L;
+            /* IBM370 architecture demands 
+             * to specify in SS operations 
+             * length of the operands one less 
+             */
+            oper_ss.oper.ss.L = L - 0x1;
 
             #ifdef DEBUG_MODE
             asmcmp_machine_oper_print_oper(oper_ss);

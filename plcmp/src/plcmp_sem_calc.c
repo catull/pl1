@@ -793,7 +793,7 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
 
                             for (j = 0; j < char_syms_size; j++)
                             {
-                                final_necessary_razr += SYM[j].char_init_len;
+                                final_necessary_razr += p_char_syms[j]->char_init_len;
                             }
 
                             if (final_necessary_razr > SYM[i].capacity)
