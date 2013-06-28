@@ -14,9 +14,10 @@
  */
 struct sym_s
 {
-    char NAME[8];
-    char TYPE;
-    unsigned int RAZR;
+    char name[8];
+    char type;
+    size_t capacity;
+    size_t char_init_len;
     char INIT[50];
 } SYM[NSYM];
 
@@ -144,7 +145,8 @@ static void clear_assembler_card(void)
 
 /* Record new assembler command by assembler card
  * into assembler commands' array 
- * and clear the temporary assembler card */
+ * and clear the temporary assembler card 
+ */
 static void record_assembler_card(void)
 {
     memcpy(assembler_out_text[IASSTXT], &assembler_card, 80);
@@ -245,13 +247,13 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
             {
                 for (i = 0; i < ISYM; i++)
                 {
-                    if (!strcmp(SYM[i].NAME, FORMT[0]) &&
-                        (strlen(SYM[i].NAME) == strlen(FORMT[0])))
+                    if (!strcmp(SYM[i].name, FORMT[0]) &&
+                        (strlen(SYM[i].name) == strlen(FORMT[0])))
                     {
-                        switch (SYM[i].TYPE)
+                        switch (SYM[i].type)
                         {
                             case 'B':
-                                if (SYM[i].RAZR <= 15)
+                                if (SYM[i].capacity <= 15)
                                 {
                                     memcpy(assembler_card.OPERAC, "LH", 2);
                                 }
@@ -287,17 +289,17 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
 
                 for (i = 0; i < ISYM; i++)
                 {
-                    if (!strcmp(SYM[i].NAME, FORMT[IFORMT - 1]) &&
-                        (strlen(SYM[i].NAME) == formt_len))
+                    if (!strcmp(SYM[i].name, FORMT[IFORMT - 1]) &&
+                        (strlen(SYM[i].name) == formt_len))
                     {
-                        switch (SYM[i].TYPE)
+                        switch (SYM[i].type)
                         {
                             case 'B':
 
                                 switch (g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len])
                                 {
                                     case '+':
-                                        if (SYM[i].RAZR <= 15)
+                                        if (SYM[i].capacity <= 15)
                                         {
                                             memcpy(assembler_card.OPERAC, "AH", 2);
                                         }
@@ -308,7 +310,7 @@ static enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
                                         break;
 
                                     case '-':
-                                        if (SYM[i].RAZR <= 15)
+                                        if (SYM[i].capacity <= 15)
                                         {
                                             memcpy(assembler_card.OPERAC, "SH", 2);
                                         }
@@ -534,36 +536,36 @@ static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
 
             for (i = 0; i < ISYM; i++)
             {
-                if (!strcmp(SYM[i].NAME, FORMT[1])
-                    && strlen(SYM[i].NAME) == strlen(FORMT[1]))
+                if (!strcmp(SYM[i].name, FORMT[1])
+                    && strlen(SYM[i].name) == strlen(FORMT[1]))
                 {
                     return PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR;
                 }
             }
 
-            strcpy(SYM[ISYM].NAME, FORMT[1]);
+            strcpy(SYM[ISYM].name, FORMT[1]);
 
             if (!(strcmp(FORMT[2], "BIN") || strcmp(FORMT[3], "FIXED")))
             {
                 init_pos = 5;
-                SYM[ISYM].TYPE = 'B';
+                SYM[ISYM].type = 'B';
             }
             else if (!strcmp(FORMT[2], "CHAR"))
             {
                 init_pos = 4;
-                SYM[ISYM].TYPE = 'C';
+                SYM[ISYM].type = 'C';
             }
             else
             {
-                SYM[ISYM].TYPE = 'U';
+                SYM[ISYM].type = 'U';
                 return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR;
             }
 
-            SYM[ISYM].RAZR = atoi(FORMT[init_pos - 1]);
+            SYM[ISYM].capacity = atoi(FORMT[init_pos - 1]);
 
             if (!strcmp(FORMT[init_pos], "INIT"))
             {
-                switch(SYM[ISYM].TYPE)
+                switch(SYM[ISYM].type)
                 {
                     case 'B':
                         strcpy(SYM[ISYM].INIT, FORMT[init_pos + 1]);           
@@ -571,18 +573,19 @@ static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
                     case 'C':
                     {
                         #define init_value_pos (init_pos + 2)
-                        #define init_value_len strlen(FORMT[init_value_pos])
 
-                        if (SYM[ISYM].RAZR < init_value_len)
+                        SYM[ISYM].char_init_len = strlen(FORMT[init_value_pos]);
+
+                        if (SYM[ISYM].capacity < SYM[ISYM].char_init_len)
                         {
                             return PLCMP_SEM_CALCULATOR_CHAR_INIT_VERY_LONG_ERROR;
                         }
 
-                        strcpy(SYM[ISYM].INIT, FORMT[init_value_pos]);
-                        memset(&(SYM[ISYM].INIT)[init_value_len], '\0', SYM[ISYM].RAZR - init_value_len);
+                        memcpy(SYM[ISYM].INIT, FORMT[init_value_pos], SYM[ISYM].char_init_len);
+                        memset(&SYM[ISYM].INIT[SYM[ISYM].char_init_len], ' ', SYM[ISYM].capacity - SYM[ISYM].char_init_len);
+                        SYM[ISYM].INIT[SYM[ISYM].capacity] = '\0';
 
                         #undef init_value_pos
-                        #undef init_value_len
 
                         break;
                     }
@@ -592,13 +595,14 @@ static enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
             }
             else
             {
-                switch(SYM[ISYM].TYPE)
+                switch(SYM[ISYM].type)
                 {
                     case 'B':
                         strcpy(SYM[ISYM].INIT, "0B");
                         break;
                     case 'C':
-                        memset(SYM[ISYM].INIT, '\0', SYM[ISYM].RAZR);
+                        memset(SYM[ISYM].INIT, ' ', SYM[ISYM].capacity);
+                        SYM[ISYM].INIT[SYM[ISYM].capacity] = '\0';
                         break;
                     default:
                         return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR;
@@ -633,72 +637,64 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
         {
             unsigned int i;
 
-            FORM(goal_achieved); /* форматирование ПЛ1-оператора END */
+            FORM(goal_achieved);
 
-            /* если вторй терм оператора END записан в табл */
             for (i = 0; i < ISYM; i++)
             {
-                /* SYM и его тип = "P",то:*/
-                if (!strcmp(SYM[i].NAME, FORMT[1]) && 
-                    (SYM[i].TYPE == 'P') && 
-                    (strlen(SYM[i].NAME) == strlen(FORMT[1])))
+                if (!strcmp(SYM[i].name, FORMT[1]) && (SYM[i].type == 'P'))
                 {
-                    /* Successful completion of the function */
                     return PLCMP_SEM_CALCULATOR_SUCCESS;
                 }
             }
 
-            /* иначе завершение программы по ошибке */
             return PLCMP_SEM_CALCULATOR_MISMATCH_PROC_NAME_PROL_EPIL_ERROR;
         }
         case 2:
         {
             char RAB[20];
             unsigned int i;
-            /* форматируем ПЛ1-оператор END */
+            
             FORM(goal_achieved);
 
-            /* формируем код безусловного возврата управления в вызывающую программу */
+            /* Formation of the mnemonic machine operation 'BCR'
+             * for returning to the caller */
             memcpy(assembler_card.OPERAC, "BCR", 3);
-            /* операнды команды и поле построчного коментария */
             memcpy(assembler_card.OPERAND, "15,14", 5);
             memcpy(assembler_card.COMM, "Exit from the program", 21);
-
-            /* запомнить опреацию Ассемблера */
             record_assembler_card();
 
-            /* далее идет блок формирования декларативных
-             * псевдоопераций DC для каждого идентификатора
-             * попавшего в табл.SYM
-             */
+            /* Formation of the 'DC' pseudo operations 
+             * for each label which have been saved into SYM-table
+             * except label of name of the program */
             for (i = 0; i < ISYM; i++)
             {
-                if (isalpha(SYM[i].NAME[0]))
+                if (isalpha(SYM[i].name[0]))
                 {
-                    int t_flag = 'P' != SYM[i].TYPE;
+                    int t_flag = 'P' != SYM[i].type;
                     if (t_flag)
                     {
-                        strcpy(assembler_card.METKA, SYM[i].NAME);
+                        strcpy(assembler_card.METKA, SYM[i].name);
                         assembler_card.METKA[strlen(assembler_card.METKA)] = ' ';
                         memcpy(assembler_card.OPERAC, "DC", 2);
                     }
 
-                    switch(SYM[i].TYPE)
+                    switch(SYM[i].type)
                     {
                         case 'B':
-                            strcpy(assembler_card.OPERAND, SYM[i].RAZR <= 15 ? "H\'" : "F\'");
+                            strcpy(assembler_card.OPERAND, SYM[i].capacity <= 15 ? "H\'" : "F\'");
                             strcat(assembler_card.OPERAND, gcvt(long_int_str_to_long_int(SYM[i].INIT), 10, &RAB[0]));
                             break;
                         case 'C':
                         {
                             char buffer[2];
-                            strcpy(assembler_card.OPERAND, "C");
+                            strcpy(assembler_card.OPERAND, "CL");
 
-                            sprintf(buffer, "%d", SYM[i].RAZR);
+                            sprintf(buffer, "%lu", SYM[i].capacity);
                             strcat(assembler_card.OPERAND, buffer);
-                            
+
                             strcat(assembler_card.OPERAND, "\'");
                             strcat(assembler_card.OPERAND, SYM[i].INIT);
+
                             break;
                         }
                         default:
@@ -714,43 +710,25 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
                 }
             }
 
-            /* далее идет блок декла- */
-            /* ративных ассемблеровс- */
-            /* ких EQU-операторов, оп-*/
-            /* ределяющих базовый и   */
-            /* рабочий регистры общего*/
-            /* назначения */
-
+            /* Formation of 'EQU' pseudo operation
+             * Definition of the number of RBASE register */
             memcpy(assembler_card.METKA, "RBASE", 5);
             memcpy(assembler_card.OPERAC, "EQU", 3);
-            memcpy(assembler_card.OPERAND, "6", 1);
-
+            memcpy(assembler_card.OPERAND, "15", 2);
             record_assembler_card();
 
-            memcpy(assembler_card.METKA, "RRAC", 4);
-            memcpy(assembler_card.OPERAC, "EQU", 3);
-            memcpy(assembler_card.OPERAND, "5", 1);
-
-            record_assembler_card();
-
+            /* Formation of 'EQU' pseudo operation
+             * Defininition of the number of RRAB register */
             memcpy(assembler_card.METKA, "RRAB", 4);
             memcpy(assembler_card.OPERAC, "EQU", 3);
             memcpy(assembler_card.OPERAND, "4", 1);
-
             record_assembler_card();
 
+            /* Formation of 'END' pseudo operation */
             memcpy(assembler_card.OPERAC, "END", 3);
-
-            i = 0;
-
-            while (FORMT[1][i] != '\0')
-            {
-                assembler_card.OPERAND[i] = FORMT[1][i];
-                ++i;
-            }
-
+            strcpy(assembler_card.OPERAND, FORMT[1]);
+            assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
             memcpy(assembler_card.COMM, "End of the program", 18);
-
             record_assembler_card();
 
             return PLCMP_SEM_CALCULATOR_SUCCESS;
@@ -784,13 +762,13 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
 
             for (i = 0; i < ISYM; i++)
             {
-                if (!strcmp(SYM[i].NAME, FORMT[0]) &&
-                    strlen(SYM[i].NAME) == strlen(FORMT[0]))
+                if (!strcmp(SYM[i].name, FORMT[0]) &&
+                    strlen(SYM[i].name) == strlen(FORMT[0]))
                 {
-                    switch (SYM[i].TYPE)
+                    switch (SYM[i].type)
                     {
                         case 'B':
-                            if (SYM[i].RAZR <= 15)
+                            if (SYM[i].capacity <= 15)
                             {
                                 memcpy(assembler_card.OPERAC, "STH", 3);
                             }
@@ -812,12 +790,13 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                             int j;
 
                             size_t final_necessary_razr = 0;
+
                             for (j = 0; j < char_syms_size; j++)
                             {
-                                final_necessary_razr += strlen(p_char_syms[j]->INIT);
+                                final_necessary_razr += SYM[j].char_init_len;
                             }
 
-                            if (final_necessary_razr > SYM[i].RAZR)
+                            if (final_necessary_razr > SYM[i].capacity)
                             {
                                 return PLCMP_SEM_CALCULATOR_CONCAT_ERROR;
                             }
@@ -826,7 +805,6 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
 
                             for (j = 0; j < char_syms_size; j++)
                             {
-
                                 /* For example consider PL1-command: C = A !! B (concatenation)
                                  * First phase: move 'A' to 'C'
                                  * Second phase: move 'B' to the address equal to address 'C' plus length of the operand 'A'
@@ -840,27 +818,20 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                  * 
                                  * - D1 (displacement of the destination operand) - in our case always will be have '0' value 
                                  * on the first phase and 'length of the second operand by previous phase' on the second phase
-                                 * If it is much more phases than two then D1 will be contain lengths of the operands which have
-                                 * been concatenated with destination operand
-                                 * - L (length of the operands) - in our case it will be length of the source operand
-                                 * - B1 (base of the destination operand) - it will be constructed 
-                                 * of two values: RBASE value and base address of the destination operand. 
-                                 * RBASE value is contained in default base register RBASE and usually has '0' value
-                                 * for program.
+                                 * If it is much more phases than two then D1 will be contain sum of lengths of the operands which have
+                                 * been already concatenated
+                                 * - L (length of the operands) - in our case it will be length of the source operand on the each
+                                 * phase
+                                 * - B1 (base of the destination operand) - this value contains number of register for basing
+                                 * for destination operand. Base address for destination operand 
+                                 * in our case will be consist of absolute address of the destination operand
                                  * - D2 (displacement of the source operand) - it has to be symbolic name 
                                  * of the second operand or absolute displacement address of the second operand
                                  *
-                                 * Base address of the destination operand on the start has value equal to
-                                 * displacement address of the destination operand (while operation " move 'A' to 'C' " 
-                                 * is being processed)
-                                 *
                                  * Now we can construct sequence of the assembler commands for processing 
                                  * first phase of concatenation (move 'A' to 'C'):
-                                 * 1) LER RRAB,RBASE (Load RBASE register value into RRAB register, number
-                                 * of registers must be equal to 0, 2, 4 or 6)
-                                 * 2) LA RRAC,D (Load address of destination operand 'D' to RRAC register)
-                                 * 3) AR RRAB,RRAC (Add value of RRAC register to value of RRAB, result is in RRAB)
-                                 * 4) MVC 0(len(A),RRAB),A  (len(A) calculates by the PL1-compiler)
+                                 * 1) LA RRAB,C (Load address of destination operand 'C' to RRAB register)
+                                 * 2) MVC 0(len(A),RRAB),A  (len(A) calculates by the PL1-compiler)
                                  *
                                  * The second phase is concatenate result of the first phase and operand 'B':
                                  * 1) MVC len(A)(len(B),RRAB),B (len(B) calculates by PL1-compiler, len(A) have been 
@@ -875,26 +846,12 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
 
                                 if (0 == j)
                                 {
-                                    memcpy(assembler_card.OPERAC, "LER", 3);
-                                    memcpy(assembler_card.OPERAND, "RRAB,RBASE", 10);
-                                    assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
-                                    memcpy(assembler_card.COMM, "Load base address to register", 29);
-
-                                    record_assembler_card();
-
+                                    /* Formation of 'LA' operation */
                                     memcpy(assembler_card.OPERAC, "LA", 2);
-                                    strcpy(assembler_card.OPERAND, "RRAC,");
-                                    strcat(assembler_card.OPERAND, SYM[i].NAME);
+                                    strcpy(assembler_card.OPERAND, "RRAB,");
+                                    strcat(assembler_card.OPERAND, SYM[i].name);
                                     assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                                     memcpy(assembler_card.COMM, "Load operand's address to register", 34);
-
-                                    record_assembler_card();
-
-                                    memcpy(assembler_card.OPERAC, "AR", 2);
-                                    memcpy(assembler_card.OPERAND, "RRAB,RRAC", 10);
-                                    assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
-                                    memcpy(assembler_card.COMM, "Add values of two registers, result is in the first", 51);
-
                                     record_assembler_card();
 
                                     memcpy(assembler_card.COMM, "Move second string to the first", 31);
@@ -904,22 +861,21 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
                                     memcpy(assembler_card.COMM, "Concat fir. and sec. strings. Result is in the first", 52);
                                 }
 
-                                /* MVC */
+                                /* Formation of 'MVC' operation */
                                 memcpy(assembler_card.OPERAC, "MVC", 3);
                                 /* D1 */
                                 sprintf(buffer, "%lu", offset);
                                 strcpy(assembler_card.OPERAND, buffer);
                                 strcat(assembler_card.OPERAND, "(");
                                 /* L */
-                                str_len = strlen(p_char_syms[j]->INIT);
+                                str_len = p_char_syms[j]->char_init_len;
                                 sprintf(buffer, "%lu", str_len);
                                 strcat(assembler_card.OPERAND, buffer);
                                 /* B1 */
                                 strcat(assembler_card.OPERAND, ",RRAB),");
                                 /* D2 */
-                                strcat(assembler_card.OPERAND, p_char_syms[j]->NAME);
+                                strcat(assembler_card.OPERAND, p_char_syms[j]->name);
                                 assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
-
                                 record_assembler_card();
 
                                 offset += str_len;
@@ -958,63 +914,42 @@ static enum plcmp_sem_calc_error_code_e OPR(int entry, void const *param)
     {
         case 1:
         {
-            FORM(goal_achieved);                                        /* форматируем оператор   */
-            /* ПЛ1 PROC               */
+            FORM(goal_achieved);
 
-            strcpy(SYM[ISYM].NAME, FORMT[0]);          /* перепишем имя ПЛ1-прог-*/
-            /* раммы в табл. SYM,     */
-
-            SYM[ISYM].TYPE = 'P';                        /* установим тип этого    */
-            /* имени = 'P'            */
-            SYM[ISYM].RAZR = 0;                  /* установим разрядность  */
+            /* Save program name as identifier */
+            strcpy(SYM[ISYM].name, FORMT[0]);
+            /* Set type 'P' */
+            SYM[ISYM].type = 'P';
+            /* Capacity is 0 */
+            SYM[ISYM].capacity = 0;
             ++ISYM;
-            /* равной 0               */
 
-                                                   /* успешное завершение    */
-            /* программы              */
             break;
         }
         case 2:
         {
-            unsigned int i = 0;
             FORM(goal_achieved);
-            /* форматируем оператор   */
-            /* ПЛ1 - "начало процедур-*/
-            /* ного блока"            */
 
-            while ('\0' != FORMT[0][i])
-            {
-                assembler_card.METKA[i] = FORMT[0][i];  /* нулевой терм используем */
-                ++i;
-            }
-
-
-            /* как метку в START-псев-*/
-            /* дооперации Ассемблера  */
-
-            /* достраиваем код и операнды в START-псевдооперации Ассемблера */
+            /* Formation of pseudo operation 'START' */
+            strcpy(assembler_card.METKA, FORMT[0]);
+            assembler_card.METKA[strlen(assembler_card.METKA)] = ' ';
             memcpy(assembler_card.OPERAC, "START", 5);
             memcpy(assembler_card.OPERAND, "0", 1);
             memcpy(assembler_card.COMM, "Start of the program", 20);
-
-            /* запоминаем карту Ассемблера */
             record_assembler_card();
 
-            /* формируем BALR-операцию Ассемблера */
+            /* Formation of mnemonic machine operation 'BALR' */
             memcpy(assembler_card.OPERAC, "BALR", 4 );
             memcpy(assembler_card.OPERAND, "RBASE,0", 7);
             memcpy(assembler_card.COMM, "Load base register", 18);
-
-            /* и запоминаем ее */
             record_assembler_card();
 
-            /* формируем USING-псевдооперацию Ассемблера */
+            /* Formation of pseudo operation 'USING' */
             memcpy(assembler_card.OPERAC, "USING", 5);
             memcpy(assembler_card.OPERAND, "*,RBASE", 7);
             memcpy(assembler_card.COMM, "Assign base register", 20);
-
-            /* и запоминаем ее */
             record_assembler_card();
+
             break;
         }
         default:
