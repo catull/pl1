@@ -30,7 +30,7 @@ int P_ST(void);
 int P_L(void);
 int P_A(void);
 int P_S(void);
-int P_LER(void);
+int P_LR(void);
 int P_LA(void);
 int P_AR(void);
 int P_MVC(void);

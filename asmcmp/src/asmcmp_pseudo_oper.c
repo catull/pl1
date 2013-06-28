@@ -104,7 +104,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                     {
                         char buffer[2];
 
-                        sprintf(buffer, "%c", g_current_asm_card.OPERAND[1]);
+                        sprintf(buffer, "%c", g_current_asm_card.OPERAND[2]);
                         buffer[1] = '\0';
 
                         data_len = atoi(buffer);
@@ -160,17 +160,17 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
 
                     data.data_type = DATA_STRING;
 
-                    buffer[0] = g_current_asm_card.OPERAND[1];
+                    buffer[0] = g_current_asm_card.OPERAND[2];
                     data_len = atoi(buffer);
 
                     data.data.string_data.str_length = data_len;
                     data.data.string_data.p_string = calloc(data_len + 1, sizeof(uint8_t));
 
-                    if ('\'' == g_current_asm_card.OPERAND[2])
+                    if ('\'' == g_current_asm_card.OPERAND[3])
                     {
-                        if ('\'' != g_current_asm_card.OPERAND[3])
+                        if ('\'' != g_current_asm_card.OPERAND[4])
                         {
-                            RAB = (uint8_t*)strtok(g_current_asm_card.OPERAND + 3, "'");
+                            RAB = (uint8_t*)strtok(g_current_asm_card.OPERAND + 4, "'");
                             strcpy((char*)data.data.string_data.p_string, (char*)RAB);
                         }
                     }
@@ -180,7 +180,6 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                     }
 
                     RAB = (uint8_t*)data.data.string_data.p_string;
-                    /*asmcmp_common_swap_bytes(RAB, RAB, data_len);*/
 
                     save_data_tex_card(data);
 

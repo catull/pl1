@@ -18,7 +18,7 @@ machine_operations_table_t T_MOP[NOP] = {
     {{'L', ' ', ' ', ' ', ' '}, 0x58, OPER_RX_LEN, FRX},
     {{'A', ' ', ' ', ' ', ' '}, 0x5A, OPER_RX_LEN, FRX},
     {{'S', ' ', ' ', ' ', ' '}, 0x5B, OPER_RX_LEN, FRX},
-    {{'L', 'E', 'R', ' ', ' '}, 0x38, OPER_RR_LEN, FRR},
+    {{'L', 'R', ' ', ' ', ' '}, 0x18, OPER_RR_LEN, FRR},
     {{'L', 'A', ' ', ' ', ' '}, 0x41, OPER_RX_LEN, FRX},
     {{'A', 'R', ' ', ' ', ' '}, 0x1A, OPER_RR_LEN, FRR},
     {{'M', 'V', 'C', ' ', ' '}, 0xD2, OPER_SS_LEN, FSS}
@@ -401,7 +401,7 @@ int P_S(void)
 }
 
 /* Subroutine realizes semantic of the machine operation 'LER' */
-int P_LER(void)
+int P_LR(void)
 {
     VR[R1] = VR[R2];
     return 0;
@@ -410,7 +410,7 @@ int P_LER(void)
 /* Subroutine realizes semantic of the machine operation 'P_LA' */
 int P_LA(void)
 {
-    VR[R1] = D;
+    VR[R1] = VR[B] + VR[X] + D;
     return 0;
 }
 

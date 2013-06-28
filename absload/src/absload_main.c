@@ -388,7 +388,7 @@ static enum absload_main_error_code_e sys(void)
             P_S();
             break;
         case 0x38:
-            P_LER();
+            P_LR();
             break;
         case 0x41:
             P_LA();
