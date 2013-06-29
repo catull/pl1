@@ -6,11 +6,11 @@
 #include <assert.h>
 #include <stdint.h>
 
-#define DL_ASSTEXT 50
-#define DL_OBJTEXT 50                             /*длина об'ектн. текста   */
-#define NSYM 10                                   /*размер табл.символов    */
-#define NPOP 6                                    /*размер табл.псевдоопер. */
-#define NOP 10                                    /*размер табл.операций    */
+#define ASMTEXT_MAX_LEN 50                      /* Max row-length of the source assembler text */ 
+#define OBJTEXT_MAX_LEN ASMTEXT_MAX_LEN         /* Length of the object text */
+#define NSYM 10                                 /* Size of the table of symbols */
+#define NPOP 6                                  /* Size of the table of pseudo operations */
+#define NOP 10                                  /* Size of the table of machine operations */
 
 /* The limited length of the line of the assembler source text 
  * It has to be 81 (80 + 1) because 'fread' function reads 

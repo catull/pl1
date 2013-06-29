@@ -144,7 +144,7 @@ static enum asmcmp_main_error_code_e read_asm_file(char const *p_asm_fp_name,
     {
         size_t asm_src_text_len;
         /* Write opened file to byte-array */
-        for (asm_src_text_len = 0; asm_src_text_len < DL_ASSTEXT; asm_src_text_len++)
+        for (asm_src_text_len = 0; asm_src_text_len < ASMTEXT_MAX_LEN; asm_src_text_len++)
         {
             if (!fread(asm_src_text[asm_src_text_len], 1, LINELEN, p_asm_f))
             {
@@ -161,7 +161,7 @@ static enum asmcmp_main_error_code_e read_asm_file(char const *p_asm_fp_name,
             }
         }
 
-        if (DL_ASSTEXT == asm_src_text_len)
+        if (ASMTEXT_MAX_LEN == asm_src_text_len)
         {
             /* Buffer is overflowed */
             err_code = ASMCMP_MAIN_PROGRAM_BUFFER_OVERFLOW;
@@ -332,7 +332,7 @@ static struct asmcmp_main_error_data_s process_src_text(char asm_src_text[][LINE
  */
 int main(int const argc, char const *argv[])
 {
-    char asm_src_text[DL_ASSTEXT][LINELEN];                  /* Content of the array of the source ASM-text */
+    char asm_src_text[ASMTEXT_MAX_LEN][LINELEN];                  /* Content of the array of the source ASM-text */
     size_t asm_src_text_len = 0;                             /* Length of the array of the source ASM-text */
     char *p_asm_fp_name = NULL, *p_tex_fp_name = NULL;
     size_t asm_fp_len;
@@ -375,7 +375,7 @@ int main(int const argc, char const *argv[])
     else
     {
         /* Clear array for the source ASM-text before getting text from the ASM-file */
-        memset(asm_src_text, '\0', sizeof(char)*DL_ASSTEXT*LINELEN);
+        memset(asm_src_text, '\0', sizeof(char)*ASMTEXT_MAX_LEN*LINELEN);
 
         err_data.main_err_data.main_err_code = read_asm_file(p_asm_fp_name, asm_src_text, &asm_src_text_len);
         if (ASMCMP_MAIN_SUCCESS == err_data.main_err_data.main_err_code)

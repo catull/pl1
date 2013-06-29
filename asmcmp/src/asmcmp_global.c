@@ -36,7 +36,7 @@ base_registers_table_t T_BASR[BASE_REGISTERS_COUNT] = {
     { 0x00, 'N' }
 };
 
-char OBJTEXT[DL_OBJTEXT][80];
+char OBJTEXT[OBJTEXT_MAX_LEN][80];
 int ITCARD;
 
 esd_card_buffer_t ESD;

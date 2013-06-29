@@ -56,7 +56,7 @@ static char assembler_out_text[MAXLTXT][80];
 static int IASSTXT;
 
 /* Subroutine prepares error data for sending its to caller
- * Error code in 'p_err_data->err_code' controls which data will be written */
+ * Error code in 'p_err_data->err_code' controls what kind of data will be written */
 static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data, 
                             goals_achieved_stack_t goal_achieved)
 {
@@ -665,7 +665,8 @@ static enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
 
             /* Formation of the 'DC' pseudo operations 
              * for each label which have been saved into SYM-table
-             * except label of name of the program */
+             * except label of name of the program 
+             */
             for (i = 0; i < ISYM; i++)
             {
                 if (isalpha(SYM[i].name[0]))

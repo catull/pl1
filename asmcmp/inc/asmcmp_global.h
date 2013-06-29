@@ -82,7 +82,7 @@ extern int I3;
 extern char PRNMET;
 extern base_registers_table_t T_BASR[BASE_REGISTERS_COUNT];
 
-extern char OBJTEXT[DL_OBJTEXT][80];
+extern char OBJTEXT[OBJTEXT_MAX_LEN][80];
 extern int ITCARD;
 
 extern esd_card_buffer_t ESD;
