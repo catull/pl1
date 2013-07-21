@@ -184,7 +184,7 @@ void wind(void)
 //загруженной программы
 static enum absload_main_error_code_e sys(void)           
 {
-    int res, temp;
+    int res;
     int ch;
     int gr_pos_x, gr_pos_y;
     int ii = 0, jj = 0;
@@ -273,7 +273,7 @@ static enum absload_main_error_code_e sys(void)
     {
         for (jj = 0; jj < gr_y - 1; jj++)
         {
-            temp = mvwinnstr(wgreen, jj + 1, 0, wstr, 67);    
+            mvwinnstr(wgreen, jj + 1, 0, wstr, 67);    
             mvwaddnstr(wgreen, jj, 0, wstr, 67);
             wrefresh(wgreen);
         }

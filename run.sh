@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 
 bin/plcmp prog/${1}.pli && 
 bin/asmcmp prog/${1}.ass && 

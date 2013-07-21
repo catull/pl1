@@ -1,7 +1,7 @@
 remarks.txt
 symbols.txt
 
-bin/*
+bin
 
 *.o
 *.d
@@ -10,3 +10,6 @@ bin/*
 *.ass
 *.tex
 *.mod
+
+pl1.sublime-project
+pl1.sublime-workspace
