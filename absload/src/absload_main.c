@@ -387,14 +387,8 @@ static enum absload_main_error_code_e sys(void)
         case 0x5B:
             P_S();
             break;
-        case 0x38:
-            P_LR();
-            break;
         case 0x41:
             P_LA();
-            break;
-        case 0x1A:
-            P_AR();
             break;
         case 0xD2:
             P_MVC();

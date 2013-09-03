@@ -398,24 +398,10 @@ int P_S(void)
     return 0;
 }
 
-/* Subroutine realizes semantic of the machine operation 'LER' */
-int P_LR(void)
-{
-    VR[R1] = VR[R2];
-    return 0;
-}
-
 /* Subroutine realizes semantic of the machine operation 'P_LA' */
 int P_LA(void)
 {
     VR[R1] = VR[B] + VR[X] + D;
-    return 0;
-}
-
-/* Subroutine realizes semantic of the machine operation 'AR' */
-int P_AR(void)
-{
-    VR[R1] += VR[R2];
     return 0;
 }
 
