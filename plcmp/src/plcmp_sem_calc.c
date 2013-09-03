@@ -806,42 +806,6 @@ static enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
 
                             for (j = 0; j < char_syms_size; j++)
                             {
-                                /* For example consider PL1-command: C = A !! B (concatenation)
-                                 * First phase: move 'A' to 'C'
-                                 * Second phase: move 'B' to the address equal to address 'C' plus length of the operand 'A'
-                                 *
-                                 * Format of command for move one string to another: 
-                                 * MVC D1(L,B1),D2(B2) 
-                                 * 
-                                 * Instead of exact command we construct 
-                                 * command MVC D1(L,B1),D2 (without B2 base address value, 
-                                 * because in our case it is contained by default in RBASE register) 
-                                 * 
-                                 * - D1 (displacement of the destination operand) - in our case always will be have '0' value 
-                                 * on the first phase and 'length of the second operand by previous phase' on the second phase
-                                 * If it is much more phases than two then D1 will be contain sum of lengths of the operands which have
-                                 * been already concatenated
-                                 * - L (length of the operands) - in our case it will be length of the source operand on the each
-                                 * phase
-                                 * - B1 (base of the destination operand) - this value contains number of register for basing
-                                 * for destination operand. Base address for destination operand 
-                                 * in our case will be consist of absolute address of the destination operand
-                                 * - D2 (displacement of the source operand) - it has to be symbolic name 
-                                 * of the second operand or absolute displacement address of the second operand
-                                 *
-                                 * Now we can construct sequence of the assembler commands for processing 
-                                 * first phase of concatenation (move 'A' to 'C'):
-                                 * 1) LA RRAB,C (Load address of destination operand 'C' to RRAB register)
-                                 * 2) MVC 0(len(A),RRAB),A  (len(A) calculates by the PL1-compiler)
-                                 *
-                                 * The second phase is concatenate result of the first phase and operand 'B':
-                                 * 1) MVC len(A)(len(B),RRAB),B (len(B) calculates by PL1-compiler, len(A) have been 
-                                 * already calculated by the previous phase)
-                                 *
-                                 * In the cycle we can concatenate more strings with '!!' operator. Actions are the same 
-                                 * as in the second phase
-                                 */
-
                                 size_t str_len;
                                 char buffer[10];
 
