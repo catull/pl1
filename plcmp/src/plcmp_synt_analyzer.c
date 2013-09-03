@@ -12,6 +12,8 @@ static void add_goal(cel_t *p_goals,
                      int src_text_begin_index,
                      int src_text_end_index)
 {
+    printf("%s %d %d\n", goal_name, src_text_begin_index, src_text_end_index);
+
     #define new p_goals->count
 
     strcpy(p_goals->cel_stack[new].CEL1, goal_name);

@@ -12,13 +12,13 @@ enum plcmp_lex_analyzer_error_code_e plcmp_lex_analyzer_compress_src_text(char c
                                                                           char pl1_src_text[][LINELEN],
                                                                           size_t pl1_src_text_len)
 {
-    int i1, i3 = 0;
+    unsigned int i1, i3 = 0;
     /* Last processed symbol in the compact source PL1-text */
     char prev_processed_symb = '\0';
 
     for (i1 = 0; i1 < pl1_src_text_len; i1++)
     {
-        int i2;
+        unsigned int i2;
         for (i2 = 0; i2 < LINELEN; i2++)
         {
             if ('\0' != pl1_src_text[i1][i2])
@@ -43,10 +43,10 @@ enum plcmp_lex_analyzer_error_code_e plcmp_lex_analyzer_compress_src_text(char c
                      '\''== prev_processed_symb))
                 {
                     /* In accordance with this condition 'pl1_src_text[i1][i2]'
-                     * which contains space-symbol will be removed
+                     * which contains whitespace-symbol will be removed
                      * from the source text.
-                     * Compressed text will not contain this space-symbol
-                     * after 'prev_processed_symb' which already 
+                     * Compressed text will not contain this whitespace-symbol
+                     * after 'prev_processed_symb' which is being already 
                      * contained in compact source text
                      * For example:
                      * - "TEXT    TEXT2" source text will be processed to "TEXT TEXT2" compact source text
@@ -54,7 +54,7 @@ enum plcmp_lex_analyzer_error_code_e plcmp_lex_analyzer_compress_src_text(char c
                      * - "TEXT(    TEXT2" source text will be processed to "TEXT(TEXT2" compact source text
                      *
                      * In this way accordance with this condition we remove excess
-                     * space-symbol after 'prev_processed_symb' symbol
+                     * whitespace-symbol after 'prev_processed_symb' symbol
                      */
                      continue; 
                 }
@@ -77,7 +77,7 @@ enum plcmp_lex_analyzer_error_code_e plcmp_lex_analyzer_compress_src_text(char c
                      * - "TEXT  (TEXT2" source text will be processed to "TEXT(TEXT2" compact source text
                      *
                      * In this way in accordance with this condition we remove excess
-                     * space-symbol before 'pl1_src_text[i1][i2]' symbol
+                     * whitespace-symbol before 'pl1_src_text[i1][i2]' symbol
                      */
                     i3--;
                 }

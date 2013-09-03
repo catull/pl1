@@ -1042,6 +1042,25 @@ static enum plcmp_sem_calc_error_code_e STC(int entry, void const *param)
     return PLCMP_SEM_CALCULATOR_SUCCESS;
 }
 
+/* Subroutine is for semantic calculation 
+ * non-terminal "CON" on the first and
+ * the second phases of semantic calculation 
+ * Here "CON" is "concat operation"
+ */
+static enum plcmp_sem_calc_error_code_e CON(int entry, void const *param)
+{
+    switch (entry)
+    {
+        case 1:
+            break;
+        case 2:
+            break;
+        default:
+            break;
+    }
+    return PLCMP_SEM_CALCULATOR_SUCCESS;
+}
+
 /* Subroutine for semantic calculation of the achieved goals made by syntax analyzer 
  * and for generation output assembler file */
 struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm_fp_name,
@@ -1075,7 +1094,8 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
         /*   14  */ RZR,
         /*   15  */ TEL,
         /*   16  */ ZNK,
-        /*   17  */ STC
+        /*   17  */ STC,
+        /*   18  */ CON
     };
 
     /* Clear buffer string of the assembler output file */
