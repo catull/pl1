@@ -10,7 +10,7 @@
 #define OBJTEXT_MAX_LEN ASMTEXT_MAX_LEN         /* Length of the object text */
 #define NSYM 10                                 /* Size of the table of symbols */
 #define NPOP 6                                  /* Size of the table of pseudo operations */
-#define NOP 10                                  /* Size of the table of machine operations */
+#define NOP 8                                   /* Size of the table of machine operations */
 
 /* The limited length of the line of the assembler source text 
  * It has to be 81 (80 + 1) because 'fread' function reads 

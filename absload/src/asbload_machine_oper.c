@@ -18,9 +18,7 @@ machine_operations_table_t T_MOP[NOP] = {
     {{'L', ' ', ' ', ' ', ' '}, 0x58, OPER_RX_LEN, FRX},
     {{'A', ' ', ' ', ' ', ' '}, 0x5A, OPER_RX_LEN, FRX},
     {{'S', ' ', ' ', ' ', ' '}, 0x5B, OPER_RX_LEN, FRX},
-    {{'L', 'R', ' ', ' ', ' '}, 0x18, OPER_RR_LEN, FRR},
     {{'L', 'A', ' ', ' ', ' '}, 0x41, OPER_RX_LEN, FRX},
-    {{'A', 'R', ' ', ' ', ' '}, 0x1A, OPER_RR_LEN, FRR},
     {{'M', 'V', 'C', ' ', ' '}, 0xD2, OPER_SS_LEN, FSS}
 };
 
