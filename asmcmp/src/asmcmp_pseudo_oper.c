@@ -439,7 +439,7 @@ static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
             else
             {
                 NBASRG = atoi(METKA2);
-                if ((NBASRG = T_SYM[J].sym_value) <= 0x0f)
+                if ((NBASRG == T_SYM[J].sym_value) <= 0x0f)
                 {
                     goto USING1;
                 }

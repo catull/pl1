@@ -107,7 +107,7 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
             char *REG_str[2];
             int i;
 
-            uint8_t R1R2;
+            uint8_t R1R2 = 0;
 
             oper_t oper_rr;
             memset(&oper_rr, 0, sizeof(oper_t));

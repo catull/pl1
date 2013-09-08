@@ -158,7 +158,7 @@ static enum absload_machine_oper_error_code_e FRX(void)
             /* get B using bitwise right shift (get elder tetrad of INST[2]) */
             B = INST[2] >> 4;
             wprintw(wgreen, "%1d)", B);
-          
+            
             ADDR = VR[B] + VR[X] + D;
             wprintw(wgreen,"        %.06lX       \n", ADDR);
 
