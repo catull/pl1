@@ -71,8 +71,8 @@ static char* errmsg_by_errdata(__asmcmp_main_error_data_t err_data, char *errmsg
  * 'p_tex_fp_name' is path to this file */
 static enum asmcmp_main_error_code_e make_tex_file(char const *p_tex_fp_name)
 {
-    FILE *p_text_fp;
-    unsigned int cards_written;
+    FILE *p_text_fp = NULL;
+    unsigned int cards_written = 0;
 
     p_text_fp = fopen(p_tex_fp_name , "wb"); 
     if (NULL == p_text_fp)
@@ -132,44 +132,47 @@ static enum asmcmp_main_error_code_e read_asm_file(char const *p_asm_fp_name,
                                                    char asm_src_text[][LINELEN],
                                                    size_t *p_asm_src_text_len)
 {
-    FILE *p_asm_f;
+    FILE *p_asm_f = NULL;
+    size_t asm_src_text_len = 0;
+
     asmcmp_main_error_code_t err_code = ASMCMP_MAIN_SUCCESS;
 
     p_asm_f = fopen(p_asm_fp_name , "rb");
     if (NULL == p_asm_f)
     {
         err_code = ASMCMP_MAIN_NOT_FOUND_INPUT_ASM_FILE;
+        goto error_1;
     }
-    else
+
+    /* Write opened file to byte-array */
+    for (asm_src_text_len = 0; asm_src_text_len < ASMTEXT_MAX_LEN; asm_src_text_len++)
     {
-        size_t asm_src_text_len;
-        /* Write opened file to byte-array */
-        for (asm_src_text_len = 0; asm_src_text_len < ASMTEXT_MAX_LEN; asm_src_text_len++)
+        if (!fread(asm_src_text[asm_src_text_len], 1, LINELEN, p_asm_f))
         {
-            if (!fread(asm_src_text[asm_src_text_len], 1, LINELEN, p_asm_f))
+            if (!feof(p_asm_f))
             {
-                if (feof(p_asm_f))
-                {   
-                    /* Successful reading */
-                    break;
-                }
-                else
-                {
-                    err_code = ASMCMP_MAIN_ERROR_READING_ASM_FILE;
-                    break;
-                }
+                /* Unsuccessful reading */
+                err_code = ASMCMP_MAIN_ERROR_READING_ASM_FILE;
+                goto error_2;
             }
+            break;
         }
-
-        if (ASMTEXT_MAX_LEN == asm_src_text_len)
-        {
-            /* Buffer is overflowed */
-            err_code = ASMCMP_MAIN_PROGRAM_BUFFER_OVERFLOW;
-        }
-
-        *p_asm_src_text_len = asm_src_text_len;
-        fclose(p_asm_f);
     }
+
+    if (ASMTEXT_MAX_LEN == asm_src_text_len)
+    {
+        /* Buffer is overflowed */
+        err_code = ASMCMP_MAIN_PROGRAM_BUFFER_OVERFLOW;
+        goto error_2;
+    }
+
+    *p_asm_src_text_len = asm_src_text_len;
+
+    error_2:
+
+    fclose(p_asm_f);
+
+    error_1:
 
     return err_code;
 }
@@ -179,7 +182,7 @@ static struct asmcmp_main_error_data_s process_src_text(char asm_src_text[][LINE
                                                         size_t asm_src_text_len,
                                                         char const *p_tex_fp_name)
 {
-    int i1;
+    int i1 = 0;
     asmcmp_main_error_data_t err_data;
 
     /* Clear error data structure and set default successful parameters
@@ -197,7 +200,7 @@ static struct asmcmp_main_error_data_s process_src_text(char asm_src_text[][LINE
     /* The first phase */
     for (i1 = 0; i1 < asm_src_text_len; i1++)
     {
-        int i2;
+        int i2 = 0;
 
         memcpy(&g_current_asm_card, asm_src_text[i1], 80);
 
