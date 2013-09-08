@@ -164,10 +164,10 @@ static struct plcmp_main_error_data_s process_src_text(char pl1_src_text[][LINEL
  */
 int main(int const argc, char const *argv[])
 {
-    char pl1_src_text[MAXNISXTXT][LINELEN];             /* Content of the array of the source PL1-text */
-    size_t pl1_src_text_len = 0;                        /* Length of the array of the source PL1-text */
-    char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;  /* Strings for containing file paths for PL1 and ASM files */
-    size_t pl1_fp_len;                                  /* Length of the PL1 file path string */
+    char pl1_src_text[MAXNISXTXT][LINELEN] = { {'\0'} };    /* Content of the array of the source PL1-text */
+    size_t pl1_src_text_len = 0;                            /* Length of the array of the source PL1-text */
+    char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;      /* Strings for containing file paths for PL1 and ASM files */
+    size_t pl1_fp_len = 0;                                  /* Length of the PL1 file path string */
     plcmp_main_error_data_t err_data;
 
     /* Clear error data structure and set default 

@@ -9,6 +9,11 @@
 #include "asmcmp_global.h"
 #include "asmcmp_machine_oper.h"
 
+int streq(char const *str_1, char const *str_2)
+{
+    return !strcmp(str_1, str_2);
+}
+
 /* Subroutine swaps bytes in input data by 'p_src' pointer 
  * and puts result into data by 'p_dst' pointer 
  * Number of swapped bytes is 'count_bytes' 

@@ -332,10 +332,10 @@ static struct asmcmp_main_error_data_s process_src_text(char asm_src_text[][LINE
  */
 int main(int const argc, char const *argv[])
 {
-    char asm_src_text[ASMTEXT_MAX_LEN][LINELEN];                  /* Content of the array of the source ASM-text */
-    size_t asm_src_text_len = 0;                             /* Length of the array of the source ASM-text */
+    char asm_src_text[ASMTEXT_MAX_LEN][LINELEN] = { {'\0'} };   /* Content of the array of the source ASM-text */
+    size_t asm_src_text_len = 0;                                /* Length of the array of the source ASM-text */
     char *p_asm_fp_name = NULL, *p_tex_fp_name = NULL;
-    size_t asm_fp_len;
+    size_t asm_fp_len = 0;
     asmcmp_main_error_data_t err_data;
 
     /* Clear error data structure and set default successful parameters */
@@ -367,33 +367,28 @@ int main(int const argc, char const *argv[])
     }
 
     /* Input file for translation must be with 'ass' extension */
-    if (strcmp(&p_asm_fp_name[asm_fp_len - 4], ".ass"))
+    if (!streq(&p_asm_fp_name[asm_fp_len - 4], ".ass"))
     {
         err_data.main_err_data.main_err_code = ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_EXTENSION;
         goto error;
     }
-    else
-    {
-        /* Clear array for the source ASM-text before getting text from the ASM-file */
-        memset(asm_src_text, '\0', sizeof(char)*ASMTEXT_MAX_LEN*LINELEN);
 
-        err_data.main_err_data.main_err_code = read_asm_file(p_asm_fp_name, asm_src_text, &asm_src_text_len);
-        if (ASMCMP_MAIN_SUCCESS == err_data.main_err_data.main_err_code)
-        {
-            /* After successfully reading file proceed to translation of the source text */
-            init_cards();
-            ASMCMP_MAIN_MAKE_TEX_FILE_PATH_BY_ASM_FILE_PATH(p_tex_fp_name, p_asm_fp_name);
-            ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
-            err_data = process_src_text(asm_src_text, asm_src_text_len, p_tex_fp_name);
-            ASMCMP_COMMON_RELEASE_MEM(p_tex_fp_name);
-        }
-        else
-        {
-            /* Error occured while reading file */
-            ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
-            goto error;
-        }
+    /* Clear array for the source ASM-text before getting text from the ASM-file */
+    memset(asm_src_text, '\0', sizeof(char) * ASMTEXT_MAX_LEN * LINELEN);
+    err_data.main_err_data.main_err_code = read_asm_file(p_asm_fp_name, asm_src_text, &asm_src_text_len);
+    if (ASMCMP_MAIN_SUCCESS != err_data.main_err_data.main_err_code)
+    {
+        /* Error occured while reading file */
+        ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
+        goto error;
     }
+
+    /* After successfully reading file proceed to translation of the source text */
+    init_cards();
+    ASMCMP_MAIN_MAKE_TEX_FILE_PATH_BY_ASM_FILE_PATH(p_tex_fp_name, p_asm_fp_name);
+    ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
+    err_data = process_src_text(asm_src_text, asm_src_text_len, p_tex_fp_name);
+    ASMCMP_COMMON_RELEASE_MEM(p_tex_fp_name);
 
     if (ASMCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data.main_err_data.main_err_code)
     {
@@ -401,7 +396,7 @@ int main(int const argc, char const *argv[])
     }
     else
     {
-        char errmsg[100];
+        char errmsg[100] = { '\0' };
 
         error:
 

@@ -79,6 +79,9 @@
         }                                                                                   \
     } while(0)
 
+
+int streq(char const *str_1, char const *str_2);
+
 /* Subroutine swaps bytes in input data by 'p_src' pointer 
  * and puts result into data by 'p_dst' pointer 
  * Number of swapped bytes is 'count_bytes' 
