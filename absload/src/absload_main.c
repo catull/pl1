@@ -160,7 +160,7 @@ void wind(void)
         waddstr(wred, "/* ");
         for (j = 0; j < 16; j++)
         {
-            if (isprint(OBLZ[BAS_IND + kk]))  
+            if (isprint(OBLZ[BAS_IND + kk]))
             {
                 waddch(wred, OBLZ[BAS_IND + kk++]);
                 wrefresh(wred);
@@ -184,7 +184,7 @@ void wind(void)
 //загруженной программы
 static enum absload_main_error_code_e sys(void)           
 {
-    int res;
+    int res = 0;
     int ch;
     int gr_pos_x, gr_pos_y;
     int ii = 0, jj = 0;
@@ -562,7 +562,8 @@ int main(int const argc, char const *argv[])
                     J = J << 4;
                     J += POINT.VAL_P.SMESH;
 
-                    if ((J0 = (int)J % 8 ) == 0)
+                    J0 = (int)J % 8;
+                    if (0 == J0)
                     {
                         BAS_ADDR = J;
                         BAS_IND = 0;
@@ -595,13 +596,13 @@ int main(int const argc, char const *argv[])
 
                     absload_main_init_curses();
 
-                    err_data.main_err_code = sys(); 
+                    err_data.main_err_code = sys();
                   
                     endwin();
 
 
                     /* I dunno why but the first version of this 
-                     * 'wonderful' absolute loader 
+                     * absolute loader 
                      * was processing only the first file in the SPISOK.
                      * Therefore I made 'break' statement
                      * after processing the first file */

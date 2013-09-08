@@ -33,23 +33,18 @@ pseudo_operations_table_t T_POP[NPOP] = {
  * new data to OBJTEXT-array */
 static void save_data_tex_card(data_t data)
 {
-    char *PTR;
-    size_t data_len;
-
-    if (CHADR % 4)
-    {
-        CHADR = (CHADR / 4 + 1) * 4;
-    }
-
-    PTR = (char*)&CHADR;
-    TXT.ADOP[2] = *PTR;
-    TXT.ADOP[1] = *(PTR + 1);
-    TXT.ADOP[0] = '\x00';
+    char *PTR = NULL;
+    size_t data_len = 0;
 
     switch (data.data_type)
     {
         case DATA_FIXED_BIN:
         {
+            if (CHADR % 4)
+            {
+                CHADR = (CHADR / 4 + 1) * 4;
+            }
+            
             data_len = sizeof(data.data.fixed_bin);
             memset(TXT.OPER, 0x40, 56);
             memcpy(TXT.OPER, &data.data.fixed_bin, data_len);
@@ -68,6 +63,11 @@ static void save_data_tex_card(data_t data)
             ASMCMP_COMMON_ASSERT(0);
             break;
     }
+
+    PTR = (char*)&CHADR;
+    TXT.ADOP[2] = *PTR;
+    TXT.ADOP[1] = *(PTR + 1);
+    TXT.ADOP[0] = '\x00';
 
     memcpy(TXT.POLE9, ESD.POLE11, 8);
     memcpy(OBJTEXT[ITCARD], &TXT, 80);
@@ -102,19 +102,24 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                         break;
                     case 'C':
                     {
-                        char buffer[2];
+                        char buffer[2] = { '\0' };
 
-                        sprintf(buffer, "%c", g_current_asm_card.OPERAND[2]);
+                        if ('L' != g_current_asm_card.OPERAND[1]) 
+                        {
+                            return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;
+                        }
+
+                        buffer[0] = g_current_asm_card.OPERAND[2];
                         buffer[1] = '\0';
 
                         data_len = atoi(buffer);
                         T_SYM[ITSYM].DLSYM = data_len;
 
-                        if (CHADR % 4)
-                        {
-                            CHADR = (CHADR / 4 + 1) * 4;
-                            T_SYM[ITSYM].sym_value = CHADR;
-                        }
+                        // if (CHADR % 4)
+                        // {
+                        //     CHADR = (CHADR / 4 + 1) * 4;
+                        //     T_SYM[ITSYM].sym_value = CHADR;
+                        // }
 
                         PRNMET = 'N';
                         break;
@@ -133,7 +138,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
         }
         case 2:
         {
-            uint8_t *RAB;
+            uint8_t *RAB = NULL;
 
             data_t data;
             memset(&data, 0, sizeof(data_t));
@@ -155,12 +160,13 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                 }
                 case 'C':
                 {
-                    char buffer[2] = {'\0', '\0'};
-                    size_t data_len;
+                    char buffer[2] = { '\0' };
+                    size_t data_len = 0;
 
                     data.data_type = DATA_STRING;
 
                     buffer[0] = g_current_asm_card.OPERAND[2];
+                    buffer[1] = '\0';
                     data_len = atoi(buffer);
 
                     data.data.string_data.str_length = data_len;
@@ -229,19 +235,24 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
                     }
                     case 'C':
                     {
-                        char buffer[2];
+                        char buffer[2] = { '\0' };
 
-                        sprintf(buffer, "%c", g_current_asm_card.OPERAND[1]);
+                        if ('L' != g_current_asm_card.OPERAND[1]) 
+                        {
+                            return ASMCMP_PSEUDO_OPER_WRONG_DATA_FORMAT_ERROR;
+                        }
+
+                        buffer[0] = g_current_asm_card.OPERAND[2];
                         buffer[1] = '\0';
 
                         data_len = atoi(buffer);
                         T_SYM[ITSYM].DLSYM = data_len;
 
-                        if (CHADR % 4)
-                        {
-                            CHADR = (CHADR / 4 + 1) * 4;
-                            T_SYM[ITSYM].sym_value = CHADR;
-                        }
+                        // if (CHADR % 4)
+                        // {
+                        //     CHADR = (CHADR / 4 + 1) * 4;
+                        //     T_SYM[ITSYM].sym_value = CHADR;
+                        // }
 
                         PRNMET = 'N';
                         break;

@@ -123,7 +123,7 @@ static enum absload_machine_oper_error_code_e FRX(void)
          */
         if (INST[0] == T_MOP[i].CODOP)
         {
-            int j;
+            int j = 0;
 
             waddstr(wgreen, "      ");
             for (j = 0; j < 5; j++)
@@ -161,10 +161,7 @@ static enum absload_machine_oper_error_code_e FRX(void)
           
             ADDR = VR[B] + VR[X] + D;
             wprintw(wgreen,"        %.06lX       \n", ADDR);
-            if (ADDR % 0x4 != 0)
-            {
-                return ABSLOAD_MACHINE_OPER_WRONG_ADDR_ALIGMENT_ERROR;
-            }
+
             break;
         }
     }
@@ -260,11 +257,6 @@ static enum absload_machine_oper_error_code_e FSS(void)
           
             ADDR2 = VR[B2] + D2;
             wprintw(wgreen, " dst %.06lX src %.06lX \n", ADDR1, ADDR2);
-
-            if (ADDR2 % 0x4 != 0)
-            {
-                return ABSLOAD_MACHINE_OPER_WRONG_ADDR_ALIGMENT_ERROR;
-            }
 
             break;
         }
