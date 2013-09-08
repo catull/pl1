@@ -115,12 +115,6 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                         data_len = atoi(buffer);
                         T_SYM[ITSYM].DLSYM = data_len;
 
-                        // if (CHADR % 4)
-                        // {
-                        //     CHADR = (CHADR / 4 + 1) * 4;
-                        //     T_SYM[ITSYM].sym_value = CHADR;
-                        // }
-
                         PRNMET = 'N';
                         break;
                     }
@@ -247,12 +241,6 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
 
                         data_len = atoi(buffer);
                         T_SYM[ITSYM].DLSYM = data_len;
-
-                        // if (CHADR % 4)
-                        // {
-                        //     CHADR = (CHADR / 4 + 1) * 4;
-                        //     T_SYM[ITSYM].sym_value = CHADR;
-                        // }
 
                         PRNMET = 'N';
                         break;
