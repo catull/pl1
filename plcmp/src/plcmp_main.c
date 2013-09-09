@@ -47,44 +47,46 @@ static enum plcmp_main_error_code_e read_pl1_file(char const *p_pl1_fp_name,
                                                   char pl1_src_text[][LINELEN],
                                                   size_t *p_pl1_src_text_len)
 {
-    FILE *p_pl1_f;
+    FILE *p_pl1_f = NULL;
+    size_t pl1_src_text_len = 0;
     plcmp_main_error_code_t err_code = PLCMP_MAIN_SUCCESS;
 
     p_pl1_f = fopen(p_pl1_fp_name , "rb");
     if (NULL == p_pl1_f)
     {
         err_code = PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE_ERROR;
+        goto error_1;
     }
-    else
+
+    /* Write opened file to byte-array */
+    for (pl1_src_text_len = 0; pl1_src_text_len < MAXNISXTXT; pl1_src_text_len++)
     {
-        size_t pl1_src_text_len;
-        /* Write opened file to byte-array */
-        for (pl1_src_text_len = 0; pl1_src_text_len < MAXNISXTXT; pl1_src_text_len++)
+        if (!fread(pl1_src_text[pl1_src_text_len], 1, LINELEN, p_pl1_f))
         {
-            if (!fread(pl1_src_text[pl1_src_text_len], 1, LINELEN, p_pl1_f))
+            if (!feof(p_pl1_f))
             {
-                if (feof(p_pl1_f))
-                {   
-                    /* Successful reading */
-                    break;
-                }
-                else
-                {
-                    err_code = PLCMP_MAIN_READING_PL1_FILE_ERROR;
-                    break;
-                }
+                /* Unsuccessful reading */
+                err_code = PLCMP_MAIN_READING_PL1_FILE_ERROR;
+                goto error_2;
             }
+            break;
         }
-
-        if (MAXNISXTXT == pl1_src_text_len)
-        {
-            /* Buffer is overflowed */
-            err_code = PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW_ERROR;
-        }
-
-        *p_pl1_src_text_len = pl1_src_text_len;
-        fclose(p_pl1_f);
     }
+
+    if (MAXNISXTXT == pl1_src_text_len)
+    {
+        /* Buffer is overflowed */
+        err_code = PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW_ERROR;
+        goto error_2;
+    }
+
+    *p_pl1_src_text_len = pl1_src_text_len;
+
+    error_2:
+
+    fclose(p_pl1_f);
+
+    error_1:
 
     return err_code;
 }
@@ -106,7 +108,7 @@ static struct plcmp_main_error_data_s process_src_text(char pl1_src_text[][LINEL
     /* Clear error data structure and set default successful parameters
      * before lexical, syntax analyzer and semantic calculator will be called */
     memset(&err_data, 0, sizeof(plcmp_main_error_data_t));
-    err_data = (plcmp_main_error_data_t){
+    err_data = (plcmp_main_error_data_t) {
         .main_err_code = PLCMP_MAIN_SUCCESS,
         .lex_analyzer_err_data.err_code = PLCMP_LEX_ANALYZER_SUCCESS,
         .synt_analyzer_err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS,

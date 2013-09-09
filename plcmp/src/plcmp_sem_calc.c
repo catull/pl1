@@ -12,8 +12,7 @@
  * which is being filled on the first process of semantic calculation
  * and is being used on the second process of semantic calculation 
  */
-struct sym_s
-{
+struct sym_s {
     char name[8];
     char type;
     size_t capacity;
@@ -1067,7 +1066,7 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
                                                                char const compact_pl1_src_text[],
                                                                dst_t const *p_goals_achieved)
 {
-    int sem_calc_phase;
+    int sem_calc_phase = 0;
     plcmp_sem_calc_error_data_t err_data;
 
     /* Set global pointer to compact text for easier working with */
@@ -1104,11 +1103,11 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
     /* First and second phases of semantic calculation */
     for (sem_calc_phase = 1; sem_calc_phase < 3; sem_calc_phase++)
     {
-        int dst_index;
+        int dst_index = 0;
         for (dst_index = 0; dst_index < p_goals_achieved->count; dst_index++)
         {
             int hand_num = plcmp_tables_sym_sint_ind(p_goals_achieved->dst_stack[dst_index].DST1, 3);
-            switch(hand_num + 1)
+            switch (hand_num + 1)
             {
                 /* PRO */
                 case 13:

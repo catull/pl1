@@ -80,16 +80,16 @@ static void remove_last_goal_achieved(dst_t *p_goals_achieved)
  */
 static void build_tpr(void)
 {
-    int i1;
-    for (i1 = 0; i1 < NNETRM; i1++)
+    int i1 = 0;
+    for (; i1 < NNETRM; i1++)
     {
-        int i2;
-        for (i2 = 0; i2 < NVXOD; i2++)
+        int i2 = 0;
+        for (; i2 < NVXOD; i2++)
         {
             if (TPR[i2][i1] && (i1 != i2))
             {
-                int i3;
-                for (i3 = 0; i3 < NNETRM; i3++)
+                int i3 = 0;
+                for (; i3 < NNETRM; i3++)
                 {
                     TPR[i2][i3] |= TPR[i1][i3];
                 }
@@ -111,7 +111,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
     /* Current index in the compact text */
     int i = 0;
     /* Current index in the table of grammar rules */
-    int j;
+    int j = 0;
     /* Maximum index of processed compact source text 
      * It needs for sending part of source text if error will occur */
     int i_max = 0;
