@@ -98,6 +98,8 @@ static struct plcmp_main_error_data_s process_src_text(char pl1_src_text[][LINEL
 {
     /* Compact source text */
     char compact_pl1_src_text[NSTROKA];
+    /* Stack of goals achieved */
+    dst_t goals_achieved;
 
     plcmp_main_error_data_t err_data;
 
@@ -106,47 +108,52 @@ static struct plcmp_main_error_data_s process_src_text(char pl1_src_text[][LINEL
     memset(&err_data, 0, sizeof(plcmp_main_error_data_t));
     err_data = (plcmp_main_error_data_t){
         .main_err_code = PLCMP_MAIN_SUCCESS,
-        .lex_analyzer_err_code = PLCMP_LEX_ANALYZER_SUCCESS,
+        .lex_analyzer_err_data.err_code = PLCMP_LEX_ANALYZER_SUCCESS,
         .synt_analyzer_err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS,
         .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
     };
 
     /* Lexical analysis of the source text */
-    err_data.lex_analyzer_err_code = 
+    err_data.lex_analyzer_err_data = 
         plcmp_lex_analyzer_compress_src_text(compact_pl1_src_text, NSTROKA, pl1_src_text, pl1_src_text_len);
-    if (PLCMP_LEX_ANALYZER_SUCCESS == err_data.lex_analyzer_err_code)
+    if (PLCMP_LEX_ANALYZER_SUCCESS != err_data.lex_analyzer_err_data.err_code)
     {
-        /* Stack of goals achieved */
-        dst_t goals_achieved;
-
-        /* Create stack of achieved goals */
-        PLCMP_MAIN_CREATE_GOALS_ACHIEVED_STACK(goals_achieved);
-
-        /* Syntax analysis of the source text and filling stack of goals achived */
-        err_data.synt_analyzer_err_data = plcmp_synt_analyzer_syntax_analysis(compact_pl1_src_text, &goals_achieved);
-        if (PLCMP_SYNT_ANALYZER_SUCCESS != err_data.synt_analyzer_err_data.err_code)
-        {
-            /* Error in syntax of the source PL1-text.
-             * Error data has already contained into 'err_data.synt_analyzer_err_data' structure
-             * because syntax analyzer has already returned its */
-            err_data.main_err_code = PLCMP_MAIN_SYNT_ANALYZER_ERROR;
-        }
-        else
-        {
-            /* Semantic calculation */
-            err_data.sem_calc_err_data = plcmp_sem_calc_gen_asm_code(p_asm_fp_name, compact_pl1_src_text, &goals_achieved);
-            if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.sem_calc_err_data.err_code)
-            {
-                /* Error in execution logic of the source PL1-text
-                 * Error data has already contained into 'err_data.sem_calc_err_data' structure
-                 * because semantic calculator has already returned its */
-                err_data.main_err_code = PLCMP_MAIN_SEM_CALCULATOR_ERROR;
-            }
-        }
-
-        PLCMP_MAIN_DESTROY_GOALS_ACHIEVED_STACK(goals_achieved);
+        /* Error in lexical analyzer of PL1-text.
+         * Error data has already contained into 'err_data.lex_analyzer_err_data' structure
+         * because lexical analyzer has already returned its */
+        err_data.main_err_code = PLCMP_MAIN_LEX_ANALYZER_ERROR;
+        goto error_1;
     }
 
+    /* Create stack of achieved goals */
+    PLCMP_MAIN_CREATE_GOALS_ACHIEVED_STACK(goals_achieved);
+
+    /* Syntax analysis of the source text and filling stack of goals achived */
+    err_data.synt_analyzer_err_data = plcmp_synt_analyzer_syntax_analysis(compact_pl1_src_text, &goals_achieved);
+    if (PLCMP_SYNT_ANALYZER_SUCCESS != err_data.synt_analyzer_err_data.err_code)
+    {
+        /* Error in syntax of the source PL1-text.
+         * Error data has already contained into 'err_data.synt_analyzer_err_data' structure
+         * because syntax analyzer has already returned its */
+        err_data.main_err_code = PLCMP_MAIN_SYNT_ANALYZER_ERROR;
+        goto error_2;
+    }
+
+    /* Semantic calculation */
+    err_data.sem_calc_err_data = plcmp_sem_calc_gen_asm_code(p_asm_fp_name, compact_pl1_src_text, &goals_achieved);
+    if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.sem_calc_err_data.err_code)
+    {
+        /* Error in execution logic of the source PL1-text
+         * Error data has already contained into 'err_data.sem_calc_err_data' structure
+         * because semantic calculator has already returned its */
+        err_data.main_err_code = PLCMP_MAIN_SEM_CALCULATOR_ERROR;
+        goto error_2;
+    }
+
+    error_2:
+    PLCMP_MAIN_DESTROY_GOALS_ACHIEVED_STACK(goals_achieved);
+
+    error_1:
     return err_data;
 }
 
@@ -175,7 +182,7 @@ int main(int const argc, char const *argv[])
     memset(&err_data, 0, sizeof(plcmp_main_error_data_t));
     err_data = (plcmp_main_error_data_t){ 
         .main_err_code = PLCMP_MAIN_SUCCESS,
-        .lex_analyzer_err_code = PLCMP_LEX_ANALYZER_SUCCESS,
+        .lex_analyzer_err_data.err_code = PLCMP_LEX_ANALYZER_SUCCESS,
         .synt_analyzer_err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS,
         .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
     };
@@ -205,26 +212,23 @@ int main(int const argc, char const *argv[])
         err_data.main_err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION_ERROR;
         goto error;
     }
-    else
-    {
-        /* Clear array for the source PL1-text before getting text from the PL1-file */
-        memset(pl1_src_text, '\0', sizeof(char)*MAXNISXTXT*LINELEN);
 
-        err_data.main_err_code = read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
-        if (PLCMP_MAIN_SUCCESS == err_data.main_err_code)
-        {
-            /* After successfully reading file proceed to compression and translation of the source text */
-            PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name, p_pl1_fp_name);
-            PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name);
-            err_data = process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
-            PLCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
-        }
-        else
-        {
-            /* Error occured while reading file */
-            PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name); 
-        }
+    /* Clear array for the source PL1-text before getting text from the PL1-file */
+    memset(pl1_src_text, '\0', sizeof(char) * MAXNISXTXT * LINELEN);
+
+    err_data.main_err_code = read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
+    if (PLCMP_MAIN_SUCCESS != err_data.main_err_code)
+    {
+        /* Error occured while reading file */
+        PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name); 
+        goto error;
     }
+
+    /* After successfully reading file proceed to compression and translation of the source text */
+    PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name, p_pl1_fp_name);
+    PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name);
+    err_data = process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
+    PLCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
 
     if (PLCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data.main_err_code)
     {
@@ -241,7 +245,7 @@ int main(int const argc, char const *argv[])
         {
             case PLCMP_MAIN_LEX_ANALYZER_ERROR:
                 printf("Lexical analyzer error message: %s\n",
-                       plcmp_lex_analyzer_errmsg_by_errcode(err_data.lex_analyzer_err_code));
+                       plcmp_lex_analyzer_errmsg_by_errcode(&err_data.lex_analyzer_err_data, errmsg));
                 break;
             case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
                 printf("Syntax analyzer error message: %s\n",

@@ -1,24 +1,30 @@
 /* encoding: UTF-8 */
 
 #include <stddef.h>
+#include <string.h>
 
 #include "plcmp_common.h"
 #include "plcmp_lex_analyzer.h"
 
 /* Subroutine of primitive lexical analyzer 
  * It compresses the source text by removing all excess spaces and newline-symbols */
-enum plcmp_lex_analyzer_error_code_e plcmp_lex_analyzer_compress_src_text(char compact_pl1_src_text[],
-                                                                          size_t compact_text_maxlen,
-                                                                          char pl1_src_text[][LINELEN],
-                                                                          size_t pl1_src_text_len)
+struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(char compact_pl1_src_text[],
+                                                                            size_t compact_text_maxlen,
+                                                                            char pl1_src_text[][LINELEN],
+                                                                            size_t pl1_src_text_len)
 {
-    unsigned int i1, i3 = 0;
+    unsigned int i1 = 0, i3 = 0;
     /* Last processed symbol in the compact source PL1-text */
     char prev_processed_symb = '\0';
 
+    plcmp_lex_analyzer_error_data_t err_data;
+
+    memset(&err_data, 0, sizeof(plcmp_lex_analyzer_error_data_t));
+    err_data.err_code = PLCMP_LEX_ANALYZER_SUCCESS;
+
     for (i1 = 0; i1 < pl1_src_text_len; i1++)
     {
-        unsigned int i2;
+        unsigned int i2 = 0;
         for (i2 = 0; i2 < LINELEN; i2++)
         {
             if ('\0' != pl1_src_text[i1][i2])
@@ -87,7 +93,8 @@ enum plcmp_lex_analyzer_error_code_e plcmp_lex_analyzer_compress_src_text(char c
                 i3++;
                 if (i3 == compact_text_maxlen)
                 {
-                    return PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW;
+                    err_data.err_code = PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW;
+                    goto error;
                 }
             }
             else
@@ -97,21 +104,27 @@ enum plcmp_lex_analyzer_error_code_e plcmp_lex_analyzer_compress_src_text(char c
         }
     }
 
+    error:
+
     compact_pl1_src_text[i3] = '\0';
 
-    return PLCMP_LEX_ANALYZER_SUCCESS;
+    return err_data;
 }
 
 /* Subroutine constructs error message by error code of lexical analyzer module */
-char const* plcmp_lex_analyzer_errmsg_by_errcode(plcmp_lex_analyzer_error_code_t err_code)
+char* plcmp_lex_analyzer_errmsg_by_errcode(plcmp_lex_analyzer_error_data_t const *err_data, char *errmsg)
 {
-    switch (err_code)
+    switch (err_data->err_code)
     {
         case PLCMP_LEX_ANALYZER_SUCCESS:
-            return "No error occured";
+            strcpy(errmsg, "No error occured");
+            break;
         case PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW:
-            return "Overflow of the compact text buffer while lexical analysis was processing";
+            strcpy(errmsg, "Overflow of the compact text buffer while lexical analysis was processing");
+            break;
         default:
-            return "Unknown error code for generating error message";
+            strcpy(errmsg, "Unknown error code for generating error message");
+            break;
     }
+    return errmsg;
 }

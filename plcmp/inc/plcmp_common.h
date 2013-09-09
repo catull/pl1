@@ -123,5 +123,4 @@ typedef struct dst_s {
         }                                       \
     } while(0)
 
-
 #endif /* PLCMP_COMMON_H */
