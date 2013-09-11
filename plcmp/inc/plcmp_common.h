@@ -67,6 +67,70 @@ typedef struct dst_s {
 #define PLCMP_COMMON_ASSERT(condition) assert(condition)
 
 /*
+ * Macro allocates memory
+ *
+ * @param1:
+ * 'pointer' has any pointer type
+ */
+#define PLCMP_COMMON_MALLOCATE_MEM(pointer, size)                                       \
+    do {                                                                                \
+        (pointer) = malloc(size);                                                       \
+        if (NULL == (pointer))                                                          \
+        {                                                                               \
+            printf("Error of allocating memory with size = %lu"                         \
+                   "bytes for " #pointer ". Assert\n", size);                           \
+            PLCMP_COMMON_ASSERT(0);                                                     \
+        }                                                                               \
+    } while(0)
+
+/*
+ * Macro allocates memory and sets to zero
+ *
+ * @param1:
+ * 'pointer' has any pointer type
+ * @param2:
+ * 'number_of_elements' has 'size_t' type
+ * @param3:
+ * 'size_of_element' has 'size_t' type
+ */
+#define PLCMP_COMMON_CALLOCATE_MEM(pointer, number_of_elements, size_of_element)            \
+    do {                                                                                    \
+        (pointer) = calloc((number_of_elements), (size_of_element));                        \
+        if (NULL == (pointer))                                                              \
+        {                                                                                   \
+            printf("Error of clear allocating memory with "                                 \
+                   "number_of_elements = %i size_of_element = %lu"                          \
+                   "bytes for " #pointer ". Assert\n",                                      \
+                   (number_of_elements),                                                    \
+                   (size_of_element));                                                      \
+            PLCMP_COMMON_ASSERT(0);                                                         \
+        }                                                                                   \
+    } while(0)
+
+
+/*
+ * Macro deallocates earlier allocated memory
+ *
+ * @param1:
+ * 'pointer' has any pointer type
+ *
+ * @param2:
+ * 'what' has 'char*' type
+ */
+#define PLCMP_COMMON_RELEASE_MEM(pointer)                                   \
+    do {                                                                    \
+        if (pointer)                                                        \
+        {                                                                   \
+            free(pointer);                                                  \
+            pointer = NULL;                                                 \
+        }                                                                   \
+        else                                                                \
+        {                                                                   \
+            printf("Try to release NULL-pointer: " #pointer ". Assert\n");  \
+        }                                                                   \
+    } while(0)
+
+/*
  * Macro allocates memory for new 'p_str_for' string with 'str_length' length
  *
  * @param1:
@@ -76,17 +140,10 @@ typedef struct dst_s {
  * @param2:
  * 'str_length' has type 'size_t'
  */
-#define PLCMP_COMMON_ALLOC_MEM_FOR_STR(p_str_for, str_length)                   \
-    do {                                                                        \
-        size_t __str_length = (str_length);                                     \
-                                                                                \
-        p_str_for = malloc(sizeof(char)*(__str_length + 1));                    \
-        if (NULL == p_str_for)                                                  \
-        {                                                                       \
-            printf("Error of allocating memory for new string. Assert\n");      \
-            PLCMP_COMMON_ASSERT(0);                                             \
-        }                                                                       \
-        p_str_for[__str_length] = '\0';                                         \
+#define PLCMP_COMMON_ALLOC_MEM_FOR_STR(p_str_for, str_length)                       \
+    do {                                                                            \
+        PLCMP_COMMON_MALLOCATE_MEM(p_str_for, sizeof(char) * ((str_length) + 1));   \
+        p_str_for[(str_length)] = '\0';                                             \
     } while(0)
 
 /* 
@@ -105,22 +162,6 @@ typedef struct dst_s {
     do {                                                                                \
         PLCMP_COMMON_ALLOC_MEM_FOR_STR(p_fp_str_to, strlen(p_fp_str_from));             \
         strcpy(p_fp_str_to, p_fp_str_from);                                             \
-    } while(0)
-
-
-/*
- * Macro deallocates earlier allocated memory
- *
- * @param1:
- * 'pointer' has any pointer type
- */
-#define PLCMP_COMMON_RELEASE_MEM(pointer)       \
-    do {                                        \
-        if (pointer)                            \
-        {                                       \
-            free(pointer);                      \
-            pointer = NULL;                     \
-        }                                       \
     } while(0)
 
 #endif /* PLCMP_COMMON_H */

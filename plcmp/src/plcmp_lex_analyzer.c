@@ -78,9 +78,9 @@ struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(char
                      * which contains space-symbol will be removed
                      * from the compact source text, which already contains this space-symbol.
                      * For example:
-                     * - "TEXT    TEXT2" source text will be processed to "TEXT TEXT2" compact source text
+                     * - "TEXT - TEXT2" source text will be processed to "TEXT- TEXT2" compact source text
                      * - "TEXT + TEXT2" source text will be processed to "TEXT+ TEXT2" compact source text
-                     * - "TEXT  (TEXT2" source text will be processed to "TEXT(TEXT2" compact source text
+                     * - "TEXT (TEXT2" source text will be processed to "TEXT(TEXT2" compact source text
                      *
                      * In this way in accordance with this condition we remove excess
                      * whitespace-symbol before 'pl1_src_text[i1][i2]' symbol
@@ -112,7 +112,7 @@ struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(char
 }
 
 /* Subroutine constructs error message by error code of lexical analyzer module */
-char* plcmp_lex_analyzer_errmsg_by_errcode(plcmp_lex_analyzer_error_data_t const *err_data, char *errmsg)
+char* plcmp_lex_analyzer_errmsg_by_errdata(plcmp_lex_analyzer_error_data_t const *err_data, char *errmsg)
 {
     switch (err_data->err_code)
     {
