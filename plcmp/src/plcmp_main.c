@@ -230,7 +230,7 @@ int main(int const argc, char const *argv[])
     }
 
     /* Input file for translation must be with 'pli' extension */
-    if (strcmp(&p_pl1_fp_name[pl1_fp_len - 4], ".pli"))
+    if (!streq(&p_pl1_fp_name[pl1_fp_len - 4], ".pli"))
     {
         err_data.main_err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION_ERROR;
         goto error;
@@ -259,7 +259,7 @@ int main(int const argc, char const *argv[])
     }
     else
     {
-        char errmsg[100];
+        char errmsg[100] = { '\0' };
 
         error:
 

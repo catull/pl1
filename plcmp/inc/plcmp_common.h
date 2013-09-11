@@ -165,3 +165,5 @@ typedef struct dst_s {
     } while(0)
 
 #endif /* PLCMP_COMMON_H */
+
+int streq(char const *str_1, char const *str_2);
