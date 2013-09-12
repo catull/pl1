@@ -7,7 +7,7 @@
 /* Table of the syntax rules that is written in the form 
  * of recognition, grouped in "bushes" and represented 
  * as bidirectional list with alternate branching */
-sint_t synt_rules_table[NSINT] = {
+synt_rule_t synt_rules_table[NSINT] = {
     /*  __________ _________ _______ _______ ______
        |  NN      :    next : prev  :  node : alt  |
        |__________:_________:_______:_______:______| */
