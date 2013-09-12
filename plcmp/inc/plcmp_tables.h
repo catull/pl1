@@ -5,18 +5,18 @@
 
 #include "plcmp_common.h"
 
-typedef struct sint_s {
+typedef struct synt_rule_s {
     int POSL;
     int PRED;
     char DER[4];
     int ALT;
 } synt_rule_t;
 
-typedef struct vxod_s {
+typedef struct input_sym_s {
     char SYM[4];
     int VX;
     char TYP;
-} vxod_t;
+} input_sym_t;
 
 /* Table of the syntax rules that is written in the form 
  * of recognition, grouped in "bushes" and represented 
@@ -25,13 +25,13 @@ extern synt_rule_t synt_rules_table[NSINT];
 
 /* Table of inputs in "bushes" (roots) of the grammar rules.
  * This table contains root symbols type (terminal or non-terminal property) */
-extern vxod_t VXOD[NVXOD];
+extern input_sym_t input_syms_table[NVXOD];
 
 /* Adjacency matrix which will become reachability matrix afterward */
 extern char TPR[NVXOD][NNETRM];
 
-/* Function finds necessary string with sought-for symbol in the VXOD-table 
- * and returns string-index of VXOD-table.
+/* Function finds necessary string with sought-for symbol in the input_syms_table-table 
+ * and returns string-index of input_syms_table-table.
  * 
  * @param1: const char *p_str_symbol
  * C-string containing name of sought-for symbol

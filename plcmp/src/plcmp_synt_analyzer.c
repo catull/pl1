@@ -143,7 +143,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
 
     L2:
 
-    j = VXOD[plcmp_tables_sym_sint_ind(&compact_pl1_src_text[i], 1)].VX;
+    j = input_syms_table[plcmp_tables_sym_sint_ind(&compact_pl1_src_text[i], 1)].VX;
 
     L3:
 
@@ -158,7 +158,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
         i_max = i;
     }
 
-    if ('T' == VXOD[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].TYP)
+    if ('T' == input_syms_table[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].TYP)
     {
         if (compact_pl1_src_text[i] == synt_rules_table[j].DER[0])
         {
@@ -192,7 +192,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
 
             if (TPR[plcmp_tables_sym_sint_ind(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)][plcmp_tables_sym_sint_ind(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)])
             {
-                j = VXOD[plcmp_tables_sym_sint_ind(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)].VX;
+                j = input_syms_table[plcmp_tables_sym_sint_ind(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)].VX;
                 goto L3;
             }
 
@@ -215,7 +215,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
                           0,
                           i,
                           j);
-        j = VXOD[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].VX;
+        j = input_syms_table[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].VX;
         goto L3;
     }
 
@@ -241,7 +241,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
 
     j = synt_rules_table[j].PRED;
 
-    if ((VXOD[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED > 0))
+    if ((input_syms_table[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED > 0))
     {
         add_goal(p_goals,
                  p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST1,
@@ -255,7 +255,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
         goto L9;
     }
 
-    if ((VXOD[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED == 0))
+    if ((input_syms_table[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED == 0))
     {
 
         if (!strcmp(p_goals->cel_stack[p_goals->count - 1].CEL1,

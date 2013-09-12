@@ -286,7 +286,7 @@ synt_rule_t synt_rules_table[NSINT] = {
 
 /* Table of inputs in "bushes" (roots) of the grammar rules.
  * This table contains root symbols type (terminal or non-terminal property) */
-vxod_t VXOD[NVXOD] = {
+input_sym_t input_syms_table[NVXOD] = {
 /*    ___________ ___________ _____ ______
      |    NN     |    symbol |input| type |
      |___________|___________|_____|______|                                  */
@@ -425,8 +425,8 @@ char TPR[NVXOD][NNETRM] = {
     /*|____________________________________________________________________________| */
 };
 
-/* Function finds necessary string with sought-for symbol in the VXOD-table 
- * and returns string-index of VXOD-table.
+/* Function finds necessary string with sought-for symbol in the input_syms_table-table 
+ * and returns string-index of input_syms_table-table.
  * 
  * @param1: const char *p_str_symbol
  * C-string containing name of sought-for symbol
@@ -442,14 +442,14 @@ unsigned int plcmp_tables_sym_sint_ind(char const *p_str_symbol, unsigned int sy
         unsigned int k = 0;
         /* Comparing each symbol each other */
         while((k != symbol_str_len) && 
-              (p_str_symbol[k] == VXOD[i].SYM[k]))
+              (p_str_symbol[k] == input_syms_table[i].SYM[k]))
         {
             ++k;
         }
         if ((k == symbol_str_len) &&
-            (VXOD[i].SYM[k] == '\0' || VXOD[i].SYM[k] == ' '))
+            (input_syms_table[i].SYM[k] == '\0' || input_syms_table[i].SYM[k] == ' '))
         {
-            /* We found necessary string with sought-for symbol in the VXOD-table */
+            /* We found necessary string with sought-for symbol in the input_syms_table-table */
             break;
         }
         continue;
