@@ -21,7 +21,7 @@ typedef struct vxod_s {
 /* Table of the syntax rules that is written in the form 
  * of recognition, grouped in "bushes" and represented 
  * as bidirectional list with alternate branching */
-extern sint_t SINT[NSINT];
+extern sint_t synt_rules_table[NSINT];
 
 /* Table of inputs in "bushes" (roots) of the grammar rules.
  * This table contains root symbols type (terminal or non-terminal property) */

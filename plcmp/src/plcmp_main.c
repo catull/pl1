@@ -74,7 +74,7 @@ static enum plcmp_main_error_code_e read_pl1_file(char const *p_pl1_fp_name,
     if (NULL == p_pl1_f)
     {
         err_code = PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE_ERROR;
-        goto error_1;
+        goto error_file_not_opened;
     }
 
     /* Write opened file to byte-array */
@@ -86,7 +86,7 @@ static enum plcmp_main_error_code_e read_pl1_file(char const *p_pl1_fp_name,
             {
                 /* Unsuccessful reading */
                 err_code = PLCMP_MAIN_READING_PL1_FILE_ERROR;
-                goto error_2;
+                goto error_while_reading_file;
             }
             break;
         }
@@ -96,15 +96,15 @@ static enum plcmp_main_error_code_e read_pl1_file(char const *p_pl1_fp_name,
     {
         /* Buffer is overflowed */
         err_code = PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW_ERROR;
-        goto error_2;
+        goto error_while_reading_file;
     }
 
     *p_pl1_src_text_len = pl1_src_text_len;
 
-    error_2:
+    error_while_reading_file:
     fclose(p_pl1_f);
 
-    error_1:
+    error_file_not_opened:
     return err_code;
 }
 

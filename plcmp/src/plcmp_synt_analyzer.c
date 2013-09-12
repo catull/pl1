@@ -147,7 +147,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
 
     L3:
 
-    j = SINT[j].POSL;
+    j = synt_rules_table[j].POSL;
 
     L31:
 
@@ -158,9 +158,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
         i_max = i;
     }
 
-    if ('T' == VXOD[plcmp_tables_sym_sint_ind(SINT[j].DER, 3)].TYP)
+    if ('T' == VXOD[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].TYP)
     {
-        if (compact_pl1_src_text[i] == SINT[j].DER[0])
+        if (compact_pl1_src_text[i] == synt_rules_table[j].DER[0])
         {
             goto L3;
         }
@@ -170,11 +170,11 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
         }
     }
 
-    if ('*' == SINT[SINT[j].POSL].DER[0])
+    if ('*' == synt_rules_table[synt_rules_table[j].POSL].DER[0])
     {
         --i;
 
-        if (!strcmp(SINT[j].DER, p_goals->cel_stack[p_goals->count - 1].CEL1))
+        if (!strcmp(synt_rules_table[j].DER, p_goals->cel_stack[p_goals->count - 1].CEL1))
         {
             add_goal_achieved(p_goals_achieved,
                               p_goals->cel_stack[p_goals->count - 1].CEL1,
@@ -204,27 +204,27 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
             goto L3;
         }
 
-        if (!TPR[plcmp_tables_sym_sint_ind(SINT[j].DER, 3)][plcmp_tables_sym_sint_ind(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)])
+        if (!TPR[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)][plcmp_tables_sym_sint_ind(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)])
         {
             goto L9;
         }
 
         add_goal_achieved(p_goals_achieved, 
-                          SINT[j].DER,
+                          synt_rules_table[j].DER,
                           p_goals->cel_stack[p_goals->count - 1].CEL2,
                           0,
                           i,
                           j);
-        j = VXOD[plcmp_tables_sym_sint_ind(SINT[j].DER, 3)].VX;
+        j = VXOD[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].VX;
         goto L3;
     }
 
-    if (!TPR[plcmp_tables_sym_sint_ind(&compact_pl1_src_text[i], 1)][plcmp_tables_sym_sint_ind(SINT[j].DER, 3)])
+    if (!TPR[plcmp_tables_sym_sint_ind(&compact_pl1_src_text[i], 1)][plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)])
     {
         goto L8;
     }
 
-    add_goal(p_goals, SINT[j].DER, i, j);
+    add_goal(p_goals, synt_rules_table[j].DER, i, j);
     goto L2;
 
     L8:
@@ -233,15 +233,15 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
 
     L9:
 
-    if (SINT[j].ALT != 0)
+    if (synt_rules_table[j].ALT != 0)
     {
-        j = SINT[j].ALT;
+        j = synt_rules_table[j].ALT;
         goto L31;
     }
 
-    j = SINT[j].PRED;
+    j = synt_rules_table[j].PRED;
 
-    if ((VXOD[plcmp_tables_sym_sint_ind(SINT[j].DER, 3)].TYP == 'N' ) && (SINT[j].PRED > 0))
+    if ((VXOD[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED > 0))
     {
         add_goal(p_goals,
                  p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST1,
@@ -255,7 +255,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
         goto L9;
     }
 
-    if ((VXOD[plcmp_tables_sym_sint_ind(SINT[j].DER, 3)].TYP == 'N' ) && (SINT[j].PRED == 0))
+    if ((VXOD[plcmp_tables_sym_sint_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED == 0))
     {
 
         if (!strcmp(p_goals->cel_stack[p_goals->count - 1].CEL1,
@@ -270,7 +270,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(char
 
     }
 
-    if (SINT[j].PRED > 0)
+    if (synt_rules_table[j].PRED > 0)
     {
         goto L8;
     }
