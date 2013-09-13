@@ -350,7 +350,7 @@ input_sym_t input_syms_table[NVXOD] = {
 };
 
 /* Adjacency matrix which will become reachability matrix afterward */
-char TPR[NVXOD][NNETRM] = {
+char adj_reach_mtrx[NVXOD][NNETRM] = {
 /*   __________ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___
     |       AVI:BUK:CIF:IDE:IPE:IPR:LIT:MAN:ODC:OEN:OPA:OPR:PRO:RZR:TEL:ZNK:STC|CON|
     |__________:___:___:___:___:___:___:___:___:___:___:___:___:___:___:___:___|___| */
@@ -434,7 +434,7 @@ char TPR[NVXOD][NNETRM] = {
  * @param2: unsigned int symbol_str_len
  * Length of the string of sought-for symbol
  */
-unsigned int plcmp_tables_sym_sint_ind(char const *p_str_symbol, unsigned int symbol_str_len)
+unsigned int plcmp_tables_get_synt_rules_stroke_ind(char const *p_str_symbol, unsigned int symbol_str_len)
 {
     unsigned int i;
     for (i = 0; i < NVXOD; i++)

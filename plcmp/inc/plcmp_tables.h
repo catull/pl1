@@ -28,7 +28,7 @@ extern synt_rule_t synt_rules_table[NSINT];
 extern input_sym_t input_syms_table[NVXOD];
 
 /* Adjacency matrix which will become reachability matrix afterward */
-extern char TPR[NVXOD][NNETRM];
+extern char adj_reach_mtrx[NVXOD][NNETRM];
 
 /* Function finds necessary string with sought-for symbol in the input_syms_table-table 
  * and returns string-index of input_syms_table-table.
@@ -39,6 +39,6 @@ extern char TPR[NVXOD][NNETRM];
  * @param2: unsigned int symbol_str_len
  * Length of the string of sought-for symbol
  */
-unsigned int plcmp_tables_sym_sint_ind(const char *p_str_symbol, unsigned int symbol_str_len);
+unsigned int plcmp_tables_get_synt_rules_stroke_ind(const char *p_str_symbol, unsigned int symbol_str_len);
 
 #endif /* PLCMP_TABLES_H */
