@@ -82,7 +82,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     memset(&err_data, 0, sizeof(plcmp_synt_analyzer_error_data_t));
     err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS;
 
-    /* Construct adjacency matrix */
+    /* Construct reachability matrix */
     plcmp_tables_build_reach_mtrx();
 
     add_goal(p_goals, "PRO", i, 999);

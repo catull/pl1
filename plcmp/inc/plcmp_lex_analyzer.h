@@ -11,7 +11,7 @@ typedef enum plcmp_lex_analyzer_error_code_e {
     PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW
 } plcmp_lex_analyzer_error_code_t;
 
-/* Structure defines content of the error data of semantic calculator module */
+/* Structure defines content of the error data of lexical analyzer module */
 typedef struct plcmp_lex_analyzer_error_data_s {
     plcmp_lex_analyzer_error_code_t err_code;
 } plcmp_lex_analyzer_error_data_t;
