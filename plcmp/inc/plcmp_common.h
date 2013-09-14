@@ -28,7 +28,8 @@
 #define MAXFORMT 30
 /* The limited size of the tables of names and labels */
 #define NSYM 100
-/* The limited length of the line of the source text (80 symbols +1 symbol for endline)*/
+/* The limited length of the line of 
+ * the source text (80 symbols +1 symbol for endline)*/
 #define LINELEN 81
 
 #define TRUE 1
@@ -72,15 +73,15 @@ typedef struct dst_s {
  * @param1:
  * 'pointer' has any pointer type
  */
-#define PLCMP_COMMON_MALLOCATE_MEM(pointer, size)                                       \
-    do {                                                                                \
-        (pointer) = malloc(size);                                                       \
-        if (NULL == (pointer))                                                          \
-        {                                                                               \
-            printf("Error of allocating memory with size = %lu"                         \
-                   "bytes for " #pointer ". Assert\n", size);                           \
-            PLCMP_COMMON_ASSERT(0);                                                     \
-        }                                                                               \
+#define PLCMP_COMMON_MALLOCATE_MEM(pointer, size)                              \
+    do {                                                                       \
+        (pointer) = malloc(size);                                              \
+        if (NULL == (pointer))                                                 \
+        {                                                                      \
+            printf("Error of allocating memory with size = %lu"                \
+                   "bytes for " #pointer ". Assert\n", size);                  \
+            PLCMP_COMMON_ASSERT(0);                                            \
+        }                                                                      \
     } while(0)
 
 /*
@@ -93,18 +94,20 @@ typedef struct dst_s {
  * @param3:
  * 'size_of_element' has 'size_t' type
  */
-#define PLCMP_COMMON_CALLOCATE_MEM(pointer, number_of_elements, size_of_element)            \
-    do {                                                                                    \
-        (pointer) = calloc((number_of_elements), (size_of_element));                        \
-        if (NULL == (pointer))                                                              \
-        {                                                                                   \
-            printf("Error of clear allocating memory with "                                 \
-                   "number_of_elements = %i size_of_element = %lu"                          \
-                   "bytes for " #pointer ". Assert\n",                                      \
-                   (number_of_elements),                                                    \
-                   (size_of_element));                                                      \
-            PLCMP_COMMON_ASSERT(0);                                                         \
-        }                                                                                   \
+#define PLCMP_COMMON_CALLOCATE_MEM(pointer,                                    \
+                                   number_of_elements,                         \
+                                   size_of_element)                            \
+    do {                                                                       \
+        (pointer) = calloc((number_of_elements), (size_of_element));           \
+        if (NULL == (pointer))                                                 \
+        {                                                                      \
+            printf("Error of clear allocating memory with "                    \
+                   "number_of_elements = %i size_of_element = %lu"             \
+                   "bytes for " #pointer ". Assert\n",                         \
+                   (number_of_elements),                                       \
+                   (size_of_element));                                         \
+            PLCMP_COMMON_ASSERT(0);                                            \
+        }                                                                      \
     } while(0)
 
 
@@ -117,17 +120,17 @@ typedef struct dst_s {
  * @param2:
  * 'what' has 'char*' type
  */
-#define PLCMP_COMMON_RELEASE_MEM(pointer)                                   \
-    do {                                                                    \
-        if (pointer)                                                        \
-        {                                                                   \
-            free(pointer);                                                  \
-            pointer = NULL;                                                 \
-        }                                                                   \
-        else                                                                \
-        {                                                                   \
-            printf("Try to release NULL-pointer: " #pointer ". Assert\n");  \
-        }                                                                   \
+#define PLCMP_COMMON_RELEASE_MEM(pointer)                                      \
+    do {                                                                       \
+        if (pointer)                                                           \
+        {                                                                      \
+            free(pointer);                                                     \
+            (pointer) = NULL;                                                  \
+        }                                                                      \
+        else                                                                   \
+        {                                                                      \
+            printf("Try to release NULL-pointer: " #pointer ". Assert\n");     \
+        }                                                                      \
     } while(0)
 
 /*
@@ -140,10 +143,11 @@ typedef struct dst_s {
  * @param2:
  * 'str_length' has type 'size_t'
  */
-#define PLCMP_COMMON_ALLOC_MEM_FOR_STR(p_str_for, str_length)                       \
-    do {                                                                            \
-        PLCMP_COMMON_MALLOCATE_MEM(p_str_for, sizeof(char) * ((str_length) + 1));   \
-        p_str_for[(str_length)] = '\0';                                             \
+#define PLCMP_COMMON_ALLOC_MEM_FOR_STR(p_str_for, str_length)                  \
+    do {                                                                       \
+        PLCMP_COMMON_MALLOCATE_MEM(p_str_for,                                  \
+                                   sizeof(char) * ((str_length) + 1));         \
+        p_str_for[(str_length)] = '\0';                                        \
     } while(0)
 
 /* 
@@ -158,10 +162,10 @@ typedef struct dst_s {
  * 'p_fp_str_from' has type 'char*' or 'char const*'
  *
  */
-#define PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_fp_str_to, p_fp_str_from)              \
-    do {                                                                                \
-        PLCMP_COMMON_ALLOC_MEM_FOR_STR(p_fp_str_to, strlen(p_fp_str_from));             \
-        strcpy(p_fp_str_to, p_fp_str_from);                                             \
+#define PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_fp_str_to, p_fp_str_from)     \
+    do {                                                                       \
+        PLCMP_COMMON_ALLOC_MEM_FOR_STR(p_fp_str_to, strlen(p_fp_str_from));    \
+        strcpy(p_fp_str_to, p_fp_str_from);                                    \
     } while(0)
 
 #endif /* PLCMP_COMMON_H */

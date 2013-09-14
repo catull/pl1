@@ -30,8 +30,8 @@ extern input_sym_t input_syms_table[NVXOD];
 /* Adjacency matrix which will become reachability matrix afterward */
 extern char adj_reach_mtrx[NVXOD][NNETRM];
 
-/* Function finds necessary string with sought-for symbol in the input_syms_table-table 
- * and returns string-index of input_syms_table-table.
+/* Function finds necessary string with sought-for symbol in the 
+ * input_syms_table-table and returns string-index of input_syms_table-table.
  * 
  * @param1: const char *p_str_symbol
  * C-string containing name of sought-for symbol
@@ -39,7 +39,9 @@ extern char adj_reach_mtrx[NVXOD][NNETRM];
  * @param2: unsigned int symbol_str_len
  * Length of the string of sought-for symbol
  */
-unsigned int plcmp_tables_get_synt_rules_stroke_ind(const char *p_str_symbol, unsigned int symbol_str_len);
+unsigned int plcmp_tables_get_synt_rules_stroke_ind(
+    const char *p_str_symbol,
+    unsigned int symbol_str_len);
 
 void plcmp_tables_build_reach_mtrx(void);
 
