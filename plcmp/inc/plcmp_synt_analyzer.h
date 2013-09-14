@@ -25,15 +25,15 @@ typedef struct plcmp_synt_analyzer_error_data_s {
  * 
  * @param1:
  * 'goals' has type 'cel_t'
- * Its field 'cel_stack' has to be NULL-pointer
+ * Its field 'p_cel_stack' has to be NULL-pointer
  *
  */
 #define PLCMP_SYNT_ANALYZER_CREATE_GOALS_STACK(goals)                           \
     do {                                                                        \
         goals.count = 0;                                                        \
                                                                                 \
-        goals.cel_stack = calloc(NCEL, sizeof(goals_stack_t));                  \
-        if (NULL == goals.cel_stack)                                            \
+        goals.p_cel_stack = calloc(NCEL, sizeof(goals_stack_t));                  \
+        if (NULL == goals.p_cel_stack)                                            \
         {                                                                       \
             printf("Error of allocating memory for stack of goals. Assert\n");  \
             PLCMP_COMMON_ASSERT(0);                                             \
@@ -45,14 +45,14 @@ typedef struct plcmp_synt_analyzer_error_data_s {
  * 
  * @param1:
  * 'goals' has type 'cel_t'
- * Its field 'cel_stack' hasn't to be 'NULL'-pointer
+ * Its field 'p_cel_stack' hasn't to be 'NULL'-pointer
  *
  */
 #define PLCMP_SYNT_ANALYZER_DESTROY_GOALS_STACK(goals)                          \
     do {                                                                        \
         goals.count = 0;                                                        \
                                                                                 \
-        PLCMP_COMMON_RELEASE_MEM(goals.cel_stack);                              \
+        PLCMP_COMMON_RELEASE_MEM(goals.p_cel_stack);                              \
     } while(0)
 
 

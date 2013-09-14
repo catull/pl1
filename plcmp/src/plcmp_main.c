@@ -18,7 +18,7 @@ static inline void plcmp_main_create_goals_achieved_stack(dst_t *goals_achieved)
 {
     PLCMP_COMMON_ASSERT(NULL != goals_achieved);
     goals_achieved->count = 0;
-    PLCMP_COMMON_CALLOCATE_MEM(goals_achieved->dst_stack,
+    PLCMP_COMMON_CALLOCATE_MEM(goals_achieved->p_dst_stack,
                                NDST,
                                sizeof(goals_achieved_stack_t));
 }
@@ -28,7 +28,7 @@ static inline void plcmp_main_destroy_goals_achieved_stack(dst_t *goals_achieved
 {
     PLCMP_COMMON_ASSERT(NULL != goals_achieved);
     goals_achieved->count = 0;
-    PLCMP_COMMON_RELEASE_MEM(goals_achieved->dst_stack);
+    PLCMP_COMMON_RELEASE_MEM(goals_achieved->p_dst_stack);
 }
 
 /* Subroutine constructs error message by error code of main module */

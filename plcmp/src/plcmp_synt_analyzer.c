@@ -12,23 +12,19 @@ static void add_goal(cel_t *p_goals,
                      int src_text_begin_index,
                      int src_text_end_index)
 {
-    strcpy(p_goals->cel_stack[p_goals->count].CEL1, goal_name);
-    p_goals->cel_stack[p_goals->count].CEL2 = src_text_begin_index;
-    p_goals->cel_stack[p_goals->count].CEL3 = src_text_end_index;
-
-    ++p_goals->count;
+    unsigned int *restrict count = &p_goals->count;
+    strcpy(p_goals->p_cel_stack[*count].CEL1, goal_name);
+    p_goals->p_cel_stack[*count].CEL2 = src_text_begin_index;
+    p_goals->p_cel_stack[*count].CEL3 = src_text_end_index;
+    ++(*count);
 }
 
 /* Subroutine removes last goal from the stack of goals */
 static void remove_last_goal(cel_t *p_goals)
 {
-    memset(p_goals->cel_stack[p_goals->count - 1].CEL1,
-           '\0',
-           sizeof(p_goals->cel_stack[p_goals->count - 1].CEL1));
-    p_goals->cel_stack[p_goals->count - 1].CEL2 = 0;
-    p_goals->cel_stack[p_goals->count - 1].CEL3 = 0;
-
-    --p_goals->count;
+    unsigned int *restrict count = &p_goals->count;
+    memset(&p_goals->p_cel_stack[*count], 0, sizeof(p_goals->p_cel_stack[*count]));
+    --(*count);
 }
 
 /* Subroutine adds a goal achieved into stack of goals achieved */
@@ -39,59 +35,23 @@ static void add_goal_achieved(dst_t *p_goals_achieved,
                               int src_text_end_index,
                               int next_goal_sint_index)
 {
-    #define new p_goals_achieved->count
-
-    strcpy(p_goals_achieved->dst_stack[new].DST1, goal_achieved_name);
-    p_goals_achieved->dst_stack[new].DST2 = src_text_begin_index;
-    p_goals_achieved->dst_stack[new].DST3 = sint_index;
-    p_goals_achieved->dst_stack[new].DST4 = src_text_end_index;
-    p_goals_achieved->dst_stack[new].DST5 = next_goal_sint_index;
-
-    #undef new
-
-    ++p_goals_achieved->count;
+    unsigned int *restrict count = &p_goals_achieved->count;
+    strcpy(p_goals_achieved->p_dst_stack[*count].DST1, goal_achieved_name);
+    p_goals_achieved->p_dst_stack[*count].DST2 = src_text_begin_index;
+    p_goals_achieved->p_dst_stack[*count].DST3 = sint_index;
+    p_goals_achieved->p_dst_stack[*count].DST4 = src_text_end_index;
+    p_goals_achieved->p_dst_stack[*count].DST5 = next_goal_sint_index;
+    ++(*count);
 }
 
 /* Subroutine removes last goal achieved from the stack of goals achieved */
 static void remove_last_goal_achieved(dst_t *p_goals_achieved)
 {
-    #define last p_goals_achieved->count - 1
-
-    memset(p_goals_achieved->dst_stack[last].DST1,
-           '\0',
-           sizeof(p_goals_achieved->dst_stack[last].DST1));
-    p_goals_achieved->dst_stack[last].DST2 = 0;
-    p_goals_achieved->dst_stack[last].DST3 = 0;
-    p_goals_achieved->dst_stack[last].DST4 = 0;
-    p_goals_achieved->dst_stack[last].DST5 = 0;
-
-    #undef last
-
-    --p_goals_achieved->count;
-}
-
-/* Subroutine constructs table of the
- * successors of the adjacency matrix
- * of the Uorshell's algorithm
- */
-static void build_tpr(void)
-{
-    int i1 = 0;
-    for (; i1 < NNETRM; i1++)
-    {
-        int i2 = 0;
-        for (; i2 < NVXOD; i2++)
-        {
-            if (adj_reach_mtrx[i2][i1] && (i1 != i2))
-            {
-                int i3 = 0;
-                for (; i3 < NNETRM; i3++)
-                {
-                    adj_reach_mtrx[i2][i3] |= adj_reach_mtrx[i1][i3];
-                }
-            }
-        }
-    }
+    unsigned int *restrict count = &p_goals_achieved->count;
+    memset(&p_goals_achieved->p_dst_stack[*count],
+           0,
+           sizeof(p_goals_achieved->p_dst_stack[*count]));
+    --(*count);
 }
 
 /* Subroutine of syntax analyzer. 
@@ -123,7 +83,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS;
 
     /* Construct adjacency matrix */
-    build_tpr();
+    plcmp_tables_build_reach_mtrx();
 
     add_goal(p_goals, "PRO", i, 999);
 
@@ -177,44 +137,44 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     {
         --i;
 
-        if (!strcmp(synt_rules_table[j].DER, p_goals->cel_stack[p_goals->count - 1].CEL1))
+        if (!strcmp(synt_rules_table[j].DER, p_goals->p_cel_stack[p_goals->count - 1].CEL1))
         {
             add_goal_achieved(p_goals_achieved,
-                              p_goals->cel_stack[p_goals->count - 1].CEL1,
-                              p_goals->cel_stack[p_goals->count - 1].CEL2,
-                              p_goals->cel_stack[p_goals->count - 1].CEL3,
+                              p_goals->p_cel_stack[p_goals->count - 1].CEL1,
+                              p_goals->p_cel_stack[p_goals->count - 1].CEL2,
+                              p_goals->p_cel_stack[p_goals->count - 1].CEL3,
                               i,
                               j);
 
-            if (!strcmp(p_goals->cel_stack[p_goals->count - 1].CEL1, "PRO"))
+            if (!strcmp(p_goals->p_cel_stack[p_goals->count - 1].CEL1, "PRO"))
             {
                 /* Successful finish of the syntax analysis */
                 PLCMP_SYNT_ANALYZER_DESTROY_GOALS_STACK(goals);
                 return err_data;
             }
 
-            if (adj_reach_mtrx[plcmp_tables_get_synt_rules_stroke_ind(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)][plcmp_tables_get_synt_rules_stroke_ind(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)])
+            if (adj_reach_mtrx[plcmp_tables_get_synt_rules_stroke_ind(p_goals->p_cel_stack[p_goals->count - 1].CEL1, 3)][plcmp_tables_get_synt_rules_stroke_ind(p_goals->p_cel_stack[p_goals->count - 1].CEL1, 3)])
             {
-                j = input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)].VX;
+                j = input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(p_goals->p_cel_stack[p_goals->count - 1].CEL1, 3)].VX;
                 goto L3;
             }
 
             L6:
 
-            j = p_goals->cel_stack[p_goals->count - 1].CEL3;
+            j = p_goals->p_cel_stack[p_goals->count - 1].CEL3;
             remove_last_goal(p_goals);
 
             goto L3;
         }
 
-        if (!adj_reach_mtrx[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)][plcmp_tables_get_synt_rules_stroke_ind(p_goals->cel_stack[p_goals->count - 1].CEL1, 3)])
+        if (!adj_reach_mtrx[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)][plcmp_tables_get_synt_rules_stroke_ind(p_goals->p_cel_stack[p_goals->count - 1].CEL1, 3)])
         {
             goto L9;
         }
 
         add_goal_achieved(p_goals_achieved, 
                           synt_rules_table[j].DER,
-                          p_goals->cel_stack[p_goals->count - 1].CEL2,
+                          p_goals->p_cel_stack[p_goals->count - 1].CEL2,
                           0,
                           i,
                           j);
@@ -248,13 +208,13 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     if ((input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED > 0))
     {
         add_goal(p_goals,
-                 p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST1,
-                 p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST2,
-                 p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST3);
+                 p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST1,
+                 p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST2,
+                 p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST3);
 
         L10:
 
-        j = p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST5;
+        j = p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST5;
         remove_last_goal_achieved(p_goals_achieved);
         goto L9;
     }
@@ -262,8 +222,8 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     if ((input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED == 0))
     {
 
-        if (!strcmp(p_goals->cel_stack[p_goals->count - 1].CEL1,
-                    p_goals_achieved->dst_stack[p_goals_achieved->count - 1].DST1))
+        if (!strcmp(p_goals->p_cel_stack[p_goals->count - 1].CEL1,
+                    p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST1))
         {
             goto L6;
         }
@@ -279,7 +239,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         goto L8;
     }
 
-    j = p_goals->cel_stack[p_goals->count - 1].CEL3;
+    j = p_goals->p_cel_stack[p_goals->count - 1].CEL3;
     remove_last_goal(p_goals);
 
     if (999 == j)

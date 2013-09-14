@@ -45,7 +45,7 @@ typedef struct goals_stack_s {
 /* */
 typedef struct cel_s {
     unsigned int count;
-    goals_stack_t *cel_stack;
+    goals_stack_t *p_cel_stack;
 } cel_t;
 
 /* Structure for the stack of goals achieved */
@@ -60,7 +60,7 @@ typedef struct goals_achieved_stack_s {
 /* */
 typedef struct dst_s {
     unsigned int count;
-    goals_achieved_stack_t *dst_stack;
+    goals_achieved_stack_t *p_dst_stack;
 } dst_t;
 
 

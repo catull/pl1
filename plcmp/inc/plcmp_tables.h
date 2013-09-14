@@ -41,4 +41,6 @@ extern char adj_reach_mtrx[NVXOD][NNETRM];
  */
 unsigned int plcmp_tables_get_synt_rules_stroke_ind(const char *p_str_symbol, unsigned int symbol_str_len);
 
+void plcmp_tables_build_reach_mtrx(void);
+
 #endif /* PLCMP_TABLES_H */

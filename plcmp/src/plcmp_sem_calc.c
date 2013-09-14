@@ -1106,7 +1106,7 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
         int dst_index = 0;
         for (dst_index = 0; dst_index < p_goals_achieved->count; dst_index++)
         {
-            int hand_num = plcmp_tables_get_synt_rules_stroke_ind(p_goals_achieved->dst_stack[dst_index].DST1, 3);
+            int hand_num = plcmp_tables_get_synt_rules_stroke_ind(p_goals_achieved->p_dst_stack[dst_index].DST1, 3);
             switch (hand_num + 1)
             {
                 /* PRO */
@@ -1115,7 +1115,7 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
                     break;
                 /* other */
                 default:
-                    err_data.err_code = handler[hand_num](sem_calc_phase, &p_goals_achieved->dst_stack[dst_index]);
+                    err_data.err_code = handler[hand_num](sem_calc_phase, &p_goals_achieved->p_dst_stack[dst_index]);
                     break;    
             }
             
@@ -1125,7 +1125,7 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(char const *p_asm
                  * of the functions of the goals achieved.
                  * Prepare and send error data to the caller 
                  */
-                cook_error_data(&err_data, p_goals_achieved->dst_stack[dst_index]);
+                cook_error_data(&err_data, p_goals_achieved->p_dst_stack[dst_index]);
                 return err_data;
             }
         }

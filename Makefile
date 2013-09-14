@@ -9,7 +9,7 @@ RM := rm -rf
 MV := mv
 
 CC := gcc
-FLAGS := -O2 -Wall
+FLAGS := -O2 -Wall -std=c99
 
 all: plcmp asmcmp absload
 

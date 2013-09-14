@@ -457,3 +457,27 @@ unsigned int plcmp_tables_get_synt_rules_stroke_ind(char const *p_str_symbol, un
 
     return NVXOD == i ? -1 : i;
 }
+
+/* Subroutine constructs table of the
+ * successors of the adjacency matrix
+ * of the Uorshell's algorithm
+ */
+void plcmp_tables_build_reach_mtrx(void)
+{
+    int i1 = 0;
+    for (; i1 < NNETRM; i1++)
+    {
+        int i2 = 0;
+        for (; i2 < NVXOD; i2++)
+        {
+            if (adj_reach_mtrx[i2][i1] && (i1 != i2))
+            {
+                int i3 = 0;
+                for (; i3 < NNETRM; i3++)
+                {
+                    adj_reach_mtrx[i2][i3] |= adj_reach_mtrx[i1][i3];
+                }
+            }
+        }
+    }
+}
