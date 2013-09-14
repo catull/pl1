@@ -17,14 +17,18 @@ typedef struct plcmp_lex_analyzer_error_data_s {
 } plcmp_lex_analyzer_error_data_t;
 
 /* Subroutine of primitive lexical analyzer 
- * It compresses the source text by removing all excess spaces and newline-symbols */
-struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(char compact_pl1_src_text[],
-                                                                            size_t compact_text_maxlen,
-                                                                            char pl1_src_text[][LINELEN],
-                                                                            size_t pl1_src_text_len);
+ * It compresses the source text by removing 
+ * all excess spaces and newline-symbols */
+struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(
+    char compact_pl1_src_text[],
+    size_t compact_text_maxlen,
+    char pl1_src_text[][LINELEN],
+    size_t pl1_src_text_len);
 
-/* Subroutine constructs error message by error code of lexical analyzer module */
-char* plcmp_lex_analyzer_errmsg_by_errdata(plcmp_lex_analyzer_error_data_t const *err_data,
-                                           char *errmsg);
+/* Subroutine constructs error message 
+ * by error code of lexical analyzer module */
+char* plcmp_lex_analyzer_errmsg_by_errdata(
+    plcmp_lex_analyzer_error_data_t const *err_data,
+    char *errmsg);
 
 #endif /* PLCMP_LEX_ANALYZER_H */

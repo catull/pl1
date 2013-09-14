@@ -7,11 +7,13 @@
 #include "plcmp_lex_analyzer.h"
 
 /* Subroutine of primitive lexical analyzer 
- * It compresses the source text by removing all excess spaces and newline-symbols */
-struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(char compact_pl1_src_text[],
-                                                                            size_t compact_text_maxlen,
-                                                                            char pl1_src_text[][LINELEN],
-                                                                            size_t pl1_src_text_len)
+ * It compresses the source text by removing 
+ * all excess spaces and newline-symbols */
+struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(
+    char compact_pl1_src_text[],
+    size_t compact_text_maxlen,
+    char pl1_src_text[][LINELEN],
+    size_t pl1_src_text_len)
 {
     unsigned int i1 = 0, i3 = 0;
     /* Last processed symbol in the compact source PL1-text */
@@ -55,12 +57,16 @@ struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(char
                      * after 'prev_processed_symb' which is being already 
                      * contained in compact source text
                      * For example:
-                     * - "TEXT    TEXT2" source text will be processed to "TEXT TEXT2" compact source text
-                     * - "TEXT: TEXT2" source text will be processed to "TEXT:TEXT2" compact source text
-                     * - "TEXT(    TEXT2" source text will be processed to "TEXT(TEXT2" compact source text
+                     * - "TEXT    TEXT2" source text will be processed to 
+                     * "TEXT TEXT2" compact source text
+                     * - "TEXT: TEXT2" source text will be processed to 
+                     * "TEXT:TEXT2" compact source text
+                     * - "TEXT(    TEXT2" source text will be processed to 
+                     * "TEXT(TEXT2" compact source text
                      *
-                     * In this way accordance with this condition we remove excess
-                     * whitespace-symbol after 'prev_processed_symb' symbol
+                     * In this way accordance with this condition 
+                     * we remove excess whitespace-symbol after 
+                     * 'prev_processed_symb' symbol
                      */
                      continue; 
                 }
@@ -76,14 +82,19 @@ struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(char
                 {
                     /* In accordance with this condition 'prev_processed_symb'
                      * which contains space-symbol will be removed
-                     * from the compact source text, which already contains this space-symbol.
+                     * from the compact source text, which already contains 
+                     * this space-symbol.
                      * For example:
-                     * - "TEXT - TEXT2" source text will be processed to "TEXT- TEXT2" compact source text
-                     * - "TEXT + TEXT2" source text will be processed to "TEXT+ TEXT2" compact source text
-                     * - "TEXT (TEXT2" source text will be processed to "TEXT(TEXT2" compact source text
+                     * - "TEXT - TEXT2" source text will be processed to 
+                     * "TEXT- TEXT2" compact source text
+                     * - "TEXT + TEXT2" source text will be processed to 
+                     * "TEXT+ TEXT2" compact source text
+                     * - "TEXT (TEXT2" source text will be processed to 
+                     * "TEXT(TEXT2" compact source text
                      *
-                     * In this way in accordance with this condition we remove excess
-                     * whitespace-symbol before 'pl1_src_text[i1][i2]' symbol
+                     * In this way in accordance with this condition 
+                     * we remove excess whitespace-symbol before 
+                     * 'pl1_src_text[i1][i2]' symbol
                      */
                     i3--;
                 }
@@ -93,7 +104,8 @@ struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(char
                 i3++;
                 if (i3 == compact_text_maxlen)
                 {
-                    err_data.err_code = PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW;
+                    err_data.err_code =
+                        PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW;
                     goto error;
                 }
             }
@@ -110,8 +122,11 @@ struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(char
     return err_data;
 }
 
-/* Subroutine constructs error message by error code of lexical analyzer module */
-char* plcmp_lex_analyzer_errmsg_by_errdata(plcmp_lex_analyzer_error_data_t const *err_data, char *errmsg)
+/* Subroutine constructs error message 
+ * by error code of lexical analyzer module */
+char* plcmp_lex_analyzer_errmsg_by_errdata(
+    plcmp_lex_analyzer_error_data_t const *err_data,
+    char *errmsg)
 {
     switch (err_data->err_code)
     {
@@ -119,7 +134,9 @@ char* plcmp_lex_analyzer_errmsg_by_errdata(plcmp_lex_analyzer_error_data_t const
             strcpy(errmsg, "No error occured");
             break;
         case PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW:
-            strcpy(errmsg, "Overflow of the compact text buffer while lexical analysis was processing");
+            strcpy(errmsg,
+                   "Overflow of the compact text buffer "
+                   "while lexical analysis was processing");
             break;
         default:
             strcpy(errmsg, "Unknown error code for generating error message");

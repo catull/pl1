@@ -10,7 +10,8 @@
 
 /* Enumerate defines error codes of main module */
 typedef enum plcmp_main_error_code_e {
-    PLCMP_MAIN_SUCCESS = 0, PLCMP_MAIN_SUCCESSFUL_TRANSLATION = PLCMP_MAIN_SUCCESS,
+    PLCMP_MAIN_SUCCESS = 0,
+    PLCMP_MAIN_SUCCESSFUL_TRANSLATION = PLCMP_MAIN_SUCCESS,
     PLCMP_MAIN_WRONG_NUM_CLI_PAR_ERROR,
     PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH_ERROR,
     PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION_ERROR,
@@ -43,12 +44,13 @@ typedef struct plcmp_main_error_data_s {
  * It hasn't to be 'NULL'-pointer
  *
  */
-#define PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name, p_pl1_fp_name)    \
-    do {                                                                                \
-        PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_asm_fp_name, p_pl1_fp_name);           \
-        size_t asm_fp_len = strlen(p_asm_fp_name);                                      \
-        p_asm_fp_name[asm_fp_len - 4] = '\0';                                           \
-        strcat(p_asm_fp_name, ".ass");                                                  \
+#define PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name,          \
+                                                       p_pl1_fp_name)          \
+    do {                                                                       \
+        PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_asm_fp_name, p_pl1_fp_name);  \
+        size_t asm_fp_len = strlen(p_asm_fp_name);                             \
+        p_asm_fp_name[asm_fp_len - 4] = '\0';                                  \
+        strcat(p_asm_fp_name, ".ass");                                         \
     } while(0)
 
 #endif /* PLCMP_MAIN_H */

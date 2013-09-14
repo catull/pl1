@@ -24,7 +24,8 @@ static inline void plcmp_main_create_goals_achieved_stack(dst_t *goals_achieved)
 }
  
 /* Subroutine destroys stack of goals achieved */
-static inline void plcmp_main_destroy_goals_achieved_stack(dst_t *goals_achieved)
+static inline void plcmp_main_destroy_goals_achieved_stack(
+    dst_t *goals_achieved)
 {
     PLCMP_COMMON_ASSERT(NULL != goals_achieved);
     goals_achieved->count = 0;
@@ -49,7 +50,8 @@ static inline char const* errmsg_by_errcode(plcmp_main_error_code_t err_code)
         case PLCMP_MAIN_READING_PL1_FILE_ERROR:
             return "Error occured while reading file with the source text";
         case PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW_ERROR:
-            return "Overflow of the program buffer while reading file with the source text";
+            return "Overflow of the program buffer "
+                   "while reading file with the source text";
         case PLCMP_MAIN_LEX_ANALYZER_ERROR:
             return "Error in lexical analyzer";
         case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
@@ -61,7 +63,8 @@ static inline char const* errmsg_by_errcode(plcmp_main_error_code_t err_code)
     }
 }
 
-/* Subroutine reads PL1-file of the source text with 'p_pl1_fp_name' file path name */
+/* Subroutine reads PL1-file of the source text 
+ * with 'p_pl1_fp_name' file path name */
 static enum plcmp_main_error_code_e read_pl1_file(char const *p_pl1_fp_name,
                                                   char pl1_src_text[][LINELEN],
                                                   size_t *p_pl1_src_text_len)
@@ -78,7 +81,9 @@ static enum plcmp_main_error_code_e read_pl1_file(char const *p_pl1_fp_name,
     }
 
     /* Write opened file to byte-array */
-    for (pl1_src_text_len = 0; pl1_src_text_len < MAXNISXTXT; pl1_src_text_len++)
+    for (pl1_src_text_len = 0;
+         pl1_src_text_len < MAXNISXTXT;
+         pl1_src_text_len++)
     {
         if (!fread(pl1_src_text[pl1_src_text_len], 1, LINELEN, p_pl1_f))
         {
@@ -111,9 +116,10 @@ static enum plcmp_main_error_code_e read_pl1_file(char const *p_pl1_fp_name,
 /* Subroutine processes source PL1-text by calling 
  * lexical and syntax analyzers and semantic calculator 
  * which translate PL1-text to text with assembler mnemonic commands */
-static struct plcmp_main_error_data_s process_src_text(char pl1_src_text[][LINELEN],
-                                                       size_t pl1_src_text_len,
-                                                       char const *p_asm_fp_name)
+static struct plcmp_main_error_data_s process_src_text(
+    char pl1_src_text[][LINELEN],
+    size_t pl1_src_text_len,
+    char const *p_asm_fp_name)
 {
     /* Compact source text */
     char compact_pl1_src_text[NSTROKA] = { '\0' };
@@ -135,11 +141,15 @@ static struct plcmp_main_error_data_s process_src_text(char pl1_src_text[][LINEL
 
     /* Lexical analysis of the source text */
     err_data.lex_analyzer_err_data =
-        plcmp_lex_analyzer_compress_src_text(compact_pl1_src_text, NSTROKA, pl1_src_text, pl1_src_text_len);
+        plcmp_lex_analyzer_compress_src_text(compact_pl1_src_text,
+                                             NSTROKA,
+                                             pl1_src_text,
+                                             pl1_src_text_len);
     if (PLCMP_LEX_ANALYZER_SUCCESS != err_data.lex_analyzer_err_data.err_code)
     {
         /* Error in lexical analyzer of PL1-text.
-         * Error data has already contained into 'err_data.lex_analyzer_err_data' structure
+         * Error data has already contained into 
+         * 'err_data.lex_analyzer_err_data' structure
          * because lexical analyzer has already returned its */
         err_data.main_err_code = PLCMP_MAIN_LEX_ANALYZER_ERROR;
         goto error_lex_analyzer;
@@ -150,11 +160,13 @@ static struct plcmp_main_error_data_s process_src_text(char pl1_src_text[][LINEL
 
     /* Syntax analysis of the source text and filling stack of goals achived */
     err_data.synt_analyzer_err_data =
-        plcmp_synt_analyzer_syntax_analysis(compact_pl1_src_text, &goals_achieved);
+        plcmp_synt_analyzer_syntax_analysis(compact_pl1_src_text,
+                                            &goals_achieved);
     if (PLCMP_SYNT_ANALYZER_SUCCESS != err_data.synt_analyzer_err_data.err_code)
     {
         /* Error in syntax of the source PL1-text.
-         * Error data has already contained into 'err_data.synt_analyzer_err_data' structure
+         * Error data has already contained into
+         * 'err_data.synt_analyzer_err_data' structure
          * because syntax analyzer has already returned its */
         err_data.main_err_code = PLCMP_MAIN_SYNT_ANALYZER_ERROR;
         goto error_synt_analyzer;
@@ -162,11 +174,14 @@ static struct plcmp_main_error_data_s process_src_text(char pl1_src_text[][LINEL
 
     /* Semantic calculation */
     err_data.sem_calc_err_data =
-        plcmp_sem_calc_gen_asm_code(p_asm_fp_name, compact_pl1_src_text, &goals_achieved);
+        plcmp_sem_calc_gen_asm_code(p_asm_fp_name,
+                                    compact_pl1_src_text,
+                                    &goals_achieved);
     if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.sem_calc_err_data.err_code)
     {
         /* Error in execution logic of the source PL1-text
-         * Error data has already contained into 'err_data.sem_calc_err_data' structure
+         * Error data has already contained into
+         * 'err_data.sem_calc_err_data' structure
          * because semantic calculator has already returned its */
         err_data.main_err_code = PLCMP_MAIN_SEM_CALCULATOR_ERROR;
         goto error_sem_calculator;
@@ -185,7 +200,8 @@ static struct plcmp_main_error_data_s process_src_text(char pl1_src_text[][LINEL
  * - the syntax analyzer
  * - the semantic calculator 
  * Successful result of this PL1 high level compiler is '.ass' assembler file
- * Unsuccessful result is an error message with reason of interruption of translation
+ * Unsuccessful result is an error message 
+ *      with reason of interruption of translation
  *
  * Requirements of the input parameters:
  * - 'argc' must be equal '2'
@@ -194,10 +210,14 @@ static struct plcmp_main_error_data_s process_src_text(char pl1_src_text[][LINEL
  */
 int main(int const argc, char const *argv[])
 {
-    char pl1_src_text[MAXNISXTXT][LINELEN] = { {'\0'} };    /* Content of the array of the source PL1-text */
-    size_t pl1_src_text_len = 0;                            /* Length of the array of the source PL1-text */
-    char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;      /* Strings for containing file paths for PL1 and ASM files */
-    size_t pl1_fp_len = 0;                                  /* Length of the PL1 file path string */
+    /* Content of the array of the source PL1-text */
+    char pl1_src_text[MAXNISXTXT][LINELEN] = { {'\0'} };
+    /* Length of the array of the source PL1-text */
+    size_t pl1_src_text_len = 0;
+    /* Strings for containing file paths for PL1 and ASM files */
+    char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;
+    /* Length of the PL1 file path string */
+    size_t pl1_fp_len = 0;
     plcmp_main_error_data_t err_data;
 
     /* Clear error data structure and set default 
@@ -232,14 +252,18 @@ int main(int const argc, char const *argv[])
     /* Input file for translation must be with 'pli' extension */
     if (!streq(&p_pl1_fp_name[pl1_fp_len - 4], ".pli"))
     {
-        err_data.main_err_code = PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION_ERROR;
+        err_data.main_err_code =
+            PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION_ERROR;
         goto error;
     }
 
-    /* Clear array for the source PL1-text before getting text from the PL1-file */
+    /* Clear array for the source PL1-text before 
+     * getting text from the PL1-file */
     memset(pl1_src_text, '\0', sizeof(char) * MAXNISXTXT * LINELEN);
 
-    err_data.main_err_code = read_pl1_file(p_pl1_fp_name, pl1_src_text, &pl1_src_text_len);
+    err_data.main_err_code = read_pl1_file(p_pl1_fp_name,
+                                           pl1_src_text,
+                                           &pl1_src_text_len);
     if (PLCMP_MAIN_SUCCESS != err_data.main_err_code)
     {
         /* Error occured while reading file */
@@ -247,8 +271,10 @@ int main(int const argc, char const *argv[])
         goto error;
     }
 
-    /* After successfully reading file proceed to compression and translation of the source text */
-    PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name, p_pl1_fp_name);
+    /* After successfully reading file proceed to compression and 
+     * translation of the source text */
+    PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name,
+                                                   p_pl1_fp_name);
     PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name);
     err_data = process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
     PLCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
@@ -263,20 +289,27 @@ int main(int const argc, char const *argv[])
 
         error:
 
-        printf("Translation is interrupted\nReason: %s\n", errmsg_by_errcode(err_data.main_err_code));
+        printf("Translation is interrupted\nReason: %s\n",
+               errmsg_by_errcode(err_data.main_err_code));
         switch(err_data.main_err_code)
         {
             case PLCMP_MAIN_LEX_ANALYZER_ERROR:
                 printf("Lexical analyzer error message: %s\n",
-                       plcmp_lex_analyzer_errmsg_by_errdata(&err_data.lex_analyzer_err_data, errmsg));
+                       plcmp_lex_analyzer_errmsg_by_errdata(
+                           &err_data.lex_analyzer_err_data,
+                           errmsg));
                 break;
             case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
                 printf("Syntax analyzer error message: %s\n",
-                       plcmp_synt_analyzer_errmsg_by_errdata(&err_data.synt_analyzer_err_data, errmsg));
+                       plcmp_synt_analyzer_errmsg_by_errdata(
+                           &err_data.synt_analyzer_err_data,
+                           errmsg));
                 break;
             case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
                 printf("Semantic calculator error message: %s\n",
-                       plcmp_sem_calc_errmsg_by_errdata(&err_data.sem_calc_err_data, errmsg));
+                       plcmp_sem_calc_errmsg_by_errdata(
+                           &err_data.sem_calc_err_data,
+                           errmsg));
                 break;
             default:
                 break;

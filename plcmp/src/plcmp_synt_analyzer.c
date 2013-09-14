@@ -23,7 +23,9 @@ static void add_goal(cel_t *p_goals,
 static void remove_last_goal(cel_t *p_goals)
 {
     unsigned int *restrict count = &p_goals->count;
-    memset(&p_goals->p_cel_stack[*count], 0, sizeof(p_goals->p_cel_stack[*count]));
+    memset(&p_goals->p_cel_stack[*count],
+           0,
+           sizeof(p_goals->p_cel_stack[*count]));
     --(*count);
 }
 
