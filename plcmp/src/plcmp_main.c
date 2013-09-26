@@ -1,16 +1,18 @@
 /* encoding: UTF-8 */
 
-#include <stdio.h>
-#include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "plcmp_common.h"
-#include "plcmp_tables.h"
-#include "plcmp_main.h"
 #include "plcmp_lex_analyzer.h"
-#include "plcmp_synt_analyzer.h"
+#include "plcmp_main.h"
+#include "plcmp_main_error.h"
+#include "plcmp_main_messages.h"
 #include "plcmp_sem_calc.h"
+#include "plcmp_synt_analyzer.h"
+#include "plcmp_tables.h"
 
 /* Subroutine creates stack for goals achieved for using later
  * by syntax analyzer (parser) and semantic calculator */
@@ -32,42 +34,12 @@ static inline void plcmp_main_destroy_goals_achieved_stack(
     PLCMP_COMMON_RELEASE_MEM(goals_achieved->p_dst_stack);
 }
 
-/* Subroutine constructs error message by error code of main module */
-static inline char const* errmsg_by_errcode(plcmp_main_error_code_t err_code)
-{
-    switch (err_code)
-    {
-        case PLCMP_MAIN_SUCCESS:
-            return "No error occured";
-        case PLCMP_MAIN_WRONG_NUM_CLI_PAR_ERROR:
-            return "Wrong number of command line parameters";
-        case PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH_ERROR:
-            return "Wrong path to PL1-file with the source text";
-        case PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION_ERROR:
-            return "Wrong input file extension with the source text";
-        case PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE_ERROR:
-            return "Couldn't find file with the source text";
-        case PLCMP_MAIN_READING_PL1_FILE_ERROR:
-            return "Error occured while reading file with the source text";
-        case PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW_ERROR:
-            return "Overflow of the program buffer "
-                   "while reading file with the source text";
-        case PLCMP_MAIN_LEX_ANALYZER_ERROR:
-            return "Error in lexical analyzer";
-        case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
-            return "Error in syntax analyzer";
-        case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
-            return "Error in semantic calculator";
-        default:
-            return "Unknown error code for generating error message";
-    }
-}
-
 /* Subroutine reads PL1-file of the source text 
  * with 'p_pl1_fp_name' file path name */
-static enum plcmp_main_error_code_e read_pl1_file(char const *p_pl1_fp_name,
-                                                  char pl1_src_text[][LINELEN],
-                                                  size_t *p_pl1_src_text_len)
+static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(
+    char const *p_pl1_fp_name,
+    char pl1_src_text[][LINELEN],
+    size_t *p_pl1_src_text_len)
 {
     FILE *p_pl1_f = NULL;
     size_t pl1_src_text_len = 0;
@@ -113,10 +85,26 @@ static enum plcmp_main_error_code_e read_pl1_file(char const *p_pl1_fp_name,
     return err_code;
 }
 
+/* Subroutine sets default values for main error data structure */ 
+static inline void plcmp_main_set_default_err_data(
+    plcmp_main_error_data_t *err_data)
+{
+    PLCMP_COMMON_ASSERT(err_data);
+    /* Clear error data structure and set default 
+     * successful parameters before modules call */
+    memset(err_data, 0, sizeof(plcmp_main_error_data_t));
+    *err_data = (plcmp_main_error_data_t){ 
+        .main_err_code = PLCMP_MAIN_SUCCESS,
+        .lex_analyzer_err_data.err_code = PLCMP_LEX_ANALYZER_SUCCESS,
+        .synt_analyzer_err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS,
+        .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
+    };
+}
+
 /* Subroutine processes source PL1-text by calling 
  * lexical and syntax analyzers and semantic calculator 
  * which translate PL1-text to text with assembler mnemonic commands */
-static struct plcmp_main_error_data_s process_src_text(
+static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     char pl1_src_text[][LINELEN],
     size_t pl1_src_text_len,
     char const *p_asm_fp_name)
@@ -125,18 +113,9 @@ static struct plcmp_main_error_data_s process_src_text(
     char compact_pl1_src_text[NSTROKA] = { '\0' };
     /* Stack of goals achieved */
     dst_t goals_achieved;
-
     plcmp_main_error_data_t err_data;
 
-    /* Clear error data structure and set default successful parameters
-     * before lexical, syntax analyzer and semantic calculator will be called */
-    memset(&err_data, 0, sizeof(plcmp_main_error_data_t));
-    err_data = (plcmp_main_error_data_t) {
-        .main_err_code = PLCMP_MAIN_SUCCESS,
-        .lex_analyzer_err_data.err_code = PLCMP_LEX_ANALYZER_SUCCESS,
-        .synt_analyzer_err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS,
-        .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
-    };
+    plcmp_main_set_default_err_data(&err_data);
     memset(&goals_achieved, 0, sizeof(dst_t));
 
     /* Lexical analysis of the source text */
@@ -220,15 +199,7 @@ int main(int const argc, char const *argv[])
     size_t pl1_fp_len = 0;
     plcmp_main_error_data_t err_data;
 
-    /* Clear error data structure and set default 
-     * successful parameters before modules call */
-    memset(&err_data, 0, sizeof(plcmp_main_error_data_t));
-    err_data = (plcmp_main_error_data_t){ 
-        .main_err_code = PLCMP_MAIN_SUCCESS,
-        .lex_analyzer_err_data.err_code = PLCMP_LEX_ANALYZER_SUCCESS,
-        .synt_analyzer_err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS,
-        .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
-    };
+    plcmp_main_set_default_err_data(&err_data);
 
     /* Current program must contains one real parameter */
     if (argc != 2)
@@ -257,11 +228,7 @@ int main(int const argc, char const *argv[])
         goto error;
     }
 
-    /* Clear array for the source PL1-text before 
-     * getting text from the PL1-file */
-    memset(pl1_src_text, '\0', sizeof(char) * MAXNISXTXT * LINELEN);
-
-    err_data.main_err_code = read_pl1_file(p_pl1_fp_name,
+    err_data.main_err_code = plcmp_main_read_pl1_file(p_pl1_fp_name,
                                            pl1_src_text,
                                            &pl1_src_text_len);
     if (PLCMP_MAIN_SUCCESS != err_data.main_err_code)
@@ -276,45 +243,12 @@ int main(int const argc, char const *argv[])
     PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name,
                                                    p_pl1_fp_name);
     PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name);
-    err_data = process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
+    err_data = plcmp_main_process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
     PLCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
 
-    if (PLCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data.main_err_code)
-    {
-        printf("Translation is finished succesfully\n");
-    }
-    else
-    {
-        char errmsg[100] = { '\0' };
+    error:
 
-        error:
-
-        printf("Translation is interrupted\nReason: %s\n",
-               errmsg_by_errcode(err_data.main_err_code));
-        switch(err_data.main_err_code)
-        {
-            case PLCMP_MAIN_LEX_ANALYZER_ERROR:
-                printf("Lexical analyzer error message: %s\n",
-                       plcmp_lex_analyzer_errmsg_by_errdata(
-                           &err_data.lex_analyzer_err_data,
-                           errmsg));
-                break;
-            case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
-                printf("Syntax analyzer error message: %s\n",
-                       plcmp_synt_analyzer_errmsg_by_errdata(
-                           &err_data.synt_analyzer_err_data,
-                           errmsg));
-                break;
-            case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
-                printf("Semantic calculator error message: %s\n",
-                       plcmp_sem_calc_errmsg_by_errdata(
-                           &err_data.sem_calc_err_data,
-                           errmsg));
-                break;
-            default:
-                break;
-        }
-    }
+    plcmp_main_messages_print_translation_result(&err_data);
 
     return err_data.main_err_code;
 }
