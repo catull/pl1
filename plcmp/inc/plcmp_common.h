@@ -141,4 +141,9 @@
 
 #endif /* PLCMP_COMMON_H */
 
-int streq(char const *str_1, char const *str_2);
+int streq(char const *restrict str_1, char const *restrict str_2);
+
+/* Subroutine concatenates strings will be passed trought the parameters and
+ * puts result to 'str' destination string
+ * The last parameter must be a NULL-pointer */
+char* strcats(char *restrict str, ...);

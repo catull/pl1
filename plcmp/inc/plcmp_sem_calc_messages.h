@@ -9,6 +9,6 @@
  * by error data of semantic calculator module */
 char* plcmp_sem_calc_messages_errmsg_by_errdata(
     plcmp_sem_calc_error_data_t const *err_data,
-    char *errmsg);
+    char errmsg[]);
 
 #endif /* PLCMP_SEM_CALC_MESSAGES_H */

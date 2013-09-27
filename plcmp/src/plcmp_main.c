@@ -1,8 +1,6 @@
 /* encoding: UTF-8 */
 
-#include <ctype.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "plcmp_common.h"
@@ -11,27 +9,6 @@
 #include "plcmp_main_messages.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_synt_analyzer.h"
-#include "plcmp_tables.h"
-
-/* Subroutine creates stack for goals achieved for using later
- * by syntax analyzer (parser) and semantic calculator */
-static inline void plcmp_main_create_goals_achieved_stack(dst_t *goals_achieved)
-{
-    PLCMP_COMMON_ASSERT(NULL != goals_achieved);
-    goals_achieved->count = 0;
-    PLCMP_COMMON_CALLOC_MEM(goals_achieved->p_dst_stack,
-                            NDST,
-                            sizeof(goals_achieved_stack_t));
-}
- 
-/* Subroutine destroys stack of goals achieved */
-static inline void plcmp_main_destroy_goals_achieved_stack(
-    dst_t *goals_achieved)
-{
-    PLCMP_COMMON_ASSERT(NULL != goals_achieved);
-    goals_achieved->count = 0;
-    PLCMP_COMMON_RELEASE_MEM(goals_achieved->p_dst_stack);
-}
 
 /* Subroutine reads PL1-file of the source text 
  * with 'p_pl1_fp_name' file path name */
@@ -45,7 +22,7 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(
     plcmp_main_error_code_t err_code = PLCMP_MAIN_SUCCESS;
 
     p_pl1_f = fopen(p_pl1_fp_name , "rb");
-    if (NULL == p_pl1_f)
+    if (!p_pl1_f)
     {
         err_code = PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE_ERROR;
         goto error_file_not_opened;
@@ -134,7 +111,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     }
 
     /* Create stack of achieved goals */
-    plcmp_main_create_goals_achieved_stack(&goals_achieved);
+    plcmp_goal_create_goals_achieved_stack(&goals_achieved);
 
     /* Syntax analysis of the source text and filling stack of goals achived */
     err_data.synt_analyzer_err_data =
@@ -167,7 +144,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
 
     error_synt_analyzer:
     error_sem_calculator:
-    plcmp_main_destroy_goals_achieved_stack(&goals_achieved);
+    plcmp_goal_destroy_goals_achieved_stack(&goals_achieved);
 
     error_lex_analyzer:
     return err_data;

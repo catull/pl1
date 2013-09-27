@@ -1,5 +1,8 @@
 /* encoding: UTF-8 */
 
+#include <stdio.h>
+
+#include "plcmp_common.h"
 #include "plcmp_main.h"
 #include "plcmp_main_messages.h"
 #include "plcmp_lex_analyzer_messages.h"
@@ -42,6 +45,8 @@ static inline char const* plcmp_main_messages_errmsg_by_errcode(
 void plcmp_main_messages_print_translation_result(
     plcmp_main_error_data_t const *err_data)
 {
+    PLCMP_COMMON_ASSERT(NULL != err_data);
+
     if (PLCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data->main_err_code)
     {
         printf("Translation is finished succesfully\n");

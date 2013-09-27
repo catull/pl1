@@ -8,7 +8,7 @@
  * error data of semantic calculator module */
 char* plcmp_sem_calc_messages_errmsg_by_errdata(
     plcmp_sem_calc_error_data_t const *err_data,
-    char *errmsg)
+    char errmsg[])
 {
     switch (err_data->err_code)
     {
@@ -26,47 +26,57 @@ char* plcmp_sem_calc_messages_errmsg_by_errdata(
         }
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
         {
-            strcpy(errmsg, "Not allowed identifier type '");
-            strcat(errmsg, err_data->data.identifier_type);
-            strcat(errmsg, "' in the source text '");
-            strcat(errmsg, err_data->src_text_part);
-            strcat(errmsg, "'");
+            strcats(errmsg,
+                    "Not allowed identifier type '",
+                    err_data->data.identifier_type,
+                    "' in the source text '",
+                    err_data->src_text_part,
+                    "'",
+                    NULL);
             break;
         }
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR:
         {
-            strcpy(errmsg, "Not allowed identifier type '");
-            strcat(errmsg, err_data->data.identifier_type);
-            strcat(errmsg, "' in the source text '");
-            strcat(errmsg, err_data->src_text_part);
-            strcat(errmsg, "'");
+            strcats(errmsg,
+                    "Not allowed identifier type '",
+                    err_data->data.identifier_type,
+                    "' in the source text '",
+                    err_data->src_text_part,
+                    "'",
+                    NULL);
             break;
         }
         case PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR:
         {
-            strcpy(errmsg, "Not determined identifier '");
-            strcat(errmsg, err_data->data.identifier);
-            strcat(errmsg, "' in the source text '");
-            strcat(errmsg, err_data->src_text_part);
-            strcat(errmsg, "'");
+            strcats(errmsg,
+                    "Not determined identifier '",
+                    err_data->data.identifier,
+                    "' in the source text '",
+                    err_data->src_text_part,
+                    "'",
+                    NULL);
             break;
         }
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR:
         {
-            strcpy(errmsg, "Not allowed operation '");
-            strcat(errmsg, err_data->data.operation);
-            strcat(errmsg, "' in the source text '");
-            strcat(errmsg, err_data->src_text_part);
-            strcat(errmsg, "'");
+            strcats(errmsg,
+                    "Not allowed operation '",
+                    err_data->data.operation,
+                    "' in the source text '",
+                    err_data->src_text_part,
+                    "'",
+                    NULL);
             break;
         }
         case PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR:
         {
-            strcpy(errmsg, "Repeated declaration of the identifier '");
-            strcat(errmsg, err_data->data.identifier);
-            strcat(errmsg, "' in the source text '");
-            strcat(errmsg, err_data->src_text_part);
-            strcat(errmsg, "'");
+            strcats(errmsg,
+                    "Repeated declaration of the identifier '",
+                    err_data->data.identifier,
+                    "' in the source text '",
+                    err_data->src_text_part,
+                    "'",
+                    NULL);
             break;
         }
         case PLCMP_SEM_CALCULATOR_CANT_WRITE_ASS_FILE_ERROR:

@@ -3,6 +3,8 @@
 #ifndef PLCMP_GOAL_H
 #define PLCMP_GOAL_H
 
+#include "plcmp_common.h"
+
 /* Structure for the stack of goals */
 typedef struct goals_stack_s {
     char CEL1[4];
@@ -31,6 +33,25 @@ typedef struct dst_s {
     goals_achieved_stack_t *p_dst_stack;
 } dst_t;
 
+/* Subroutine creates stack for goals achieved for using later
+ * by syntax analyzer (parser) and semantic calculator */
+static inline void plcmp_goal_create_goals_achieved_stack(dst_t *goals_achieved)
+{
+    PLCMP_COMMON_ASSERT(NULL != goals_achieved);
+    goals_achieved->count = 0;
+    PLCMP_COMMON_CALLOC_MEM(goals_achieved->p_dst_stack,
+                            NDST,
+                            sizeof(goals_achieved_stack_t));
+}
+
+/* Subroutine destroys stack of goals achieved */
+static inline void plcmp_goal_destroy_goals_achieved_stack(
+    dst_t *goals_achieved)
+{
+    PLCMP_COMMON_ASSERT(NULL != goals_achieved);
+    goals_achieved->count = 0;
+    PLCMP_COMMON_RELEASE_MEM(goals_achieved->p_dst_stack);
+}
 
 void plcmp_goal_add(cel_t *p_goals,
                     char const *goal_name,

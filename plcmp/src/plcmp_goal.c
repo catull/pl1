@@ -1,6 +1,5 @@
 /* encoding: UTF-8 */
 
-#include <stdlib.h>
 #include <string.h>
 
 #include "plcmp_goal.h"
