@@ -2,9 +2,8 @@
 
 #include "plcmp_main.h"
 #include "plcmp_main_messages.h"
-
 #include "plcmp_lex_analyzer_messages.h"
-#include "plcmp_sem_calc.h"
+#include "plcmp_sem_calc_messages.h"
 #include "plcmp_synt_analyzer_messages.h"
 
 /* Subroutine constructs error message by error code of main module */
@@ -69,7 +68,7 @@ void plcmp_main_messages_print_translation_result(
                 break;
             case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
                 printf("Semantic calculator error message: %s\n",
-                       plcmp_sem_calc_errmsg_by_errdata(
+                       plcmp_sem_calc_messages_errmsg_by_errdata(
                            &err_data->sem_calc_err_data,
                            errmsg));
                 break;

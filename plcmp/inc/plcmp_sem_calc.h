@@ -3,6 +3,8 @@
 #ifndef PLCMP_SEM_CALC_H
 #define PLCMP_SEM_CALC_H
 
+#include "plcmp_common.h"
+
 #define PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN 20
 
 /* Enumerate defines error codes of semantic calculator module */
@@ -37,11 +39,5 @@ struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(
     char const *p_asm_fp_name,
     char const compact_pl1_src_text[],
     dst_t const *p_goals_achieved);
-
-/* Subroutine constructs error message 
- * by error data of semantic calculator module */
-char* plcmp_sem_calc_errmsg_by_errdata(
-    plcmp_sem_calc_error_data_t const *err_data,
-    char *errmsg);
 
 #endif /* PLCMP_SEM_CALC_H */
