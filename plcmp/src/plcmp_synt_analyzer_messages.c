@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "plcmp_common.h"
 #include "plcmp_synt_analyzer.h"
 #include "plcmp_synt_analyzer_messages.h"
 
@@ -17,8 +18,10 @@ char* plcmp_synt_analyzer_messages_errmsg_by_errdata(
             strcpy(errmsg, "No error occured");
             break;
         case PLCMP_SYNT_ANALYZER_SYNTAX_ERROR:
-            strcpy(errmsg, "Error in syntax of the source text: ");
-            strcat(errmsg, err_data->src_text_part);
+            strcats(errmsg,
+                    "Error in syntax of the source text: ",
+                    err_data->src_text_part,
+                    NULL);
             break;
         default:
             strcpy(errmsg,
