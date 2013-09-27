@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "plcmp_common.h"
-#include "plcmp_tables.h"
 #include "plcmp_synt_analyzer.h"
+#include "plcmp_tables.h"
 
 /* Subroutine adds a new goal into stack of goals */
 static void add_goal(cel_t *p_goals,

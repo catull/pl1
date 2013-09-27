@@ -3,7 +3,6 @@
 #include "plcmp_common.h"
 #include "plcmp_tables.h"
 
-
 /* Table of the syntax rules that is written in the form 
  * of recognition, grouped in "bushes" and represented 
  * as bidirectional list with alternate branching */

@@ -4,8 +4,8 @@
 #include "plcmp_main_messages.h"
 
 #include "plcmp_lex_analyzer.h"
-#include "plcmp_synt_analyzer.h"
 #include "plcmp_sem_calc.h"
+#include "plcmp_synt_analyzer.h"
 
 /* Subroutine constructs error message by error code of main module */
 static inline char const* plcmp_main_messages_errmsg_by_errcode(

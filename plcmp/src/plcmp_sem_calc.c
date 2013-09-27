@@ -1,12 +1,12 @@
 /* encoding: UTF-8 */
- 
+
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
-#include "plcmp_tables.h"
 #include "plcmp_common.h"
 #include "plcmp_sem_calc.h"
+#include "plcmp_tables.h"
 
 /* This array of structures is the table of labels' names of variables
  * which is being filled on the first process of semantic calculation
