@@ -8,7 +8,6 @@
 #include "plcmp_common.h"
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_main.h"
-#include "plcmp_main_error.h"
 #include "plcmp_main_messages.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_synt_analyzer.h"
@@ -20,9 +19,9 @@ static inline void plcmp_main_create_goals_achieved_stack(dst_t *goals_achieved)
 {
     PLCMP_COMMON_ASSERT(NULL != goals_achieved);
     goals_achieved->count = 0;
-    PLCMP_COMMON_CALLOCATE_MEM(goals_achieved->p_dst_stack,
-                               NDST,
-                               sizeof(goals_achieved_stack_t));
+    PLCMP_COMMON_CALLOC_MEM(goals_achieved->p_dst_stack,
+                            NDST,
+                            sizeof(goals_achieved_stack_t));
 }
  
 /* Subroutine destroys stack of goals achieved */
@@ -107,7 +106,7 @@ static inline void plcmp_main_set_default_err_data(
 static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     char pl1_src_text[][LINELEN],
     size_t pl1_src_text_len,
-    char const *p_asm_fp_name)
+    char const p_asm_fp_name[])
 {
     /* Compact source text */
     char compact_pl1_src_text[NSTROKA] = { '\0' };
@@ -116,7 +115,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     plcmp_main_error_data_t err_data;
 
     plcmp_main_set_default_err_data(&err_data);
-    memset(&goals_achieved, 0, sizeof(dst_t));
+    memset(&goals_achieved, 0, sizeof(goals_achieved));
 
     /* Lexical analysis of the source text */
     err_data.lex_analyzer_err_data =
@@ -229,8 +228,8 @@ int main(int const argc, char const *argv[])
     }
 
     err_data.main_err_code = plcmp_main_read_pl1_file(p_pl1_fp_name,
-                                           pl1_src_text,
-                                           &pl1_src_text_len);
+                                                      pl1_src_text,
+                                                      &pl1_src_text_len);
     if (PLCMP_MAIN_SUCCESS != err_data.main_err_code)
     {
         /* Error occured while reading file */
@@ -243,7 +242,9 @@ int main(int const argc, char const *argv[])
     PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name,
                                                    p_pl1_fp_name);
     PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name);
-    err_data = plcmp_main_process_src_text(pl1_src_text, pl1_src_text_len, p_asm_fp_name);
+    err_data = plcmp_main_process_src_text(pl1_src_text,
+                                           pl1_src_text_len,
+                                           p_asm_fp_name);
     PLCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
 
     error:

@@ -73,7 +73,7 @@ typedef struct dst_s {
  * @param1:
  * 'pointer' has any pointer type
  */
-#define PLCMP_COMMON_MALLOCATE_MEM(pointer, size)                              \
+#define PLCMP_COMMON_MALLOC_MEM(pointer, size)                                 \
     do {                                                                       \
         (pointer) = malloc(size);                                              \
         if (NULL == (pointer))                                                 \
@@ -94,9 +94,9 @@ typedef struct dst_s {
  * @param3:
  * 'size_of_element' has 'size_t' type
  */
-#define PLCMP_COMMON_CALLOCATE_MEM(pointer,                                    \
-                                   number_of_elements,                         \
-                                   size_of_element)                            \
+#define PLCMP_COMMON_CALLOC_MEM(pointer,                                       \
+                                number_of_elements,                            \
+                                size_of_element)                               \
     do {                                                                       \
         (pointer) = calloc((number_of_elements), (size_of_element));           \
         if (NULL == (pointer))                                                 \
@@ -130,6 +130,7 @@ typedef struct dst_s {
         else                                                                   \
         {                                                                      \
             printf("Try to release NULL-pointer: " #pointer ". Assert\n");     \
+            PLCMP_COMMON_ASSERT(0);                                            \
         }                                                                      \
     } while(0)
 
@@ -145,8 +146,8 @@ typedef struct dst_s {
  */
 #define PLCMP_COMMON_ALLOC_MEM_FOR_STR(p_str_for, str_length)                  \
     do {                                                                       \
-        PLCMP_COMMON_MALLOCATE_MEM(p_str_for,                                  \
-                                   sizeof(char) * ((str_length) + 1));         \
+        PLCMP_COMMON_MALLOC_MEM(p_str_for,                                     \
+                                sizeof(char) * ((str_length) + 1));            \
         p_str_for[(str_length)] = '\0';                                        \
     } while(0)
 

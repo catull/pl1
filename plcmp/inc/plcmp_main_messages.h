@@ -3,7 +3,7 @@
 #ifndef PLCMP_MAIN_MESSAGES_H
 #define PLCMP_MAIN_MESSAGES_H
 
-#include "plcmp_main_error.h"
+#include "plcmp_main.h"
 
 void plcmp_main_messages_print_translation_result(
     plcmp_main_error_data_t const *err_data);

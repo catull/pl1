@@ -1,7 +1,7 @@
 /* encoding: UTF-8 */
 
+#include "plcmp_main.h"
 #include "plcmp_main_messages.h"
-#include "plcmp_main_error.h"
 
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_synt_analyzer.h"

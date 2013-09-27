@@ -31,7 +31,7 @@ typedef struct plcmp_synt_analyzer_error_data_s {
 #define PLCMP_SYNT_ANALYZER_CREATE_GOALS_STACK(goals)                          \
     do {                                                                       \
         goals.count = 0;                                                       \
-        PLCMP_COMMON_CALLOCATE_MEM(goals.p_cel_stack,                          \
+        PLCMP_COMMON_CALLOC_MEM(goals.p_cel_stack,                             \
                                    NCEL,                                       \
                                    sizeof(goals_stack_t));                     \
     } while(0)
