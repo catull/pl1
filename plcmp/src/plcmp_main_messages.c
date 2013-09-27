@@ -3,9 +3,9 @@
 #include "plcmp_main.h"
 #include "plcmp_main_messages.h"
 
-#include "plcmp_lex_analyzer.h"
+#include "plcmp_lex_analyzer_messages.h"
 #include "plcmp_sem_calc.h"
-#include "plcmp_synt_analyzer.h"
+#include "plcmp_synt_analyzer_messages.h"
 
 /* Subroutine constructs error message by error code of main module */
 static inline char const* plcmp_main_messages_errmsg_by_errcode(
@@ -57,13 +57,13 @@ void plcmp_main_messages_print_translation_result(
         {
             case PLCMP_MAIN_LEX_ANALYZER_ERROR:
                 printf("Lexical analyzer error message: %s\n",
-                       plcmp_lex_analyzer_errmsg_by_errdata(
+                       plcmp_lex_analyzer_messages_errmsg_by_errdata(
                            &err_data->lex_analyzer_err_data,
                            errmsg));
                 break;
             case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
                 printf("Syntax analyzer error message: %s\n",
-                       plcmp_synt_analyzer_errmsg_by_errdata(
+                       plcmp_synt_analyzer_messages_errmsg_by_errdata(
                            &err_data->synt_analyzer_err_data,
                            errmsg));
                 break;

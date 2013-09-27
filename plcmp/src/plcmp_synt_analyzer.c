@@ -261,22 +261,3 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         goto L8;
     }
 }
-
-/* Subroutine constructs error message by error data of syntax analyzer module */
-char* plcmp_synt_analyzer_errmsg_by_errdata(plcmp_synt_analyzer_error_data_t const *err_data, char *errmsg)
-{
-    switch (err_data->err_code)
-    {
-        case PLCMP_SYNT_ANALYZER_SUCCESS:
-            strcpy(errmsg, "No error occured");
-            break;
-        case PLCMP_SYNT_ANALYZER_SYNTAX_ERROR:
-            strcpy(errmsg, "Error in syntax of the source text: ");
-            strcat(errmsg, err_data->src_text_part);
-            break;
-        default:
-            strcpy(errmsg, "Unknown error code in error data for generating error message");
-            break;
-    }
-    return errmsg;
-}
