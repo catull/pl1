@@ -4,6 +4,7 @@
 #define PLCMP_SYNT_ANALYZER_H
 
 #include "plcmp_common.h"
+#include "plcmp_goal.h"
 
 #define PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN 20
 

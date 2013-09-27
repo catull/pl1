@@ -1,60 +1,12 @@
 /* encoding: UTF-8 */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "plcmp_common.h"
+#include "plcmp_goal.h"
 #include "plcmp_synt_analyzer.h"
 #include "plcmp_tables.h"
-
-/* Subroutine adds a new goal into stack of goals */
-static void add_goal(cel_t *p_goals,
-                     char const *goal_name,
-                     int src_text_begin_index,
-                     int src_text_end_index)
-{
-    unsigned int *restrict count = &p_goals->count;
-    strcpy(p_goals->p_cel_stack[*count].CEL1, goal_name);
-    p_goals->p_cel_stack[*count].CEL2 = src_text_begin_index;
-    p_goals->p_cel_stack[*count].CEL3 = src_text_end_index;
-    ++(*count);
-}
-
-/* Subroutine removes last goal from the stack of goals */
-static void remove_last_goal(cel_t *p_goals)
-{
-    unsigned int *restrict count = &p_goals->count;
-    memset(&p_goals->p_cel_stack[*count],
-           0,
-           sizeof(p_goals->p_cel_stack[*count]));
-    --(*count);
-}
-
-/* Subroutine adds a goal achieved into stack of goals achieved */
-static void add_goal_achieved(dst_t *p_goals_achieved,
-                              char const *goal_achieved_name,
-                              int src_text_begin_index,
-                              int sint_index,
-                              int src_text_end_index,
-                              int next_goal_sint_index)
-{
-    unsigned int *restrict count = &p_goals_achieved->count;
-    strcpy(p_goals_achieved->p_dst_stack[*count].DST1, goal_achieved_name);
-    p_goals_achieved->p_dst_stack[*count].DST2 = src_text_begin_index;
-    p_goals_achieved->p_dst_stack[*count].DST3 = sint_index;
-    p_goals_achieved->p_dst_stack[*count].DST4 = src_text_end_index;
-    p_goals_achieved->p_dst_stack[*count].DST5 = next_goal_sint_index;
-    ++(*count);
-}
-
-/* Subroutine removes last goal achieved from the stack of goals achieved */
-static void remove_last_goal_achieved(dst_t *p_goals_achieved)
-{
-    unsigned int *restrict count = &p_goals_achieved->count;
-    memset(&p_goals_achieved->p_dst_stack[*count],
-           0,
-           sizeof(p_goals_achieved->p_dst_stack[*count]));
-    --(*count);
-}
 
 /* Subroutine of syntax analyzer. 
  * It constructs parse tree and returns error data if it will be */
@@ -87,7 +39,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     /* Construct reachability matrix */
     plcmp_tables_build_reach_mtrx();
 
-    add_goal(p_goals, "PRO", i, 999);
+    plcmp_goal_add(p_goals, "PRO", i, 999);
 
     if (!adj_reach_mtrx[plcmp_tables_get_synt_rules_stroke_ind(
                             &compact_pl1_src_text[i], 1)]
@@ -141,7 +93,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
         if (!strcmp(synt_rules_table[j].DER, p_goals->p_cel_stack[p_goals->count - 1].CEL1))
         {
-            add_goal_achieved(p_goals_achieved,
+            plcmp_goal_add_achieved(p_goals_achieved,
                               p_goals->p_cel_stack[p_goals->count - 1].CEL1,
                               p_goals->p_cel_stack[p_goals->count - 1].CEL2,
                               p_goals->p_cel_stack[p_goals->count - 1].CEL3,
@@ -164,7 +116,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             L6:
 
             j = p_goals->p_cel_stack[p_goals->count - 1].CEL3;
-            remove_last_goal(p_goals);
+            plcmp_goal_remove_last(p_goals);
 
             goto L3;
         }
@@ -174,7 +126,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             goto L9;
         }
 
-        add_goal_achieved(p_goals_achieved, 
+        plcmp_goal_add_achieved(p_goals_achieved, 
                           synt_rules_table[j].DER,
                           p_goals->p_cel_stack[p_goals->count - 1].CEL2,
                           0,
@@ -190,7 +142,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         goto L8;
     }
 
-    add_goal(p_goals, synt_rules_table[j].DER, i, j);
+    plcmp_goal_add(p_goals, synt_rules_table[j].DER, i, j);
     goto L2;
 
     L8:
@@ -209,7 +161,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     if ((input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED > 0))
     {
-        add_goal(p_goals,
+        plcmp_goal_add(p_goals,
                  p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST1,
                  p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST2,
                  p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST3);
@@ -217,7 +169,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         L10:
 
         j = p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST5;
-        remove_last_goal_achieved(p_goals_achieved);
+        plcmp_goal_remove_last_achieved(p_goals_achieved);
         goto L9;
     }
 
@@ -242,7 +194,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     }
 
     j = p_goals->p_cel_stack[p_goals->count - 1].CEL3;
-    remove_last_goal(p_goals);
+    plcmp_goal_remove_last(p_goals);
 
     if (999 == j)
     {

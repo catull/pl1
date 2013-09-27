@@ -35,36 +35,6 @@
 #define TRUE 1
 #define FALSE 0
 
-
-/* Structure for the stack of goals */
-typedef struct goals_stack_s {
-    char CEL1[4];
-    int CEL2;
-    int CEL3;
-} goals_stack_t;
-
-/* */
-typedef struct cel_s {
-    unsigned int count;
-    goals_stack_t *p_cel_stack;
-} cel_t;
-
-/* Structure for the stack of goals achieved */
-typedef struct goals_achieved_stack_s {
-    char DST1[4];
-    int DST2;
-    int DST3;
-    int DST4;
-    int DST5; 
-} goals_achieved_stack_t;
-
-/* */
-typedef struct dst_s {
-    unsigned int count;
-    goals_achieved_stack_t *p_dst_stack;
-} dst_t;
-
-
 #define PLCMP_COMMON_ASSERT(condition) assert(condition)
 
 /*
