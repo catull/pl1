@@ -9,6 +9,8 @@
 #include "plcmp_sem_calc_messages.h"
 #include "plcmp_synt_analyzer_messages.h"
 
+#define MAX_TRANSLATION_ERROR_RESULT_MESSAGE_LEN 100
+
 /* Subroutine constructs error message by error code of main module */
 static inline char const* plcmp_main_messages_errmsg_by_errcode(
     plcmp_main_error_code_t err_code)
@@ -53,7 +55,7 @@ void plcmp_main_messages_print_translation_result(
     }
     else
     {
-        char errmsg[100] = { '\0' };
+        char errmsg[MAX_TRANSLATION_ERROR_RESULT_MESSAGE_LEN] = { '\0' };
 
         printf("Translation is interrupted\nReason: %s\n",
                plcmp_main_messages_errmsg_by_errcode(err_data->main_err_code));
