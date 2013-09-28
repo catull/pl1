@@ -37,7 +37,7 @@ typedef struct plcmp_sem_calc_error_data_s {
  * of the achieved goals made by syntax analyzer 
  * and for generation output assembler file */
 struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(
-    char const *p_asm_fp_name,
+    char const p_asm_fp_name[],
     char const compact_pl1_src_text[],
     dst_t const *p_goals_achieved);
 

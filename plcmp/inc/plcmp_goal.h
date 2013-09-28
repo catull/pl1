@@ -53,6 +53,25 @@ static inline void plcmp_goal_destroy_goals_achieved_stack(
     PLCMP_COMMON_RELEASE_MEM(goals_achieved->p_dst_stack);
 }
 
+/* Subroutine creates stack for goals for using 
+ * later by syntax analyzer (parser) */
+static inline void plcmp_goal_create_goals_stack(cel_t *goals)
+{
+    PLCMP_COMMON_ASSERT(NULL != goals);
+    goals->count = 0;
+    PLCMP_COMMON_CALLOC_MEM(goals->p_cel_stack,
+                            NCEL,
+                            sizeof(goals_stack_t));
+}
+
+/* Subroutine destroys stack of goals */
+static inline void plcmp_goal_destroy_goals_stack(cel_t *goals)
+{
+    PLCMP_COMMON_ASSERT(NULL != goals);
+    goals->count = 0;
+    PLCMP_COMMON_RELEASE_MEM(goals->p_cel_stack);
+}
+
 void plcmp_goal_add(cel_t *p_goals,
                     char const *goal_name,
                     int src_text_begin_index,

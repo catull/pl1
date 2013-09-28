@@ -15,7 +15,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     dst_t *p_goals_achieved)
 {
     /* It's stack of goals and pointer on it.
-     * Later stack will be normally created by macro */
+     * Later stack will be normally created by function call */
     cel_t goals, *p_goals = &goals;
 
     plcmp_synt_analyzer_error_data_t err_data;
@@ -29,7 +29,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     int i_max = 0;
 
     /* Create stack of goals */
-    PLCMP_SYNT_ANALYZER_CREATE_GOALS_STACK(goals);
+    plcmp_goal_create_goals_stack(p_goals);
 
     /* Clear error data structure for later using 
      * and set default successful value for error code */
@@ -45,7 +45,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                             &compact_pl1_src_text[i], 1)]
                        [plcmp_tables_get_synt_rules_stroke_ind("PRO", 3)])
     {
-        PLCMP_SYNT_ANALYZER_DESTROY_GOALS_STACK(goals);
+        plcmp_goal_destroy_goals_stack(p_goals);
 
         /* Prepare error data for return to main module */
         err_data.err_code = PLCMP_SYNT_ANALYZER_SYNTAX_ERROR;
@@ -94,16 +94,16 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         if (!strcmp(synt_rules_table[j].DER, p_goals->p_cel_stack[p_goals->count - 1].CEL1))
         {
             plcmp_goal_add_achieved(p_goals_achieved,
-                              p_goals->p_cel_stack[p_goals->count - 1].CEL1,
-                              p_goals->p_cel_stack[p_goals->count - 1].CEL2,
-                              p_goals->p_cel_stack[p_goals->count - 1].CEL3,
-                              i,
-                              j);
+                                    p_goals->p_cel_stack[p_goals->count - 1].CEL1,
+                                    p_goals->p_cel_stack[p_goals->count - 1].CEL2,
+                                    p_goals->p_cel_stack[p_goals->count - 1].CEL3,
+                                    i,
+                                    j);
 
             if (!strcmp(p_goals->p_cel_stack[p_goals->count - 1].CEL1, "PRO"))
             {
                 /* Successful finish of the syntax analysis */
-                PLCMP_SYNT_ANALYZER_DESTROY_GOALS_STACK(goals);
+                plcmp_goal_destroy_goals_stack(p_goals);
                 return err_data;
             }
 
@@ -162,9 +162,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     if ((input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED > 0))
     {
         plcmp_goal_add(p_goals,
-                 p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST1,
-                 p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST2,
-                 p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST3);
+                       p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST1,
+                       p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST2,
+                       p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST3);
 
         L10:
 
@@ -198,7 +198,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     if (999 == j)
     {
-        PLCMP_SYNT_ANALYZER_DESTROY_GOALS_STACK(goals);
+        plcmp_goal_destroy_goals_stack(p_goals);
 
         /* Prepare error data for return to main module */
         err_data.err_code = PLCMP_SYNT_ANALYZER_SYNTAX_ERROR;

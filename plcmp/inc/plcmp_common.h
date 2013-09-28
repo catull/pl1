@@ -46,7 +46,7 @@
         if (NULL == (pointer))                                                 \
         {                                                                      \
             printf("Error of allocating memory with size = %lu"                \
-                   "bytes for " #pointer ". Assert\n", size);                  \
+                   "bytes for " #pointer ". Assert\n", (size));                \
             PLCMP_COMMON_ASSERT(0);                                            \
         }                                                                      \
     } while(0)
