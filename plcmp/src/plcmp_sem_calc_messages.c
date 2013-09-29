@@ -11,6 +11,8 @@ char* plcmp_sem_calc_messages_errmsg_by_errdata(
     plcmp_sem_calc_error_data_t const *err_data,
     char errmsg[])
 {
+    PLCMP_COMMON_ASSERT(NULL != err_data && NULL != errmsg);
+
     switch (err_data->err_code)
     {
         case PLCMP_SEM_CALCULATOR_SUCCESS:
