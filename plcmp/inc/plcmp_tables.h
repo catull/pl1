@@ -3,7 +3,7 @@
 #ifndef PLCMP_TABLES_H
 #define PLCMP_TABLES_H
 
-#include "plcmp_common.h"
+#include "plcmp_utils.h"
 
 typedef struct synt_rule_s {
     int POSL;

@@ -3,12 +3,87 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "plcmp_common.h"
+#include "plcmp_utils.h"
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_main.h"
-#include "plcmp_main_messages.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_synt_analyzer.h"
+
+#define MAX_TRANSLATION_ERROR_RESULT_MESSAGE_LEN 100
+
+/* Subroutine constructs error message by error code of main module */
+static inline char const* plcmp_main_messages_errmsg_by_errcode(
+    plcmp_main_error_code_t err_code)
+{
+    switch (err_code)
+    {
+        case PLCMP_MAIN_SUCCESS:
+            return "No error occured";
+        case PLCMP_MAIN_WRONG_NUM_CLI_PAR_ERROR:
+            return "Wrong number of command line parameters";
+        case PLCMP_MAIN_WRONG_INPUT_PL1_FILE_PATH_ERROR:
+            return "Wrong path to PL1-file with the source text";
+        case PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION_ERROR:
+            return "Wrong input file extension with the source text";
+        case PLCMP_MAIN_NOT_FOUND_INPUT_PL1_FILE_ERROR:
+            return "Couldn't find file with the source text";
+        case PLCMP_MAIN_READING_PL1_FILE_ERROR:
+            return "Error occured while reading file with the source text";
+        case PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW_ERROR:
+            return "Overflow of the program buffer "
+                   "while reading file with the source text";
+        case PLCMP_MAIN_LEX_ANALYZER_ERROR:
+            return "Error in lexical analyzer";
+        case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
+            return "Error in syntax analyzer";
+        case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
+            return "Error in semantic calculator";
+        default:
+            return "Unknown error code for generating error message";
+    }
+}
+
+/* Subroutine prints translation's result using main error data */
+static void plcmp_main_messages_print_translation_result(
+    plcmp_main_error_data_t const *err_data)
+{
+    PLCMP_UTILS_ASSERT(NULL != err_data);
+
+    if (PLCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data->main_err_code)
+    {
+        printf("Translation is finished succesfully\n");
+    }
+    else
+    {
+        char errmsg[MAX_TRANSLATION_ERROR_RESULT_MESSAGE_LEN] = { '\0' };
+
+        printf("Translation is interrupted\nReason: %s\n",
+               plcmp_main_messages_errmsg_by_errcode(err_data->main_err_code));
+        switch(err_data->main_err_code)
+        {
+            case PLCMP_MAIN_LEX_ANALYZER_ERROR:
+                printf("Lexical analyzer error message: %s\n",
+                       plcmp_lex_analyzer_errmsg_by_errdata(
+                           &err_data->lex_analyzer_err_data,
+                           errmsg));
+                break;
+            case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
+                printf("Syntax analyzer error message: %s\n",
+                       plcmp_synt_analyzer_errmsg_by_errdata(
+                           &err_data->synt_analyzer_err_data,
+                           errmsg));
+                break;
+            case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
+                printf("Semantic calculator error message: %s\n",
+                       plcmp_sem_calc_errmsg_by_errdata(
+                           &err_data->sem_calc_err_data,
+                           errmsg));
+                break;
+            default:
+                break;
+        }
+    }
+}
 
 /* Subroutine reads PL1-file of the source text 
  * with 'p_pl1_fp_name' file path name */
@@ -65,7 +140,7 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(
 static inline void plcmp_main_set_default_err_data(
     plcmp_main_error_data_t *err_data)
 {
-    PLCMP_COMMON_ASSERT(err_data);
+    PLCMP_UTILS_ASSERT(err_data);
     /* Clear error data structure and set default 
      * successful parameters before modules call */
     memset(err_data, 0, sizeof(plcmp_main_error_data_t));
@@ -185,7 +260,7 @@ int main(int const argc, char const *argv[])
     }
 
     /* Copy name of translated program from input argument */
-    PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_pl1_fp_name, argv[1]);
+    PLCMP_UTILS_ALLOC_MEM_AND_COPY_FP_STR(p_pl1_fp_name, argv[1]);
 
     /* Length of PL1 file path must be greater than 4 symbols.
      * Minimum file path is extension '.pli' */ 
@@ -210,7 +285,7 @@ int main(int const argc, char const *argv[])
     if (PLCMP_MAIN_SUCCESS != err_data.main_err_code)
     {
         /* Error occured while reading file */
-        PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name); 
+        PLCMP_UTILS_RELEASE_MEM(p_pl1_fp_name); 
         goto error;
     }
 
@@ -218,11 +293,11 @@ int main(int const argc, char const *argv[])
      * translation of the source text */
     PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name,
                                                    p_pl1_fp_name);
-    PLCMP_COMMON_RELEASE_MEM(p_pl1_fp_name);
+    PLCMP_UTILS_RELEASE_MEM(p_pl1_fp_name);
     err_data = plcmp_main_process_src_text(pl1_src_text,
                                            pl1_src_text_len,
                                            p_asm_fp_name);
-    PLCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
+    PLCMP_UTILS_RELEASE_MEM(p_asm_fp_name);
 
     error:
 

@@ -1,7 +1,7 @@
 /* encoding: UTF-8 */
 
-#ifndef PLCMP_COMMON_H
-#define PLCMP_COMMON_H
+#ifndef PLCMP_UTILS_H
+#define PLCMP_UTILS_H
 
 #include <assert.h>
 #include <stddef.h>
@@ -32,7 +32,7 @@
  * the source text (80 symbols +1 symbol for endline)*/
 #define LINELEN 81
 
-#define PLCMP_COMMON_ASSERT(condition) assert(condition)
+#define PLCMP_UTILS_ASSERT(condition) assert(condition)
 
 /*
  * Macro allocates memory
@@ -40,14 +40,14 @@
  * @param1:
  * 'pointer' has any pointer type
  */
-#define PLCMP_COMMON_MALLOC_MEM(pointer, size)                                 \
+#define PLCMP_UTILS_MALLOC_MEM(pointer, size)                                  \
     do {                                                                       \
         (pointer) = malloc(size);                                              \
         if (NULL == (pointer))                                                 \
         {                                                                      \
             printf("Error of allocating memory with size = %lu"                \
                    "bytes for " #pointer ". Assert\n", (size));                \
-            PLCMP_COMMON_ASSERT(0);                                            \
+            PLCMP_UTILS_ASSERT(0);                                             \
         }                                                                      \
     } while(0)
 
@@ -61,9 +61,9 @@
  * @param3:
  * 'size_of_element' has 'size_t' type
  */
-#define PLCMP_COMMON_CALLOC_MEM(pointer,                                       \
-                                number_of_elements,                            \
-                                size_of_element)                               \
+#define PLCMP_UTILS_CALLOC_MEM(pointer,                                        \
+                               number_of_elements,                             \
+                               size_of_element)                                \
     do {                                                                       \
         (pointer) = calloc((number_of_elements), (size_of_element));           \
         if (NULL == (pointer))                                                 \
@@ -73,7 +73,7 @@
                    "bytes for " #pointer ". Assert\n",                         \
                    (number_of_elements),                                       \
                    (size_of_element));                                         \
-            PLCMP_COMMON_ASSERT(0);                                            \
+            PLCMP_UTILS_ASSERT(0);                                             \
         }                                                                      \
     } while(0)
 
@@ -87,7 +87,7 @@
  * @param2:
  * 'what' has 'char*' type
  */
-#define PLCMP_COMMON_RELEASE_MEM(pointer)                                      \
+#define PLCMP_UTILS_RELEASE_MEM(pointer)                                       \
     do {                                                                       \
         if (pointer)                                                           \
         {                                                                      \
@@ -97,7 +97,7 @@
         else                                                                   \
         {                                                                      \
             printf("Try to release NULL-pointer: " #pointer ". Assert\n");     \
-            PLCMP_COMMON_ASSERT(0);                                            \
+            PLCMP_UTILS_ASSERT(0);                                             \
         }                                                                      \
     } while(0)
 
@@ -111,9 +111,9 @@
  * @param2:
  * 'str_length' has type 'size_t'
  */
-#define PLCMP_COMMON_ALLOC_MEM_FOR_STR(p_str_for, str_length)                  \
+#define PLCMP_UTILS_ALLOC_MEM_FOR_STR(p_str_for, str_length)                   \
     do {                                                                       \
-        PLCMP_COMMON_MALLOC_MEM(p_str_for,                                     \
+        PLCMP_UTILS_MALLOC_MEM(p_str_for,                                      \
                                 sizeof(char) * ((str_length) + 1));            \
         p_str_for[(str_length)] = '\0';                                        \
     } while(0)
@@ -130,12 +130,13 @@
  * 'p_fp_str_from' has type 'char*' or 'char const*'
  *
  */
-#define PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_fp_str_to, p_fp_str_from)     \
+#define PLCMP_UTILS_ALLOC_MEM_AND_COPY_FP_STR(p_fp_str_to, p_fp_str_from)      \
     do {                                                                       \
-        PLCMP_COMMON_ALLOC_MEM_FOR_STR(p_fp_str_to, strlen(p_fp_str_from));    \
+        PLCMP_UTILS_ALLOC_MEM_FOR_STR(p_fp_str_to, strlen(p_fp_str_from));     \
         strcpy(p_fp_str_to, p_fp_str_from);                                    \
     } while(0)
 
+/* Check equality of two strings */
 int streq(char const *restrict str_1, char const *restrict str_2);
 
 /* Subroutine concatenates strings will be passed trought the parameters and
@@ -143,4 +144,4 @@ int streq(char const *restrict str_1, char const *restrict str_2);
  * The last parameter must be a NULL-pointer */
 char* strcats(char *restrict str, ...);
 
-#endif /* PLCMP_COMMON_H */
+#endif /* PLCMP_UTILS_H */

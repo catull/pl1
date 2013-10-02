@@ -5,7 +5,7 @@
 
 #include <string.h>
 
-#include "plcmp_common.h"
+#include "plcmp_utils.h"
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_synt_analyzer.h"
@@ -49,7 +49,7 @@ typedef struct plcmp_main_error_data_s {
 #define PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name,          \
                                                        p_pl1_fp_name)          \
     do {                                                                       \
-        PLCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_asm_fp_name, p_pl1_fp_name);  \
+        PLCMP_UTILS_ALLOC_MEM_AND_COPY_FP_STR(p_asm_fp_name, p_pl1_fp_name);   \
         size_t asm_fp_len = strlen(p_asm_fp_name);                             \
         p_asm_fp_name[asm_fp_len - 4] = '\0';                                  \
         strcat(p_asm_fp_name, ".ass");                                         \

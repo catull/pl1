@@ -3,7 +3,7 @@
 #ifndef PLCMP_SYNT_ANALYZER_H
 #define PLCMP_SYNT_ANALYZER_H
 
-#include "plcmp_common.h"
+#include "plcmp_utils.h"
 #include "plcmp_goal.h"
 
 #define PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN 20
@@ -19,6 +19,12 @@ typedef struct plcmp_synt_analyzer_error_data_s {
     plcmp_synt_analyzer_error_code_t err_code;
     char src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN + 1];
 } plcmp_synt_analyzer_error_data_t;
+
+/* Subroutine constructs error message 
+ * by error data of syntax analyzer module */
+char* plcmp_synt_analyzer_errmsg_by_errdata(
+    plcmp_synt_analyzer_error_data_t const *err_data,
+    char errmsg[]);
 
 /* Subroutine of syntax analyzer. 
  * It constructs parse tree and returns error data if it will be */

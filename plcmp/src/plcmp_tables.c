@@ -1,6 +1,6 @@
 /* encoding: UTF-8 */
 
-#include "plcmp_common.h"
+#include "plcmp_utils.h"
 #include "plcmp_tables.h"
 
 /* Table of the syntax rules that is written in the form 

@@ -3,8 +3,9 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include "plcmp_common.h"
+#include "plcmp_utils.h"
 
+/* Check equality of two strings */
 int streq(char const *restrict str_1, char const *restrict str_2)
 {
     return !strcmp(str_1, str_2);
