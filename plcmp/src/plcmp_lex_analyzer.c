@@ -3,8 +3,8 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "plcmp_utils.h"
 #include "plcmp_lex_analyzer.h"
+#include "plcmp_utils.h"
 
 /* Subroutine constructs error message 
  * by error code of lexical analyzer module */

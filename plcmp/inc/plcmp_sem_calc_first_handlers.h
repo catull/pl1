@@ -8,23 +8,31 @@
 typedef enum plcmp_sem_calc_error_code_e 
     plcmp_sem_calc_first_handler_t(void const *param);
 
-plcmp_sem_calc_first_handler_t FAVI;
-plcmp_sem_calc_first_handler_t FBUK;
-plcmp_sem_calc_first_handler_t FCIF;
-plcmp_sem_calc_first_handler_t FIDE;
-plcmp_sem_calc_first_handler_t FIPE;
-plcmp_sem_calc_first_handler_t FIPR;
-plcmp_sem_calc_first_handler_t FLIT;
-plcmp_sem_calc_first_handler_t FMAN;
-plcmp_sem_calc_first_handler_t FODC;
-plcmp_sem_calc_first_handler_t FOEN;
-plcmp_sem_calc_first_handler_t FOPA;
-plcmp_sem_calc_first_handler_t FOPR;
-plcmp_sem_calc_first_handler_t FPRO;
-plcmp_sem_calc_first_handler_t FRZR;
-plcmp_sem_calc_first_handler_t FTEL;
-plcmp_sem_calc_first_handler_t FZNK;
-plcmp_sem_calc_first_handler_t FSTC;
-plcmp_sem_calc_first_handler_t FCON;
+#define X(s) plcmp_sem_calc_first_handler_t s;
+
+#define SEM_CALC_FIRST_HANDLERS \
+    X(FAVI) \
+    X(FBUK) \
+    X(FCIF) \
+    X(FIDE) \
+    X(FIPE) \
+    X(FIPR) \
+    X(FLIT) \
+    X(FMAN) \
+    X(FODC) \
+    X(FOEN) \
+    X(FOPA) \
+    X(FOPR) \
+    X(FPRO) \
+    X(FRZR) \
+    X(FTEL) \
+    X(FZNK) \
+    X(FSTC) \
+    X(FCON)
+
+SEM_CALC_FIRST_HANDLERS
+
+#undef X
+#undef SEM_CALC_FIRST_HANDLERS
 
 #endif /* PLCMP_SEM_CALC_FIRST_HANDLERS_H */
