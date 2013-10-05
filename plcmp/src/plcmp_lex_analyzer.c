@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "plcmp_common.h"
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_utils.h"
 

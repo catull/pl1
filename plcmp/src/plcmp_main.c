@@ -3,11 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "plcmp_utils.h"
+#include "plcmp_common.h"
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_main.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_synt_analyzer.h"
+#include "plcmp_utils.h"
 
 #define MAX_TRANSLATION_ERROR_RESULT_MESSAGE_LEN 100
 

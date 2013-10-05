@@ -25,7 +25,8 @@ ASMCMP_OBJS := $(patsubst %.c, $(ASMCMP_OBJ_DIR)/%.o, $(ASMCMP_SRCS_NOTDIR))
 ASMCMP_DEPS := $(patsubst %.c, $(ASMCMP_DEP_DIR)/%.d, $(ASMCMP_SRCS_NOTDIR))
 
 $(ASMCMP_OBJ_DIR)/%.o: $(ASMCMP_SRC_DIR)/%.c
-	$(CC) -c $< $(FLAGS) $(ASMCMP_DEFINITIONS) $(ASMCMP_INCLUDES) -MMD -o $@
-	@$(MV) $(patsubst %.o, %.d, $@) $(ASMCMP_DEP_DIR)
+	$(CC) -c $< $(FLAGS) $(ASMCMP_INCLUDES) -MM -MF \
+$(addprefix $(ASMCMP_DEP_DIR)/, $(patsubst $(ASMCMP_OBJ_DIR)/%.o, %.d, $@))
+	$(CC) -c $< $(FLAGS) $(ASMCMP_INCLUDES) -o $@
 
 -include $(ASMCMP_DEPS)

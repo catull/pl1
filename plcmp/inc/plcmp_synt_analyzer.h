@@ -3,7 +3,6 @@
 #ifndef PLCMP_SYNT_ANALYZER_H
 #define PLCMP_SYNT_ANALYZER_H
 
-#include "plcmp_utils.h"
 #include "plcmp_goal.h"
 
 #define PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN 20

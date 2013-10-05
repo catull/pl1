@@ -25,7 +25,8 @@ PLCMP_OBJS := $(patsubst %.c, $(PLCMP_OBJ_DIR)/%.o, $(PLCMP_SRCS_NOTDIR))
 PLCMP_DEPS := $(patsubst %.c, $(PLCMP_DEP_DIR)/%.d, $(PLCMP_SRCS_NOTDIR))
 
 $(PLCMP_OBJ_DIR)/%.o: $(PLCMP_SRC_DIR)/%.c
-	$(CC) -c $< $(FLAGS) $(PLCMP_INCLUDES) -MMD -o $@
-	@$(MV) $(patsubst %.o, %.d, $@) $(PLCMP_DEP_DIR)
+	$(CC) -c $< $(FLAGS) $(PLCMP_INCLUDES) -MM -MF \
+$(addprefix $(PLCMP_DEP_DIR)/, $(patsubst $(PLCMP_OBJ_DIR)/%.o, %.d, $@))
+	$(CC) -c $< $(FLAGS) $(PLCMP_INCLUDES) -o $@
 
 -include $(PLCMP_DEPS)

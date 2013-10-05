@@ -3,6 +3,7 @@
 #ifndef PLCMP_GOAL_H
 #define PLCMP_GOAL_H
 
+#include "plcmp_common.h"
 #include "plcmp_utils.h"
 
 /* Structure for the stack of goals */
@@ -40,8 +41,8 @@ static inline void plcmp_goal_create_goals_achieved_stack(dst_t *goals_achieved)
     PLCMP_UTILS_ASSERT(NULL != goals_achieved);
     goals_achieved->count = 0;
     PLCMP_UTILS_CALLOC_MEM(goals_achieved->p_dst_stack,
-                            NDST,
-                            sizeof(goals_achieved_stack_t));
+                           NDST,
+                           sizeof(goals_achieved_stack_t));
 }
 
 /* Subroutine destroys stack of goals achieved */
@@ -60,8 +61,8 @@ static inline void plcmp_goal_create_goals_stack(cel_t *goals)
     PLCMP_UTILS_ASSERT(NULL != goals);
     goals->count = 0;
     PLCMP_UTILS_CALLOC_MEM(goals->p_cel_stack,
-                            NCEL,
-                            sizeof(goals_stack_t));
+                           NCEL,
+                           sizeof(goals_stack_t));
 }
 
 /* Subroutine destroys stack of goals */

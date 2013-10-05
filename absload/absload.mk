@@ -25,7 +25,8 @@ ABSLOAD_OBJS := $(patsubst %.c, $(ABSLOAD_OBJ_DIR)/%.o, $(ABSLOAD_SRCS_NOTDIR))
 ABSLOAD_DEPS := $(patsubst %.c, $(ABSLOAD_DEP_DIR)/%.d, $(ABSLOAD_OBJS_NOTDIR))
 
 $(ABSLOAD_OBJ_DIR)/%.o: $(ABSLOAD_SRC_DIR)/%.c
-	$(CC) -c $< $(FLAGS) $(ABSLOAD_INCLUDES) -MMD -o $@
-	@$(MV) $(patsubst %.o, %.d, $@) $(ABSLOAD_DEP_DIR)
+	$(CC) -c $< $(FLAGS) $(ABSLOAD_INCLUDES) -MM -MF \
+$(addprefix $(ABSLOAD_DEP_DIR)/, $(patsubst $(ABSLOAD_OBJ_DIR)/%.o, %.d, $@))
+	$(CC) -c $< $(FLAGS) $(ABSLOAD_INCLUDES) -o $@
 
 -include $(ABSLOAD_DEPS)
