@@ -118,6 +118,29 @@
         strcpy(p_fp_str_to, p_fp_str_from);                                    \
     } while(0)
 
+
+/*
+ * Macro makes file path with '.ass' extension
+ * from the file path with '.pli' extension
+ *
+ * @param1:
+ * 'p_asm_fp_name' has type 'char*'
+ * It has to be 'NULL'-pointer
+ *
+ * @param2:
+ * 'p_pl1_fp_name' has type 'char*' or 'char const*'
+ * It hasn't to be 'NULL'-pointer
+ *
+ */
+#define PLCMP_UTILS_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name,         \
+                                                        p_pl1_fp_name)         \
+    do {                                                                       \
+        PLCMP_UTILS_ALLOC_MEM_AND_COPY_FP_STR(p_asm_fp_name, p_pl1_fp_name);   \
+        size_t asm_fp_len = strlen(p_asm_fp_name);                             \
+        p_asm_fp_name[asm_fp_len - 4] = '\0';                                  \
+        strcat(p_asm_fp_name, ".ass");                                         \
+    } while (0)
+
 /* Check equality of two strings */
 int streq(char const *restrict str_1, char const *restrict str_2);
 

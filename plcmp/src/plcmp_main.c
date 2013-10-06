@@ -292,8 +292,8 @@ int main(int const argc, char const *argv[])
 
     /* After successfully reading file proceed to compression and 
      * translation of the source text */
-    PLCMP_MAIN_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name,
-                                                   p_pl1_fp_name);
+    PLCMP_UTILS_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name,
+                                                    p_pl1_fp_name);
     PLCMP_UTILS_RELEASE_MEM(p_pl1_fp_name);
     err_data = plcmp_main_process_src_text(pl1_src_text,
                                            pl1_src_text_len,
