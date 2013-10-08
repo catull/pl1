@@ -6,34 +6,27 @@ ABSLOAD_DIR := absload
 BIN_DIR := bin
 
 RM := rm -rf
-MV := mv
 
 CC := gcc
 FLAGS := -O2 -Wall -std=c99
 
+.PHONY: all plcmp asmcmp absload clean clean_plcmp clean_asmcmp clean_absload
+
 all: plcmp asmcmp absload
-
--include $(PLCMP_DIR)/plcmp.mk
--include $(ASMCMP_DIR)/asmcmp.mk
--include $(ABSLOAD_DIR)/absload.mk
-
-plcmp: $(PLCMP_OBJS)
-	$(CC) $(PLCMP_OBJS) -o $(PLCMP_BIN)
-
-asmcmp: $(ASMCMP_OBJS)
-	$(CC) $(ASMCMP_OBJS) -o $(ASMCMP_BIN)
-
-absload: $(ABSLOAD_OBJS)
-	$(CC) -lncurses $(ABSLOAD_OBJS) -o $(ABSLOAD_BIN)
-
-.PHONY: clean clean_plcmp clean_asmcmp clean_absload clean_all
-
 clean: clean_all
 clean_all: clean_plcmp clean_asmcmp clean_absload
 
+plcmp:
+	cd $(PLCMP_DIR) && pwd -P && $(MAKE) -f plcmp.mk build
 clean_plcmp:
-	-$(RM) $(PLCMP_OBJ_DIR)/* $(PLCMP_DEP_DIR)/* $(PLCMP_BIN)
+	cd $(PLCMP_DIR) && pwd -P && $(MAKE) -f plcmp.mk clean
+
+asmcmp:
+	cd $(ASMCMP_DIR) && pwd -P && $(MAKE) -f asmcmp.mk build
 clean_asmcmp:
-	-$(RM) $(ASMCMP_OBJ_DIR)/* $(ASMCMP_DEP_DIR)/* $(ASMCMP_BIN)
+	cd $(ASMCMP_DIR) && pwd -P && $(MAKE) -f asmcmp.mk clean
+
+absload:
+	cd $(ABSLOAD_DIR) && pwd -P && $(MAKE) -f absload.mk build
 clean_absload:
-	-$(RM) $(ABSLOAD_OBJ_DIR)/* $(ABSLOAD_DEP_DIR)/* $(ABSLOAD_BIN)
+	cd $(ABSLOAD_DIR) && pwd -P && $(MAKE) -f absload.mk clean

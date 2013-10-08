@@ -1,11 +1,16 @@
 # encoding: UTF-8
 
-ASMCMP_BIN := $(BIN_DIR)/asmcmp
+RM := rm -rf
 
-ASMCMP_INC_DIR := $(ASMCMP_DIR)/inc
-ASMCMP_SRC_DIR := $(ASMCMP_DIR)/src
-ASMCMP_OBJ_DIR := $(ASMCMP_DIR)/obj
-ASMCMP_DEP_DIR := $(ASMCMP_DIR)/dep
+CC := gcc
+FLAGS := -O2 -Wall -std=c99
+
+ASMCMP_BIN := bin/asmcmp
+
+ASMCMP_INC_DIR := inc
+ASMCMP_SRC_DIR := src
+ASMCMP_OBJ_DIR := obj
+ASMCMP_DEP_DIR := dep
 
 # ASSEMBLER COMPILER INCLUDES
 ASMCMP_INCLUDES := -I $(ASMCMP_INC_DIR)
@@ -24,9 +29,15 @@ ASMCMP_OBJS := $(patsubst %.c, $(ASMCMP_OBJ_DIR)/%.o, $(ASMCMP_SRCS_NOTDIR))
 # ASSEMBLER COMPILER DEPENDENCIES
 ASMCMP_DEPS := $(patsubst %.c, $(ASMCMP_DEP_DIR)/%.d, $(ASMCMP_SRCS_NOTDIR))
 
+-include $(ASMCMP_DEPS)
+
+build: $(ASMCMP_OBJS)
+	$(CC) $(ASMCMP_OBJS) -o $(ASMCMP_BIN)
+clean:
+	-$(RM) $(ASMCMP_OBJS) $(ASMCMP_DEPS) $(ASMCMP_BIN)
+
 $(ASMCMP_OBJ_DIR)/%.o: $(ASMCMP_SRC_DIR)/%.c
 	$(CC) -c $< $(FLAGS) $(ASMCMP_INCLUDES) -MM -MF \
 $(addprefix $(ASMCMP_DEP_DIR)/, $(patsubst $(ASMCMP_OBJ_DIR)/%.o, %.d, $@))
 	$(CC) -c $< $(FLAGS) $(ASMCMP_INCLUDES) -o $@
 
--include $(ASMCMP_DEPS)

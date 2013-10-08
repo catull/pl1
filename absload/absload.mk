@@ -1,11 +1,16 @@
 # encoding: UTF-8
 
-ABSLOAD_BIN := $(BIN_DIR)/absload
+RM := rm -rf
 
-ABSLOAD_INC_DIR := $(ABSLOAD_DIR)/inc
-ABSLOAD_SRC_DIR := $(ABSLOAD_DIR)/src
-ABSLOAD_OBJ_DIR := $(ABSLOAD_DIR)/obj
-ABSLOAD_DEP_DIR := $(ABSLOAD_DIR)/dep
+CC := gcc
+FLAGS := -O2 -Wall -std=c99
+
+ABSLOAD_BIN := bin/absload
+
+ABSLOAD_INC_DIR := inc
+ABSLOAD_SRC_DIR := src
+ABSLOAD_OBJ_DIR := obj
+ABSLOAD_DEP_DIR := dep
 
 # ABSLOAD INCLUDES
 ABSLOAD_INCLUDES := -I $(ABSLOAD_INC_DIR)
@@ -24,9 +29,14 @@ ABSLOAD_OBJS := $(patsubst %.c, $(ABSLOAD_OBJ_DIR)/%.o, $(ABSLOAD_SRCS_NOTDIR))
 # ABSLOAD DEPENDENCIES
 ABSLOAD_DEPS := $(patsubst %.c, $(ABSLOAD_DEP_DIR)/%.d, $(ABSLOAD_OBJS_NOTDIR))
 
+-include $(ABSLOAD_DEPS)
+
+build: $(ABSLOAD_OBJS)
+	$(CC) -lncurses $(ABSLOAD_OBJS) -o $(ABSLOAD_BIN)
+clean:
+	-$(RM) $(ABSLOAD_OBJS) $(ABSLOAD_DEPS) $(ABSLOAD_BIN)
+
 $(ABSLOAD_OBJ_DIR)/%.o: $(ABSLOAD_SRC_DIR)/%.c
 	$(CC) -c $< $(FLAGS) $(ABSLOAD_INCLUDES) -MM -MF \
 $(addprefix $(ABSLOAD_DEP_DIR)/, $(patsubst $(ABSLOAD_OBJ_DIR)/%.o, %.d, $@))
 	$(CC) -c $< $(FLAGS) $(ABSLOAD_INCLUDES) -o $@
-
--include $(ABSLOAD_DEPS)

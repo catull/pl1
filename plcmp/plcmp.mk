@@ -1,11 +1,16 @@
 # encoding: UTF-8
 
-PLCMP_BIN := $(BIN_DIR)/plcmp
+RM := rm -rf
 
-PLCMP_INC_DIR := $(PLCMP_DIR)/inc
-PLCMP_SRC_DIR := $(PLCMP_DIR)/src
-PLCMP_OBJ_DIR := $(PLCMP_DIR)/obj
-PLCMP_DEP_DIR := $(PLCMP_DIR)/dep
+CC := gcc
+FLAGS := -O2 -Wall -std=c99
+
+PLCMP_BIN := bin/plcmp
+
+PLCMP_INC_DIR := inc
+PLCMP_SRC_DIR := src
+PLCMP_OBJ_DIR := obj
+PLCMP_DEP_DIR := dep
 
 # PL COMPILER INCLUDES
 PLCMP_INCLUDES := -I $(PLCMP_INC_DIR)
@@ -24,9 +29,14 @@ PLCMP_OBJS := $(patsubst %.c, $(PLCMP_OBJ_DIR)/%.o, $(PLCMP_SRCS_NOTDIR))
 # PL COMPILER DEPENDENCIES
 PLCMP_DEPS := $(patsubst %.c, $(PLCMP_DEP_DIR)/%.d, $(PLCMP_SRCS_NOTDIR))
 
+-include $(PLCMP_DEPS)
+
+build: $(PLCMP_OBJS)
+	$(CC) $(PLCMP_OBJS) -o $(PLCMP_BIN)
+clean:
+	-$(RM) $(PLCMP_OBJS) $(PLCMP_DEPS) $(PLCMP_BIN)
+
 $(PLCMP_OBJ_DIR)/%.o: $(PLCMP_SRC_DIR)/%.c
 	$(CC) -c $< $(FLAGS) $(PLCMP_INCLUDES) -MM -MF \
 $(addprefix $(PLCMP_DEP_DIR)/, $(patsubst $(PLCMP_OBJ_DIR)/%.o, %.d, $@))
 	$(CC) -c $< $(FLAGS) $(PLCMP_INCLUDES) -o $@
-
--include $(PLCMP_DEPS)
