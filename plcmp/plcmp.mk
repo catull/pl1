@@ -3,7 +3,9 @@
 RM := rm -rf
 
 CC := gcc
-FLAGS := -O2 -Wall -std=c99
+
+CC_FLAGS := -O2 -Wall
+CC_FLAGS += $(GLOBAL_CC_FLAGS)
 
 PLCMP_BIN := bin/plcmp
 
@@ -37,6 +39,6 @@ clean:
 	-$(RM) $(PLCMP_OBJS) $(PLCMP_DEPS) $(PLCMP_BIN)
 
 $(PLCMP_OBJ_DIR)/%.o: $(PLCMP_SRC_DIR)/%.c
-	$(CC) -c $< $(FLAGS) $(PLCMP_INCLUDES) -MM -MF \
+	$(CC) -c $< $(CC_FLAGS) $(PLCMP_INCLUDES) -MM -MF \
 $(addprefix $(PLCMP_DEP_DIR)/, $(patsubst $(PLCMP_OBJ_DIR)/%.o, %.d, $@))
-	$(CC) -c $< $(FLAGS) $(PLCMP_INCLUDES) -o $@
+	$(CC) -c $< $(CC_FLAGS) $(PLCMP_INCLUDES) -o $@

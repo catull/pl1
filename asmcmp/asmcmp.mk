@@ -3,7 +3,9 @@
 RM := rm -rf
 
 CC := gcc
-FLAGS := -O2 -Wall -std=c99
+
+CC_FLAGS := -O2 -Wall
+CC_FLAGS += $(GLOBAL_CC_FLAGS)
 
 ASMCMP_BIN := bin/asmcmp
 
