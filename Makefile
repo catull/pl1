@@ -4,9 +4,6 @@ PLCMP_DIR := plcmp
 ASMCMP_DIR := asmcmp
 ABSLOAD_DIR := absload
 
-RM := rm -rf
-
-CC := gcc
 GLOBAL_CC_FLAGS := -std=c99
 
 .PHONY: all plcmp asmcmp absload clean clean_plcmp clean_asmcmp clean_absload
