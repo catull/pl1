@@ -3,11 +3,6 @@
 remarks.txt
 symbols.txt
 
-bin
-
-*.o
-*.d
-
 *.pli
 *.ass
 *.tex
