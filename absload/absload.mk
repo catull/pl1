@@ -31,8 +31,6 @@ ABSLOAD_OBJS := $(patsubst %.c, $(ABSLOAD_OBJ_DIR)/%.o, $(ABSLOAD_SRCS_NOTDIR))
 # ABSLOAD DEPENDENCIES
 ABSLOAD_DEPS := $(patsubst %.c, $(ABSLOAD_DEP_DIR)/%.d, $(ABSLOAD_SRCS_NOTDIR))
 
--include $(ABSLOAD_DEPS)
-
 build: $(ABSLOAD_OBJS)
 	$(CC) -lncurses $(ABSLOAD_OBJS) -o $(ABSLOAD_BIN)
 clean:
@@ -42,3 +40,5 @@ $(ABSLOAD_OBJ_DIR)/%.o: $(ABSLOAD_SRC_DIR)/%.c
 	$(CC) -c $< $(FLAGS) $(ABSLOAD_INCLUDES) -MM -MF \
 $(addprefix $(ABSLOAD_DEP_DIR)/, $(patsubst $(ABSLOAD_OBJ_DIR)/%.o, %.d, $@))
 	$(CC) -c $< $(FLAGS) $(ABSLOAD_INCLUDES) -o $@
+
+-include $(ABSLOAD_DEPS)

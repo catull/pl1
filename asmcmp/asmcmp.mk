@@ -31,8 +31,6 @@ ASMCMP_OBJS := $(patsubst %.c, $(ASMCMP_OBJ_DIR)/%.o, $(ASMCMP_SRCS_NOTDIR))
 # ASSEMBLER COMPILER DEPENDENCIES
 ASMCMP_DEPS := $(patsubst %.c, $(ASMCMP_DEP_DIR)/%.d, $(ASMCMP_SRCS_NOTDIR))
 
--include $(ASMCMP_DEPS)
-
 build: $(ASMCMP_OBJS)
 	$(CC) $(ASMCMP_OBJS) -o $(ASMCMP_BIN)
 clean:
@@ -42,4 +40,6 @@ $(ASMCMP_OBJ_DIR)/%.o: $(ASMCMP_SRC_DIR)/%.c
 	$(CC) -c $< $(FLAGS) $(ASMCMP_INCLUDES) -MM -MF \
 $(addprefix $(ASMCMP_DEP_DIR)/, $(patsubst $(ASMCMP_OBJ_DIR)/%.o, %.d, $@))
 	$(CC) -c $< $(FLAGS) $(ASMCMP_INCLUDES) -o $@
+
+-include $(ASMCMP_DEPS)
 
