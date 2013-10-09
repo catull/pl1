@@ -1,5 +1,5 @@
-#ifndef HANDLERS_NAMES_HND
-#define HANDLERS_NAMES_HND
+#ifndef PLCMP_HANDLERS_H
+#define PLCMP_HANDLERS_H
 
 #define HANDLERS_NAMES \
     X(AVI) \
@@ -21,4 +21,4 @@
     X(STC) \
     X(CON)
 
-#endif /* HANDLERS_NAMES_HND */
+#endif /* PLCMP_HANDLERS_H */
