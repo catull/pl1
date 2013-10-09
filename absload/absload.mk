@@ -29,7 +29,7 @@ ABSLOAD_SRCS_NOTDIR := $(notdir $(wildcard $(ABSLOAD_SRC_DIR)/*.c))
 ABSLOAD_OBJS := $(patsubst %.c, $(ABSLOAD_OBJ_DIR)/%.o, $(ABSLOAD_SRCS_NOTDIR))
 
 # ABSLOAD DEPENDENCIES
-ABSLOAD_DEPS := $(patsubst %.c, $(ABSLOAD_DEP_DIR)/%.d, $(ABSLOAD_OBJS_NOTDIR))
+ABSLOAD_DEPS := $(patsubst %.c, $(ABSLOAD_DEP_DIR)/%.d, $(ABSLOAD_SRCS_NOTDIR))
 
 -include $(ABSLOAD_DEPS)
 
