@@ -7,6 +7,49 @@
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_utils.h"
 
+static char const list_1[] = {
+    ' ',
+    ';',
+    ')',
+    ':',
+    '(',
+    '+',
+    '-',
+    '=',
+    '*',
+    '!',
+    '\''
+};
+
+static char const list_2[] = {
+    ')',
+    '(',
+    '+',
+    '-',
+    '=',
+    '*',
+    '!',
+    '\''
+};
+
+#define LIST_ARRAY_SIZE(p_list) (\
+    ((p_list) == (list_1)) ? ARRAY_SIZE(list_1) :   \
+    ((p_list) == (list_2)) ? ARRAY_SIZE(list_2) : 0 \
+)
+
+static int symbol_into_list(char const list[], char sym)
+{
+    unsigned int i = 0;
+    for (i = 0; i < LIST_ARRAY_SIZE(list); i++)
+    {
+        if (list[i] == sym)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 /* Subroutine constructs error message 
  * by error code of lexical analyzer module */
 char* plcmp_lex_analyzer_errmsg_by_errdata(
@@ -65,17 +108,7 @@ struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(
             }
 
             if (' ' == pl1_src_text[i1][i2] &&
-                (' ' == prev_processed_symb ||
-                 ';' == prev_processed_symb ||
-                 ')' == prev_processed_symb ||
-                 ':' == prev_processed_symb ||
-                 '(' == prev_processed_symb ||
-                 '+' == prev_processed_symb ||
-                 '-' == prev_processed_symb ||
-                 '=' == prev_processed_symb ||
-                 '*' == prev_processed_symb ||
-                 '!' == prev_processed_symb ||
-                 '\''== prev_processed_symb))
+                symbol_into_list(list_1, prev_processed_symb))
             {
                 /* In accordance with this condition 'pl1_src_text[i1][i2]'
                  * which contains whitespace-symbol will be removed
@@ -95,17 +128,10 @@ struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(
                  * we remove excess whitespace-symbol after 
                  * 'prev_processed_symb' symbol
                  */
-                 continue; 
+                continue; 
             }
-            else if (('+'   == pl1_src_text[i1][i2] ||
-                      '-'   == pl1_src_text[i1][i2] ||
-                      '='   == pl1_src_text[i1][i2] ||
-                      '('   == pl1_src_text[i1][i2] ||
-                      ')'   == pl1_src_text[i1][i2] ||
-                      '*'   == pl1_src_text[i1][i2] ||
-                      '\''  == pl1_src_text[i1][i2] ||
-                      '!'   == pl1_src_text[i1][i2]) && 
-                       ' '  == prev_processed_symb)
+            else if (symbol_into_list(list_2, pl1_src_text[i1][i2]) &&
+                     ' '  == prev_processed_symb)
             {
                 /* In accordance with this condition 'prev_processed_symb'
                  * which contains space-symbol will be removed

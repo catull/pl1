@@ -141,6 +141,8 @@
         strcat(p_asm_fp_name, ".ass");                                         \
     } while (0)
 
+#define ARRAY_SIZE(array) sizeof(array) / sizeof((array)[0])
+
 /* Check equality of two strings */
 int streq(char const *restrict str_1, char const *restrict str_2);
 
