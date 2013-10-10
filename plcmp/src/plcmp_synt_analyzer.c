@@ -34,6 +34,15 @@ char* plcmp_synt_analyzer_errmsg_by_errdata(
     return errmsg;
 }
 
+/* Subroutine sets default values for syntax analyzer's error data structure */
+static inline void plcmp_synt_analyzer_set_default_err_data(
+    plcmp_synt_analyzer_error_data_t *err_data)
+{
+    PLCMP_UTILS_ASSERT(err_data);
+    memset(err_data, 0, sizeof(plcmp_synt_analyzer_error_data_t));
+    err_data->err_code = PLCMP_SYNT_ANALYZER_SUCCESS;
+}
+
 /* Subroutine of syntax analyzer. 
  * It constructs parse tree and returns error data if it will be */
 struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
@@ -51,16 +60,14 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     /* Current index in the table of grammar rules */
     int j = 0;
     /* Maximum index of processed compact source text 
-     * It needs for sending part of source text if error will occur */
+     * It is necessary for sending part of source text if error will occur */
     int i_max = 0;
 
     /* Create stack of goals */
     plcmp_goal_create_goals_stack(p_goals);
-
     /* Clear error data structure for later using 
      * and set default successful value for error code */
-    memset(&err_data, 0, sizeof(plcmp_synt_analyzer_error_data_t));
-    err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS;
+    plcmp_synt_analyzer_set_default_err_data(&err_data);
 
     /* Construct reachability matrix */
     plcmp_tables_build_reach_mtrx();
@@ -86,7 +93,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     L2:
 
-    j = input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(&compact_pl1_src_text[i], 1)].VX;
+    j = input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(&compact_pl1_src_text[i], 1)].synt_rule_tb_ind;
 
     L3:
 
@@ -101,7 +108,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         i_max = i;
     }
 
-    if ('T' == input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].TYP)
+    if (TERM == input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].type)
     {
         if (compact_pl1_src_text[i] == synt_rules_table[j].DER[0])
         {
@@ -135,7 +142,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
             if (adj_reach_mtrx[plcmp_tables_get_synt_rules_stroke_ind(p_goals->p_cel_stack[p_goals->count - 1].title, 3)][plcmp_tables_get_synt_rules_stroke_ind(p_goals->p_cel_stack[p_goals->count - 1].title, 3)])
             {
-                j = input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(p_goals->p_cel_stack[p_goals->count - 1].title, 3)].VX;
+                j = input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(p_goals->p_cel_stack[p_goals->count - 1].title, 3)].synt_rule_tb_ind;
                 goto L3;
             }
 
@@ -158,7 +165,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                           0,
                           i,
                           j);
-        j = input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].VX;
+        j = input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].synt_rule_tb_ind;
         goto L3;
     }
 
@@ -185,7 +192,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     j = synt_rules_table[j].PRED;
 
-    if ((input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED > 0))
+    if ((input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].type == NON_TERM ) && (synt_rules_table[j].PRED > 0))
     {
         plcmp_goal_add(p_goals,
                        p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].title,
@@ -199,7 +206,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         goto L9;
     }
 
-    if ((input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].TYP == 'N' ) && (synt_rules_table[j].PRED == 0))
+    if ((input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].type == NON_TERM ) && (synt_rules_table[j].PRED == 0))
     {
 
         if (!strcmp(p_goals->p_cel_stack[p_goals->count - 1].title,

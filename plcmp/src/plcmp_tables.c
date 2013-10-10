@@ -289,63 +289,63 @@ input_sym_t input_syms_table[NVXOD] = {
 /*    ___________ ___________ _____ ______
      |    NN     |    symbol |input| type |
      |___________|___________|_____|______|                                  */
-    {/*.   1     .*/   "AVI" , 164 , 'N' },
-    {/*.   2     .*/   "BUK" ,  93 , 'N' },
-    {/*.   3     .*/   "CIF" , 136 , 'N' },
-    {/*.   4     .*/   "IDE" ,  96 , 'N' },
-    {/*.   5     .*/   "IPE" , 153 , 'N' },
-    {/*.   6     .*/   "IPR" , 113 , 'N' },
-    {/*.   7     .*/   "LIT" , 161 , 'N' },
-    {/*.   8     .*/   "MAN" , 143 , 'N' },
-    {/*.   9     .*/   "ODC" , 176 , 'N' },
-    {/*.  10     .*/   "OEN" ,   0 , 'N' },
-    {/*.  11     .*/   "OPA" ,   0 , 'N' },
-    {/*.  12     .*/   "OPR" , 171 , 'N' },
-    {/*.  13     .*/   "PRO" ,   0 , 'N' },
-    {/*.  14     .*/   "RZR" , 139 , 'N' },
-    {/*.  15     .*/   "TEL" , 179 , 'N' },
-    {/*.  16     .*/   "ZNK" ,   0 , 'N' },
-    {/*.  17     .*/   "STC" , 204 , 'N' },
-    {/*.  18     .*/   "CON" ,   0 , 'N' },
-    {/*.  19     .*/   "A  " ,  33 , 'T' },
-    {/*.  20     .*/   "B  " ,  36 , 'T' },
-    {/*.  21     .*/   "C  " ,  39 , 'T' },
-    {/*.  22     .*/   "D  " ,  42 , 'T' },
-    {/*.  23     .*/   "E  " ,  74 , 'T' },
-    {/*.  24     .*/   "M  " ,  84 , 'T' },
-    {/*.  25     .*/   "P  " ,  87 , 'T' },
-    {/*.  26     .*/   "X  " ,  90 , 'T' },
-    {/*.  27     .*/   "0  " ,   1 , 'T' },
-    {/*.  28     .*/   "1  " ,   4 , 'T' },
-    {/*.  29     .*/   "2  " ,   9 , 'T' },
-    {/*.  30     .*/   "3  " ,  12 , 'T' },
-    {/*.  31     .*/   "4  " ,  15 , 'T' },
-    {/*.  32     .*/   "5  " ,  18 , 'T' },
-    {/*.  33     .*/   "6  " ,  21 , 'T' },
-    {/*.  34     .*/   "7  " ,  24 , 'T' },
-    {/*.  35     .*/   "8  " ,  27 , 'T' },
-    {/*.  36     .*/   "9  " ,  30 , 'T' },
-    {/*.  37     .*/   "+  " , 107 , 'T' },
-    {/*.  38     .*/   "-  " , 110 , 'T' },
-    {/*.  39     .*/   ":  " ,   0 , 'T' },
-    {/*.  40     .*/   "I  " ,   0 , 'T' },
-    {/*.  41     .*/   "R  " ,   0 , 'T' },
-    {/*.  42     .*/   "N  " ,   0 , 'T' },
-    {/*.  43     .*/   "O  " ,   0 , 'T' },
-    {/*.  44     .*/   "T  " ,   0 , 'T' },
-    {/*.  45     .*/   "S  " ,   0 , 'T' },
-    {/*.  46     .*/   "(  " ,   0 , 'T' },
-    {/*.  47     .*/   ")  " ,   0 , 'T' },
-    {/*.  48     .*/   "   " ,   0 , 'T' },
-    {/*.  49     .*/   ";  " ,   0 , 'T' },
-    {/*.  50     .*/   "L  " , 201 , 'T' },
-    {/*.  51     .*/   "F  " ,   0 , 'T' },
-    {/*.  52     .*/   "=  " ,   0 , 'T' },
-    {/*.  53     .*/   "H  " ,   0 , 'T' },
-    {/*.  54     .*/   "*  " , 198 , 'T' },
+    {/*.   1     .*/   "AVI" , 164 , NON_TERM },
+    {/*.   2     .*/   "BUK" ,  93 , NON_TERM },
+    {/*.   3     .*/   "CIF" , 136 , NON_TERM },
+    {/*.   4     .*/   "IDE" ,  96 , NON_TERM },
+    {/*.   5     .*/   "IPE" , 153 , NON_TERM },
+    {/*.   6     .*/   "IPR" , 113 , NON_TERM },
+    {/*.   7     .*/   "LIT" , 161 , NON_TERM },
+    {/*.   8     .*/   "MAN" , 143 , NON_TERM },
+    {/*.   9     .*/   "ODC" , 176 , NON_TERM },
+    {/*.  10     .*/   "OEN" ,   0 , NON_TERM },
+    {/*.  11     .*/   "OPA" ,   0 , NON_TERM },
+    {/*.  12     .*/   "OPR" , 171 , NON_TERM },
+    {/*.  13     .*/   "PRO" ,   0 , NON_TERM },
+    {/*.  14     .*/   "RZR" , 139 , NON_TERM },
+    {/*.  15     .*/   "TEL" , 179 , NON_TERM },
+    {/*.  16     .*/   "ZNK" ,   0 , NON_TERM },
+    {/*.  17     .*/   "STC" , 204 , NON_TERM },
+    {/*.  18     .*/   "CON" ,   0 , NON_TERM },
+    {/*.  19     .*/   "A  " ,  33 , TERM },
+    {/*.  20     .*/   "B  " ,  36 , TERM },
+    {/*.  21     .*/   "C  " ,  39 , TERM },
+    {/*.  22     .*/   "D  " ,  42 , TERM },
+    {/*.  23     .*/   "E  " ,  74 , TERM },
+    {/*.  24     .*/   "M  " ,  84 , TERM },
+    {/*.  25     .*/   "P  " ,  87 , TERM },
+    {/*.  26     .*/   "X  " ,  90 , TERM },
+    {/*.  27     .*/   "0  " ,   1 , TERM },
+    {/*.  28     .*/   "1  " ,   4 , TERM },
+    {/*.  29     .*/   "2  " ,   9 , TERM },
+    {/*.  30     .*/   "3  " ,  12 , TERM },
+    {/*.  31     .*/   "4  " ,  15 , TERM },
+    {/*.  32     .*/   "5  " ,  18 , TERM },
+    {/*.  33     .*/   "6  " ,  21 , TERM },
+    {/*.  34     .*/   "7  " ,  24 , TERM },
+    {/*.  35     .*/   "8  " ,  27 , TERM },
+    {/*.  36     .*/   "9  " ,  30 , TERM },
+    {/*.  37     .*/   "+  " , 107 , TERM },
+    {/*.  38     .*/   "-  " , 110 , TERM },
+    {/*.  39     .*/   ":  " ,   0 , TERM },
+    {/*.  40     .*/   "I  " ,   0 , TERM },
+    {/*.  41     .*/   "R  " ,   0 , TERM },
+    {/*.  42     .*/   "N  " ,   0 , TERM },
+    {/*.  43     .*/   "O  " ,   0 , TERM },
+    {/*.  44     .*/   "T  " ,   0 , TERM },
+    {/*.  45     .*/   "S  " ,   0 , TERM },
+    {/*.  46     .*/   "(  " ,   0 , TERM },
+    {/*.  47     .*/   ")  " ,   0 , TERM },
+    {/*.  48     .*/   "   " ,   0 , TERM },
+    {/*.  49     .*/   ";  " ,   0 , TERM },
+    {/*.  50     .*/   "L  " , 201 , TERM },
+    {/*.  51     .*/   "F  " ,   0 , TERM },
+    {/*.  52     .*/   "=  " ,   0 , TERM },
+    {/*.  53     .*/   "H  " ,   0 , TERM },
+    {/*.  54     .*/   "*  " , 198 , TERM },
 /**********************************************/
-    {/*.  55     .*/   "'  " ,   0 , 'T' },
-    {/*.  56     .*/   "!  " , 225 , 'T' }
+    {/*.  55     .*/   "'  " ,   0 , TERM },
+    {/*.  56     .*/   "!  " , 225 , TERM }
 };
 
 /* Adjacency matrix which will become reachability matrix afterward */
@@ -424,7 +424,7 @@ char adj_reach_mtrx[NVXOD][NNETRM] = {
     /*|____________________________________________________________________________| */
 };
 
-/* Function finds necessary string with sought-for symbol in the input_syms_table-table 
+/* Function finds necessary string with sought-for symbol in the 'input_syms_table'-table 
  * and returns string-index of input_syms_table-table.
  * 
  * @param1: const char *p_str_symbol
@@ -441,12 +441,12 @@ unsigned int plcmp_tables_get_synt_rules_stroke_ind(char const *p_str_symbol, un
         unsigned int k = 0;
         /* Comparing each symbol each other */
         while((k != symbol_str_len) && 
-              (p_str_symbol[k] == input_syms_table[i].SYM[k]))
+              (p_str_symbol[k] == input_syms_table[i].title[k]))
         {
             ++k;
         }
         if ((k == symbol_str_len) &&
-            (input_syms_table[i].SYM[k] == '\0' || input_syms_table[i].SYM[k] == ' '))
+            (input_syms_table[i].title[k] == '\0' || input_syms_table[i].title[k] == ' '))
         {
             /* We found necessary string with sought-for symbol in the input_syms_table-table */
             break;

@@ -3,6 +3,7 @@
 #ifndef PLCMP_TABLES_H
 #define PLCMP_TABLES_H
 
+#include "plcmp_common.h"
 #include "plcmp_utils.h"
 
 typedef struct synt_rule_s {
@@ -12,10 +13,15 @@ typedef struct synt_rule_s {
     int ALT;
 } synt_rule_t;
 
+typedef enum typeof_symbol_s {
+    TERM,
+    NON_TERM
+} typeof_sym_t;
+
 typedef struct input_sym_s {
-    char SYM[4];
-    int VX;
-    char TYP;
+    sym_title_t title;
+    unsigned int synt_rule_tb_ind;
+    typeof_sym_t type;
 } input_sym_t;
 
 /* Table of the syntax rules that is written in the form 
