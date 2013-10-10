@@ -27,4 +27,6 @@
  * the source text (80 symbols +1 symbol for endline)*/
 #define LINELEN 81
 
+typedef char sym_title_t[4];
+
 #endif
