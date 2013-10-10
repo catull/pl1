@@ -11,7 +11,7 @@ void plcmp_goal_add_interim(goals_interim_stack_t *p_goals,
                             int src_text_end_index)
 {
     unsigned int *restrict count = &p_goals->count;
-    strcpy(p_goals->stack[*count].title, goal_title);
+    strcpy(p_goals->stack[*count].sym_title, goal_title);
     p_goals->stack[*count].CEL2 = src_text_begin_index;
     p_goals->stack[*count].CEL3 = src_text_end_index;
     ++(*count);
@@ -36,7 +36,7 @@ void plcmp_goal_add_achieved(goals_achieved_stack_t *p_goals_achieved,
                              int next_goal_sint_index)
 {
     unsigned int *restrict count = &p_goals_achieved->count;
-    strcpy(p_goals_achieved->stack[*count].title, goal_achieved_title);
+    strcpy(p_goals_achieved->stack[*count].sym_title, goal_achieved_title);
     p_goals_achieved->stack[*count].DST2 = src_text_begin_index;
     p_goals_achieved->stack[*count].DST3 = sint_index;
     p_goals_achieved->stack[*count].DST4 = src_text_end_index;

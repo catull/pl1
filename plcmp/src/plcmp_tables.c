@@ -441,12 +441,12 @@ unsigned int plcmp_tables_get_synt_rules_stroke_ind(char const *p_str_symbol, un
         unsigned int k = 0;
         /* Comparing each symbol each other */
         while((k != symbol_str_len) && 
-              (p_str_symbol[k] == input_syms_table[i].title[k]))
+              (p_str_symbol[k] == input_syms_table[i].sym_title[k]))
         {
             ++k;
         }
         if ((k == symbol_str_len) &&
-            (input_syms_table[i].title[k] == '\0' || input_syms_table[i].title[k] == ' '))
+            (input_syms_table[i].sym_title[k] == '\0' || input_syms_table[i].sym_title[k] == ' '))
         {
             /* We found necessary string with sought-for symbol in the input_syms_table-table */
             break;

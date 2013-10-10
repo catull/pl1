@@ -7,10 +7,10 @@
 #include "plcmp_utils.h"
 
 typedef struct synt_rule_s {
-    int POSL;
-    int PRED;
-    char DER[4];
-    int ALT;
+    int next;
+    int prev;
+    sym_design_t sym_design;
+    int alt;
 } synt_rule_t;
 
 typedef enum typeof_symbol_s {
@@ -19,7 +19,7 @@ typedef enum typeof_symbol_s {
 } typeof_sym_t;
 
 typedef struct input_sym_s {
-    sym_title_t title;
+    sym_title_t sym_title;
     unsigned int synt_rule_tb_ind;
     typeof_sym_t type;
 } input_sym_t;

@@ -8,7 +8,7 @@
 
 /* Structure for the stack of goals */
 typedef struct goal_interim_s {
-    sym_title_t title;
+    sym_title_t sym_title;
     int CEL2;
     int CEL3;
 } goal_interim_t;
@@ -21,7 +21,7 @@ typedef struct goals_interim_stack_s {
 
 /* Structure for the stack of goals achieved */
 typedef struct goal_achieved_s {
-    sym_title_t title;
+    sym_title_t sym_title;
     int DST2;
     int DST3;
     int DST4;
