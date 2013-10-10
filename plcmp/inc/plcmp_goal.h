@@ -7,47 +7,47 @@
 #include "plcmp_utils.h"
 
 /* Structure for the stack of goals */
-typedef struct goals_stack_s {
+typedef struct goal_interim_s {
     sym_title_t title;
     int CEL2;
     int CEL3;
-} goals_stack_t;
+} goal_interim_t;
 
 /* */
-typedef struct cel_s {
+typedef struct goals_interim_stack_s {
     unsigned int count;
-    goals_stack_t *p_cel_stack;
-} cel_t;
+    goal_interim_t *stack;
+} goals_interim_stack_t;
 
 /* Structure for the stack of goals achieved */
-typedef struct goals_achieved_stack_s {
+typedef struct goal_achieved_s {
     sym_title_t title;
     int DST2;
     int DST3;
     int DST4;
     int DST5; 
-} goals_achieved_stack_t;
+} goal_achieved_t;
 
 /* */
-typedef struct dst_s {
+typedef struct goals_achieved_stack_s {
     unsigned int count;
-    goals_achieved_stack_t *p_dst_stack;
-} dst_t;
+    goal_achieved_t *p_dst_stack;
+} goals_achieved_stack_t;
 
 /* Subroutine creates stack for goals achieved for using later
  * by syntax analyzer (parser) and semantic calculator */
-static inline void plcmp_goal_create_goals_achieved_stack(dst_t *goals_achieved)
+static inline void plcmp_goal_create_goals_achieved_stack(goals_achieved_stack_t *goals_achieved)
 {
     PLCMP_UTILS_ASSERT(NULL != goals_achieved);
     goals_achieved->count = 0;
     PLCMP_UTILS_CALLOC_MEM(goals_achieved->p_dst_stack,
                            NDST,
-                           sizeof(goals_achieved_stack_t));
+                           sizeof(goal_achieved_t));
 }
 
 /* Subroutine destroys stack of goals achieved */
 static inline void plcmp_goal_destroy_goals_achieved_stack(
-    dst_t *goals_achieved)
+    goals_achieved_stack_t *goals_achieved)
 {
     PLCMP_UTILS_ASSERT(NULL != goals_achieved);
     goals_achieved->count = 0;
@@ -56,34 +56,34 @@ static inline void plcmp_goal_destroy_goals_achieved_stack(
 
 /* Subroutine creates stack for goals for using 
  * later by syntax analyzer (parser) */
-static inline void plcmp_goal_create_goals_stack(cel_t *goals)
+static inline void plcmp_goal_create_goals_interim_stack(goals_interim_stack_t *goals)
 {
     PLCMP_UTILS_ASSERT(NULL != goals);
     goals->count = 0;
-    PLCMP_UTILS_CALLOC_MEM(goals->p_cel_stack,
+    PLCMP_UTILS_CALLOC_MEM(goals->stack,
                            NCEL,
-                           sizeof(goals_stack_t));
+                           sizeof(goal_interim_t));
 }
 
 /* Subroutine destroys stack of goals */
-static inline void plcmp_goal_destroy_goals_stack(cel_t *goals)
+static inline void plcmp_goal_destroy_goals_interim_stack(goals_interim_stack_t *goals)
 {
     PLCMP_UTILS_ASSERT(NULL != goals);
     goals->count = 0;
-    PLCMP_UTILS_RELEASE_MEM(goals->p_cel_stack);
+    PLCMP_UTILS_RELEASE_MEM(goals->stack);
 }
 
 /* Subroutine adds a new goal into stack of goals */
-void plcmp_goal_add(cel_t *p_goals,
-                    char const *goal_name,
-                    int src_text_begin_index,
-                    int src_text_end_index);
+void plcmp_goal_add_interim(goals_interim_stack_t *p_goals,
+                            char const *goal_name,
+                            int src_text_begin_index,
+                            int src_text_end_index);
 
 /* Subroutine removes last goal from the stack of goals */
-void plcmp_goal_remove_last(cel_t *p_goals);
+void plcmp_goal_remove_last_interim(goals_interim_stack_t *p_goals);
 
 /* Subroutine adds a goal achieved into stack of goals achieved */
-void plcmp_goal_add_achieved(dst_t *p_goals_achieved,
+void plcmp_goal_add_achieved(goals_achieved_stack_t *p_goals_achieved,
                              char const *goal_achieved_name,
                              int src_text_begin_index,
                              int sint_index,
@@ -91,6 +91,6 @@ void plcmp_goal_add_achieved(dst_t *p_goals_achieved,
                              int next_goal_sint_index);
 
 /* Subroutine removes last goal achieved from the stack of goals achieved */
-void plcmp_goal_remove_last_achieved(dst_t *p_goals_achieved);
+void plcmp_goal_remove_last_achieved(goals_achieved_stack_t *p_goals_achieved);
 
 #endif /* PLCMP_GOAL_H */

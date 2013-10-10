@@ -17,7 +17,7 @@ extern char FORMT[MAXFORMT][9];
 /* Formatted array index */
 extern int IFORMT;
 
-static void FORM(goals_achieved_stack_t achieved_goal)
+static void FORM(goal_achieved_t achieved_goal)
 {
     int i, j;
 
@@ -120,7 +120,7 @@ enum plcmp_sem_calc_error_code_e FODC(void const *param)
 {
     int i;
     int init_pos;
-    goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
+    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
 
     FORM(goal_achieved);
 
@@ -206,7 +206,7 @@ enum plcmp_sem_calc_error_code_e FODC(void const *param)
 
 enum plcmp_sem_calc_error_code_e FOEN(void const *param)
 {
-    goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
+    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
     unsigned int i = 0;
 
     FORM(goal_achieved);
@@ -230,7 +230,7 @@ enum plcmp_sem_calc_error_code_e FOPA(void const *param)
 
 enum plcmp_sem_calc_error_code_e FOPR(void const *param)
 {
-    goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
+    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
 
     FORM(goal_achieved);
 

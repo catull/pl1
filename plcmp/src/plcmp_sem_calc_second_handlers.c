@@ -78,7 +78,7 @@ static long int long_int_str_to_long_int(char const *str_long_value)
     return long_value;
 }
 
-static void FORM(goals_achieved_stack_t achieved_goal)
+static void FORM(goal_achieved_t achieved_goal)
 {
     int i, j;
 
@@ -132,7 +132,7 @@ static void FORM(goals_achieved_stack_t achieved_goal)
 enum plcmp_sem_calc_error_code_e SAVI(void const *param)
 {
     unsigned int i = 0;
-    goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
+    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
 
     FORM(goal_achieved);
 
@@ -322,7 +322,7 @@ enum plcmp_sem_calc_error_code_e SODC(void const *param)
 
 enum plcmp_sem_calc_error_code_e SOEN(void const *param)
 {
-    goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
+    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
     char RAB[20] = { '\0' };
     unsigned int i = 0;
     
@@ -410,7 +410,7 @@ enum plcmp_sem_calc_error_code_e SOEN(void const *param)
 enum plcmp_sem_calc_error_code_e SOPA(void const *param)
 {
     int i = 0;
-    goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
+    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
 
     FORM(goal_achieved);
 
@@ -515,7 +515,7 @@ enum plcmp_sem_calc_error_code_e SOPA(void const *param)
 
 enum plcmp_sem_calc_error_code_e SOPR(void const *param)
 {
-    goals_achieved_stack_t goal_achieved = *((goals_achieved_stack_t*)param);
+    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
     FORM(goal_achieved);
 
     /* Formation of pseudo operation 'START' */

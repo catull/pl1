@@ -164,7 +164,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     /* Compact source text */
     char compact_pl1_src_text[NSTROKA] = { '\0' };
     /* Stack of goals achieved */
-    dst_t goals_achieved;
+    goals_achieved_stack_t goals_achieved;
     plcmp_main_error_data_t err_data;
 
     plcmp_main_set_default_err_data(&err_data);

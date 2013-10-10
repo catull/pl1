@@ -31,7 +31,7 @@ int IFORMT;
 /* Subroutine prepares error data for sending its to caller
  * Error code in 'p_err_data->err_code' controls what kind of data will be written */
 static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data, 
-                            goals_achieved_stack_t goal_achieved)
+                            goal_achieved_t goal_achieved)
 {
     switch (p_err_data->err_code)
     {
@@ -215,7 +215,7 @@ char* plcmp_sem_calc_errmsg_by_errdata(
 struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
     char const p_asm_fp_name[],
     char const compact_pl1_src_text[],
-    dst_t const *p_goals_achieved)
+    goals_achieved_stack_t const *p_goals_achieved)
 {
     int sem_calc_phase = 0;
     plcmp_sem_calc_error_data_t err_data;

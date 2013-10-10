@@ -53,6 +53,6 @@ char* plcmp_sem_calc_errmsg_by_errdata(
 struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(
     char const p_asm_fp_name[],
     char const compact_pl1_src_text[],
-    dst_t const *p_goals_achieved);
+    goals_achieved_stack_t const *p_goals_achieved);
 
 #endif /* PLCMP_SEM_CALC_H */
