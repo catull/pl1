@@ -28,5 +28,6 @@
 #define LINELEN 81
 
 typedef char sym_title_t[4];
+typedef char sym_design_t[4];
 
 #endif
