@@ -195,13 +195,13 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     if ((input_syms_table[plcmp_tables_get_synt_rules_stroke_ind(synt_rules_table[j].DER, 3)].type == NON_TERM ) && (synt_rules_table[j].PRED > 0))
     {
         plcmp_goal_add_interim(p_goals,
-                       p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].title,
-                       p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST2,
-                       p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST3);
+                       p_goals_achieved->stack[p_goals_achieved->count - 1].title,
+                       p_goals_achieved->stack[p_goals_achieved->count - 1].DST2,
+                       p_goals_achieved->stack[p_goals_achieved->count - 1].DST3);
 
         L10:
 
-        j = p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].DST5;
+        j = p_goals_achieved->stack[p_goals_achieved->count - 1].DST5;
         plcmp_goal_remove_last_achieved(p_goals_achieved);
         goto L9;
     }
@@ -210,7 +210,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     {
 
         if (!strcmp(p_goals->stack[p_goals->count - 1].title,
-                    p_goals_achieved->p_dst_stack[p_goals_achieved->count - 1].title))
+                    p_goals_achieved->stack[p_goals_achieved->count - 1].title))
         {
             goto L6;
         }

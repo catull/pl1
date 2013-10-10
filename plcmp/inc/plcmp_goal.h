@@ -31,7 +31,7 @@ typedef struct goal_achieved_s {
 /* */
 typedef struct goals_achieved_stack_s {
     unsigned int count;
-    goal_achieved_t *p_dst_stack;
+    goal_achieved_t *stack;
 } goals_achieved_stack_t;
 
 /* Subroutine creates stack for goals achieved for using later
@@ -40,7 +40,7 @@ static inline void plcmp_goal_create_goals_achieved_stack(goals_achieved_stack_t
 {
     PLCMP_UTILS_ASSERT(NULL != goals_achieved);
     goals_achieved->count = 0;
-    PLCMP_UTILS_CALLOC_MEM(goals_achieved->p_dst_stack,
+    PLCMP_UTILS_CALLOC_MEM(goals_achieved->stack,
                            NDST,
                            sizeof(goal_achieved_t));
 }
@@ -51,7 +51,7 @@ static inline void plcmp_goal_destroy_goals_achieved_stack(
 {
     PLCMP_UTILS_ASSERT(NULL != goals_achieved);
     goals_achieved->count = 0;
-    PLCMP_UTILS_RELEASE_MEM(goals_achieved->p_dst_stack);
+    PLCMP_UTILS_RELEASE_MEM(goals_achieved->stack);
 }
 
 /* Subroutine creates stack for goals for using 

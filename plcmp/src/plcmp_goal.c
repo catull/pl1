@@ -36,11 +36,11 @@ void plcmp_goal_add_achieved(goals_achieved_stack_t *p_goals_achieved,
                              int next_goal_sint_index)
 {
     unsigned int *restrict count = &p_goals_achieved->count;
-    strcpy(p_goals_achieved->p_dst_stack[*count].title, goal_achieved_title);
-    p_goals_achieved->p_dst_stack[*count].DST2 = src_text_begin_index;
-    p_goals_achieved->p_dst_stack[*count].DST3 = sint_index;
-    p_goals_achieved->p_dst_stack[*count].DST4 = src_text_end_index;
-    p_goals_achieved->p_dst_stack[*count].DST5 = next_goal_sint_index;
+    strcpy(p_goals_achieved->stack[*count].title, goal_achieved_title);
+    p_goals_achieved->stack[*count].DST2 = src_text_begin_index;
+    p_goals_achieved->stack[*count].DST3 = sint_index;
+    p_goals_achieved->stack[*count].DST4 = src_text_end_index;
+    p_goals_achieved->stack[*count].DST5 = next_goal_sint_index;
     ++(*count);
 }
 
@@ -48,8 +48,8 @@ void plcmp_goal_add_achieved(goals_achieved_stack_t *p_goals_achieved,
 void plcmp_goal_remove_last_achieved(goals_achieved_stack_t *p_goals_achieved)
 {
     unsigned int *restrict count = &p_goals_achieved->count;
-    memset(&p_goals_achieved->p_dst_stack[*count],
+    memset(&p_goals_achieved->stack[*count],
            0,
-           sizeof(p_goals_achieved->p_dst_stack[*count]));
+           sizeof(p_goals_achieved->stack[*count]));
     --(*count);
 }
