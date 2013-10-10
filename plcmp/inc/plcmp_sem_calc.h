@@ -3,8 +3,8 @@
 #ifndef PLCMP_SEM_CALC_H
 #define PLCMP_SEM_CALC_H
 
-#include "plcmp_utils.h"
 #include "plcmp_goal.h"
+#include "plcmp_utils.h"
 
 #define PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN 20
 

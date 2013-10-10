@@ -474,7 +474,8 @@ void plcmp_tables_build_reach_mtrx(void)
                 int i3 = 0;
                 for (; i3 < NNETRM; i3++)
                 {
-                    adj_reach_mtrx[i2][i3] |= adj_reach_mtrx[i1][i3];
+                    adj_reach_mtrx[i2][i3] = 
+                        adj_reach_mtrx[i2][i3] || adj_reach_mtrx[i1][i3];
                 }
             }
         }

@@ -3,8 +3,8 @@
 #ifndef PLCMP_SEM_CALC_HADLERS_H
 #define PLCMP_SEM_CALC_HADLERS_H
 
-#include "plcmp_sem_calc.h"
 #include "plcmp_handlers.h"
+#include "plcmp_sem_calc.h"
 
 typedef enum plcmp_sem_calc_error_code_e 
     plcmp_sem_calc_handler_t(int entry, void const *param);

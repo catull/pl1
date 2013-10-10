@@ -131,7 +131,7 @@ struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(
                 continue; 
             }
             else if (symbol_into_list(list_2, pl1_src_text[i1][i2]) &&
-                     ' '  == prev_processed_symb)
+                     ' ' == prev_processed_symb)
             {
                 /* In accordance with this condition 'prev_processed_symb'
                  * which contains space-symbol will be removed

@@ -3,8 +3,8 @@
 #ifndef PLCMP_SEM_CALC_FIRST_HANDLERS_H
 #define PLCMP_SEM_CALC_FIRST_HANDLERS_H
 
-#include "plcmp_sem_calc.h"
 #include "plcmp_handlers.h"
+#include "plcmp_sem_calc.h"
 
 typedef enum plcmp_sem_calc_error_code_e 
     plcmp_sem_calc_first_handler_t(void const *param);

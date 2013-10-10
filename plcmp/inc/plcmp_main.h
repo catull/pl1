@@ -5,10 +5,10 @@
 
 #include <string.h>
 
-#include "plcmp_utils.h"
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_synt_analyzer.h"
+#include "plcmp_utils.h"
 
 /* Enumerate defines error codes of main module */
 typedef enum plcmp_main_error_code_e {
