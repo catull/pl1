@@ -39,7 +39,7 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
             break;
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &g_p_compact_pl1_src_text[goal_achieved.DST2],
+                   &g_p_compact_pl1_src_text[goal_achieved.src_text_beg_ind],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
@@ -48,7 +48,7 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
             break;
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &g_p_compact_pl1_src_text[goal_achieved.DST2],
+                   &g_p_compact_pl1_src_text[goal_achieved.src_text_beg_ind],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
@@ -57,7 +57,7 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
             break;
         case PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &g_p_compact_pl1_src_text[goal_achieved.DST2],
+                   &g_p_compact_pl1_src_text[goal_achieved.src_text_beg_ind],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
@@ -69,18 +69,18 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
             size_t formt_len = strlen(FORMT[IFORMT - 1]);
             size_t oper_len = 0;
             memcpy(p_err_data->src_text_part,
-                   &g_p_compact_pl1_src_text[goal_achieved.DST2],
+                   &g_p_compact_pl1_src_text[goal_achieved.src_text_beg_ind],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
             p_err_data->data.operation[oper_len] = 
-                g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len];
+                g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len];
             ++oper_len;
-            if ('!' == g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len] &&
-                '!' == g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len + 1])
+            if ('!' == g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len] &&
+                '!' == g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len + 1])
             {
                 p_err_data->data.operation[oper_len] = 
-                    g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len + 1];
+                    g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len + 1];
                 ++oper_len;
             }
             p_err_data->data.operation[oper_len] = '\0';
@@ -89,7 +89,7 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
         }
         case PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &g_p_compact_pl1_src_text[goal_achieved.DST2],
+                   &g_p_compact_pl1_src_text[goal_achieved.src_text_beg_ind],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
@@ -254,7 +254,7 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
         int dst_index = 0;
         for (dst_index = 0; dst_index < p_goals_achieved->count; dst_index++)
         {
-            int hand_num = plcmp_tables_get_synt_rules_stroke_ind(p_goals_achieved->stack[dst_index].sym_title, 3);
+            int hand_num = plcmp_tables_get_input_syms_tb_ind(p_goals_achieved->stack[dst_index].sym_title, 3);
             switch (hand_num + 1)
             {
                 /* PRO */

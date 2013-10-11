@@ -433,7 +433,7 @@ char adj_reach_mtrx[NVXOD][NNETRM] = {
  * @param2: unsigned int symbol_str_len
  * Length of the string of sought-for symbol
  */
-unsigned int plcmp_tables_get_synt_rules_stroke_ind(char const *p_str_symbol, unsigned int symbol_str_len)
+unsigned int plcmp_tables_get_input_syms_tb_ind(char const *p_str_symbol, unsigned int symbol_str_len)
 {
     unsigned int i;
     for (i = 0; i < NVXOD; i++)

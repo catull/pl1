@@ -88,11 +88,11 @@ static void FORM(goal_achieved_t achieved_goal)
     }
 
     IFORMT = 0;
-    j = achieved_goal.DST2;
+    j = achieved_goal.src_text_beg_ind;
 
     FORM1:
 
-    for (i = j; i <= achieved_goal.DST4 + 1; i++)
+    for (i = j; i <= achieved_goal.src_text_end_ind + 1; i++)
     {
 
         if ('\'' == g_p_compact_pl1_src_text[i] ||
@@ -189,7 +189,7 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                 {
                     case 'B':
 
-                        switch (g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len])
+                        switch (g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len])
                         {
                             case '+':
                                 if (SYM[i].capacity <= 15)
@@ -214,7 +214,7 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                                 break;
 
                             case '!':
-                                switch (g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len - 1])
+                                switch (g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len - 1])
                                 {
                                     case '!':
                                         break;
@@ -237,10 +237,10 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
 
                     case 'C':
 
-                        switch (g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len])
+                        switch (g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len])
                         {
                             case '!':
-                                switch (g_p_compact_pl1_src_text[goal_achieved.DST4 - formt_len - 1])
+                                switch (g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len - 1])
                                 {
                                     case '!':
                                         p_char_syms[char_syms_size] = &SYM[i];

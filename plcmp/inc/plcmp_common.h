@@ -29,5 +29,6 @@
 
 typedef char sym_title_t[4];
 typedef char sym_design_t[4];
+typedef unsigned int index_t;
 
 #endif

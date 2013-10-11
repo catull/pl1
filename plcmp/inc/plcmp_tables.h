@@ -6,11 +6,13 @@
 #include "plcmp_common.h"
 #include "plcmp_utils.h"
 
+typedef index_t tb_rules_ind_t;
+
 typedef struct synt_rule_s {
-    int next;
-    int prev;
+    tb_rules_ind_t next;
+    tb_rules_ind_t prev;
     sym_design_t sym_design;
-    int alt;
+    tb_rules_ind_t alt;
 } synt_rule_t;
 
 typedef enum typeof_symbol_s {
@@ -20,7 +22,7 @@ typedef enum typeof_symbol_s {
 
 typedef struct input_sym_s {
     sym_title_t sym_title;
-    unsigned int synt_rule_tb_ind;
+    tb_rules_ind_t synt_rule_tb_ind;
     typeof_sym_t type;
 } input_sym_t;
 
@@ -45,7 +47,7 @@ extern char adj_reach_mtrx[NVXOD][NNETRM];
  * @param2: unsigned int symbol_str_len
  * Length of the string of sought-for symbol
  */
-unsigned int plcmp_tables_get_synt_rules_stroke_ind(
+unsigned int plcmp_tables_get_input_syms_tb_ind(
     const char *p_str_symbol,
     unsigned int symbol_str_len);
 

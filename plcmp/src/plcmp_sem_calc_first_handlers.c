@@ -27,11 +27,11 @@ static void FORM(goal_achieved_t achieved_goal)
     }
 
     IFORMT = 0;
-    j = achieved_goal.DST2;
+    j = achieved_goal.src_text_beg_ind;
 
     FORM1:
 
-    for (i = j; i <= achieved_goal.DST4 + 1; i++)
+    for (i = j; i <= achieved_goal.src_text_end_ind + 1; i++)
     {
 
         if ('\'' == g_p_compact_pl1_src_text[i] ||
