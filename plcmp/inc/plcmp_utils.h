@@ -27,8 +27,8 @@
         (pointer) = malloc(size);                                              \
         if (NULL == (pointer))                                                 \
         {                                                                      \
-            printf("Error of allocating memory with size = %lu"                \
-                   "bytes for " #pointer ". Assert\n", (size));                \
+            printf("Error of allocating memory with size = %lu "               \
+                   "bytes for '" #pointer "' pointer. Assert\n", (size));      \
             PLCMP_UTILS_ASSERT(0);                                             \
         }                                                                      \
         (pointer);                                                             \
@@ -52,8 +52,8 @@
         if (NULL == (pointer))                                                 \
         {                                                                      \
             printf("Error of clear allocating memory with "                    \
-                   "number_of_elements = %i size_of_element = %lu"             \
-                   "bytes for " #pointer ". Assert\n",                         \
+                   "number_of_elements = %i size_of_element = %lu "            \
+                   "bytes for '" #pointer "' pointer. Assert\n",               \
                    (number_of_elements),                                       \
                    (size_of_element));                                         \
             PLCMP_UTILS_ASSERT(0);                                             \
@@ -80,7 +80,7 @@
         }                                                                      \
         else                                                                   \
         {                                                                      \
-            printf("Try to release NULL-pointer: " #pointer ". Assert\n");     \
+            printf("Try to release NULL-pointer: '" #pointer "'. Assert\n");   \
             PLCMP_UTILS_ASSERT(0);                                             \
         }                                                                      \
     } while(0)
