@@ -165,11 +165,10 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     /* Compact source text */
     char compact_pl1_src_text[NSTROKA] = { '\0' };
     /* Stack of goals achieved */
-    goals_achieved_stack_t goals_achieved;
+    goals_achieved_stack_t *goals_achieved = NULL;
     plcmp_main_error_data_t err_data;
 
     plcmp_main_set_default_err_data(&err_data);
-    memset(&goals_achieved, 0, sizeof(goals_achieved));
 
     /* Lexical analysis of the source text */
     err_data.lex_analyzer_err_data =
@@ -188,12 +187,12 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     }
 
     /* Create stack of achieved goals */
-    plcmp_goal_create_goals_achieved_stack(&goals_achieved);
+    goals_achieved = plcmp_goal_create_goals_achieved_stack();
 
     /* Syntax analysis of the source text and filling stack of goals achived */
     err_data.synt_analyzer_err_data =
         plcmp_synt_analyzer_syntax_analysis(compact_pl1_src_text,
-                                            &goals_achieved);
+                                            goals_achieved);
     if (PLCMP_SYNT_ANALYZER_SUCCESS != err_data.synt_analyzer_err_data.err_code)
     {
         /* Error in syntax of the source PL1-text.
@@ -208,7 +207,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     err_data.sem_calc_err_data =
         plcmp_sem_calc_gen_asm_code(p_asm_fp_name,
                                     compact_pl1_src_text,
-                                    &goals_achieved);
+                                    goals_achieved);
     if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.sem_calc_err_data.err_code)
     {
         /* Error in execution logic of the source PL1-text

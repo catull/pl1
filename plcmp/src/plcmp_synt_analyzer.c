@@ -51,8 +51,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 {
     /* It's stack of goals and pointer on it.
      * Later stack will be normally created by function call */
-    goals_interim_stack_t goals, *p_goals = &goals;
-
+    goals_interim_stack_t *p_goals = NULL;
     plcmp_synt_analyzer_error_data_t err_data;
 
     /* Current index in the compact text */
@@ -64,7 +63,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     int i_max = 0;
 
     /* Create stack of goals */
-    plcmp_goal_create_goals_interim_stack(p_goals);
+    p_goals = plcmp_goal_create_goals_interim_stack();
     /* Clear error data structure for later using 
      * and set default successful value for error code */
     plcmp_synt_analyzer_set_default_err_data(&err_data);
@@ -78,7 +77,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                             &compact_pl1_src_text[i], 1)]
                        [plcmp_tables_get_input_syms_tb_ind("PRO", 3)])
     {
-        plcmp_goal_destroy_goals_interim_stack(p_goals);
+        plcmp_goal_destroy_goals_interim_stack(&p_goals);
 
         /* Prepare error data for return to main module */
         err_data.err_code = PLCMP_SYNT_ANALYZER_SYNTAX_ERROR;
@@ -136,7 +135,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             if (!strcmp(p_goals->stack[p_goals->count - 1].sym_title, "PRO"))
             {
                 /* Successful finish of the syntax analysis */
-                plcmp_goal_destroy_goals_interim_stack(p_goals);
+                plcmp_goal_destroy_goals_interim_stack(&p_goals);
                 return err_data;
             }
 
@@ -231,7 +230,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     if (999 == j)
     {
-        plcmp_goal_destroy_goals_interim_stack(p_goals);
+        plcmp_goal_destroy_goals_interim_stack(&p_goals);
 
         /* Prepare error data for return to main module */
         err_data.err_code = PLCMP_SYNT_ANALYZER_SYNTAX_ERROR;

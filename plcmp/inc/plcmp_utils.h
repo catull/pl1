@@ -23,7 +23,7 @@
  * 'pointer' has any pointer type
  */
 #define PLCMP_UTILS_MALLOC_MEM(pointer, size)                                  \
-    do {                                                                       \
+    ({                                                                         \
         (pointer) = malloc(size);                                              \
         if (NULL == (pointer))                                                 \
         {                                                                      \
@@ -31,7 +31,8 @@
                    "bytes for " #pointer ". Assert\n", (size));                \
             PLCMP_UTILS_ASSERT(0);                                             \
         }                                                                      \
-    } while(0)
+        (pointer);                                                             \
+    })
 
 /*
  * Macro allocates memory and sets to zero
@@ -46,7 +47,7 @@
 #define PLCMP_UTILS_CALLOC_MEM(pointer,                                        \
                                number_of_elements,                             \
                                size_of_element)                                \
-    do {                                                                       \
+    ({                                                                         \
         (pointer) = calloc((number_of_elements), (size_of_element));           \
         if (NULL == (pointer))                                                 \
         {                                                                      \
@@ -57,7 +58,8 @@
                    (size_of_element));                                         \
             PLCMP_UTILS_ASSERT(0);                                             \
         }                                                                      \
-    } while(0)
+        (pointer);                                                             \
+    })
 
 
 /*
