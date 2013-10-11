@@ -37,8 +37,10 @@ clean:
 	-$(RM) $(ABSLOAD_OBJS) $(ABSLOAD_DEPS) $(ABSLOAD_BIN)
 
 $(ABSLOAD_OBJ_DIR)/%.o: $(ABSLOAD_SRC_DIR)/%.c
-	$(CC) -c $< $(FLAGS) $(ABSLOAD_INCLUDES) -MM -MF \
+	$(CC) -c $< $(FLAGS) $(ABSLOAD_INCLUDES) -MM -MT $@ -MF \
 $(addprefix $(ABSLOAD_DEP_DIR)/, $(patsubst $(ABSLOAD_OBJ_DIR)/%.o, %.d, $@))
 	$(CC) -c $< $(FLAGS) $(ABSLOAD_INCLUDES) -o $@
 
 -include $(ABSLOAD_DEPS)
+
+.PHONY: build clean

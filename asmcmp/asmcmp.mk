@@ -37,9 +37,10 @@ clean:
 	-$(RM) $(ASMCMP_OBJS) $(ASMCMP_DEPS) $(ASMCMP_BIN)
 
 $(ASMCMP_OBJ_DIR)/%.o: $(ASMCMP_SRC_DIR)/%.c
-	$(CC) -c $< $(FLAGS) $(ASMCMP_INCLUDES) -MM -MF \
+	$(CC) -c $< $(FLAGS) $(ASMCMP_INCLUDES) -MM -MT $@ -MF \
 $(addprefix $(ASMCMP_DEP_DIR)/, $(patsubst $(ASMCMP_OBJ_DIR)/%.o, %.d, $@))
 	$(CC) -c $< $(FLAGS) $(ASMCMP_INCLUDES) -o $@
 
 -include $(ASMCMP_DEPS)
 
+.PHONY: build clean
