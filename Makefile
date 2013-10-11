@@ -13,19 +13,19 @@ clean: clean_all
 clean_all: clean_plcmp clean_asmcmp clean_absload
 
 plcmp:
-	cd $(PLCMP_DIR) && pwd -P && \
-$(MAKE) GLOBAL_CC_FLAGS=$(GLOBAL_CC_FLAGS) -f plcmp.mk build
+	$(MAKE) -C $(PLCMP_DIR) \
+	GLOBAL_CC_FLAGS=$(GLOBAL_CC_FLAGS) -f plcmp.mk build
 clean_plcmp:
-	cd $(PLCMP_DIR) && pwd -P && $(MAKE) -f plcmp.mk clean
+	$(MAKE) -C $(PLCMP_DIR) -f plcmp.mk clean
 
 asmcmp:
-	cd $(ASMCMP_DIR) && pwd -P && \
-$(MAKE) GLOBAL_CC_FLAGS=$(GLOBAL_CC_FLAGS) -f asmcmp.mk build
+	$(MAKE) -C $(ASMCMP_DIR) \
+	GLOBAL_CC_FLAGS=$(GLOBAL_CC_FLAGS) -f asmcmp.mk build
 clean_asmcmp:
-	cd $(ASMCMP_DIR) && pwd -P && $(MAKE) -f asmcmp.mk clean
+	$(MAKE) -C $(ASMCMP_DIR) -f asmcmp.mk clean
 
 absload:
-	cd $(ABSLOAD_DIR) && pwd -P && \
-$(MAKE) GLOBAL_CC_FLAGS=$(GLOBAL_CC_FLAGS) -f absload.mk build
+	$(MAKE) -C $(ABSLOAD_DIR) \
+	GLOBAL_CC_FLAGS=$(GLOBAL_CC_FLAGS) -f absload.mk build
 clean_absload:
-	cd $(ABSLOAD_DIR) && pwd -P && $(MAKE) -f absload.mk clean
+	$(MAKE) -C $(ABSLOAD_DIR) -f absload.mk clean
