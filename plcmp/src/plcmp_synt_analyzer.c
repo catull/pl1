@@ -99,7 +99,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].synt_rule_tb_ind;
     j = synt_rules_table[j].next;
 
-    L31:
+    L1:
 
     ++i;
 
@@ -113,12 +113,12 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         if (compact_pl1_src_text[i] == synt_rules_table[j].sym_design[0])
         {
             j = synt_rules_table[j].next;
-            goto L31;
+            goto L1;
         }
         else
         {
             --i;
-            goto L9;
+            goto L3;
         }
     }
 
@@ -147,22 +147,20 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             {
                 j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)].synt_rule_tb_ind;
                 j = synt_rules_table[j].next;
-                goto L31;
+                goto L1;
             }
-
-            L6:
 
             j = goals_interim->last->tb_rules_ind;
             plcmp_goal_remove_last_interim(goals_interim);
 
             j = synt_rules_table[j].next;
-            goto L31;
+            goto L1;
         }
 
         if (!adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)]
                            [plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)])
         {
-            goto L9;
+            goto L3;
         }
 
         plcmp_goal_add_achieved(goals_achieved, 
@@ -173,27 +171,27 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                                 j);
         j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].synt_rule_tb_ind;
         j = synt_rules_table[j].next;
-        goto L31;
+        goto L1;
     }
 
     if (!adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)]
                        [plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)])
     {
         --i;
-        goto L9;
+        goto L3;
     }
 
     plcmp_goal_add_interim(goals_interim, synt_rules_table[j].sym_design, i, j);
     j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].synt_rule_tb_ind;
     j = synt_rules_table[j].next;
-    goto L31;
+    goto L1;
 
-    L9:
+    L3:
 
     if (synt_rules_table[j].alt != 0)
     {
         j = synt_rules_table[j].alt;
-        goto L31;
+        goto L1;
     }
 
     j = synt_rules_table[j].prev;
@@ -207,11 +205,11 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                                    goals_achieved->last->src_text_beg_ind,
                                    goals_achieved->last->tb_rules_ind);
 
-            L10:
+            L4:
 
             j = goals_achieved->last->tb_rules_next_goal_ind;
             plcmp_goal_remove_last_achieved(goals_achieved);
-            goto L9;
+            goto L3;
         }
 
         if (synt_rules_table[j].prev == 0)
@@ -219,11 +217,15 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             if (streq(goals_interim->last->sym_title,
                       goals_achieved->last->sym_title))
             {
-                goto L6;
+                j = goals_interim->last->tb_rules_ind;
+                plcmp_goal_remove_last_interim(goals_interim);
+
+                j = synt_rules_table[j].next;
+                goto L1;
             }
             else
             {
-                goto L10;
+                goto L4;
             }
         }
     }
@@ -231,7 +233,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     if (synt_rules_table[j].prev > 0)
     {
         --i;
-        goto L9;
+        goto L3;
     }
 
     j = goals_interim->last->tb_rules_ind;
@@ -252,6 +254,6 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     else
     {
         --i;
-        goto L9;
+        goto L3;
     }
 }
