@@ -65,14 +65,15 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     PLCMP_UTILS_ASSERT(p_goals_achieved, "");
 
+    /* Clear error data structure for later using 
+     * and set default successful value for error code */
+    plcmp_synt_analyzer_set_default_err_data(&err_data);
+
     /* Create stack of interim goals */
     goals_interim = plcmp_goal_create_goals_interim_stack();
     /* Create stack of achieved goals */
     *p_goals_achieved = plcmp_goal_create_goals_achieved_stack();
     goals_achieved = *p_goals_achieved;
-    /* Clear error data structure for later using 
-     * and set default successful value for error code */
-    plcmp_synt_analyzer_set_default_err_data(&err_data);
     /* Construct reachability matrix */
     plcmp_tables_build_reach_mtrx();
 
@@ -198,32 +199,33 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     j = synt_rules_table[j].prev;
 
-    if ((input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].type == NON_TERM ) &&
-        (synt_rules_table[j].prev > 0))
+    if (input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].type == NON_TERM)
     {
-        plcmp_goal_add_interim(goals_interim,
-                               goals_achieved->last->sym_title,
-                               goals_achieved->last->src_text_beg_ind,
-                               goals_achieved->last->tb_rules_ind);
-
-        L10:
-
-        j = goals_achieved->last->tb_rules_next_goal_ind;
-        plcmp_goal_remove_last_achieved(goals_achieved);
-        goto L9;
-    }
-
-    if ((input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].type == NON_TERM ) &&
-        (synt_rules_table[j].prev == 0))
-    {
-        if (streq(goals_interim->last->sym_title,
-                  goals_achieved->last->sym_title))
+        if (synt_rules_table[j].prev > 0)
         {
-            goto L6;
+            plcmp_goal_add_interim(goals_interim,
+                                   goals_achieved->last->sym_title,
+                                   goals_achieved->last->src_text_beg_ind,
+                                   goals_achieved->last->tb_rules_ind);
+
+            L10:
+
+            j = goals_achieved->last->tb_rules_next_goal_ind;
+            plcmp_goal_remove_last_achieved(goals_achieved);
+            goto L9;
         }
-        else
+
+        if (synt_rules_table[j].prev == 0)
         {
-            goto L10;
+            if (streq(goals_interim->last->sym_title,
+                      goals_achieved->last->sym_title))
+            {
+                goto L6;
+            }
+            else
+            {
+                goto L10;
+            }
         }
     }
 
