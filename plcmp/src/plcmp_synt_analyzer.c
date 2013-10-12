@@ -108,7 +108,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
         err_data.src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN] = '\0';
 
-        return err_data;
+        goto quit;
     }
 
     j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
@@ -155,7 +155,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             {
                 /* Successful finish of the syntax analysis */
                 plcmp_goal_destroy_goals_interim_stack(&goals_interim);
-                return err_data;
+                goto quit;
             }
 
             if (adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)]
@@ -265,11 +265,15 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         memcpy(err_data.src_text_part, &compact_pl1_src_text[i_max], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
         err_data.src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN] = '\0';
 
-        return err_data;
+        goto quit;
     }
     else
     {
         --i;
         goto L2;
     }
+
+    quit:
+
+    return err_data;
 }
