@@ -34,9 +34,10 @@ void plcmp_goal_remove_last_interim(goals_interim_stack_t *intr_goals)
     }
     else
     {
-        printf("Trying to remove last interim goal from the "
-               "empty stack of interim goals. Assert\n");
-        PLCMP_UTILS_ASSERT(0);
+        PLCMP_UTILS_ASSERT(
+            0,
+            "Trying to remove last interim goal from the "
+            "empty stack of interim goals");
     }
 }
 
@@ -74,8 +75,9 @@ void plcmp_goal_remove_last_achieved(goals_achieved_stack_t *p_goals_achieved)
     }
     else
     {
-        printf("Trying to remove last achieved goal from the "
-               "empty stack of achieved goals. Assert\n");
-        PLCMP_UTILS_ASSERT(0);
+        PLCMP_UTILS_ASSERT(
+            0,
+            "Trying to remove last achieved goal from the "
+            "empty stack of achieved goals");
     }
 }

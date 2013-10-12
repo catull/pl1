@@ -53,7 +53,8 @@ static inline goals_achieved_stack_t*
 static inline void plcmp_goal_destroy_goals_achieved_stack(
     goals_achieved_stack_t **goals_achieved)
 {
-    PLCMP_UTILS_ASSERT(NULL != goals_achieved && NULL != *goals_achieved);
+    PLCMP_UTILS_ASSERT(NULL != goals_achieved && NULL != *goals_achieved,
+                       "Can't destroy goals achieved stack");
     PLCMP_UTILS_RELEASE_MEM(*goals_achieved);
 }
 
@@ -73,7 +74,8 @@ static inline goals_interim_stack_t*
 static inline void plcmp_goal_destroy_goals_interim_stack(
     goals_interim_stack_t **goals)
 {
-    PLCMP_UTILS_ASSERT(NULL != goals && NULL != *goals);
+    PLCMP_UTILS_ASSERT(NULL != goals && NULL != *goals,
+                       "Can't destroy goals achieved stack");
     PLCMP_UTILS_RELEASE_MEM(*goals);
 }
 

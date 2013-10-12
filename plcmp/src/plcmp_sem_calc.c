@@ -113,7 +113,7 @@ char* plcmp_sem_calc_errmsg_by_errdata(
     plcmp_sem_calc_error_data_t const *err_data,
     char errmsg[])
 {
-    PLCMP_UTILS_ASSERT(NULL != err_data && NULL != errmsg);
+    PLCMP_UTILS_ASSERT(err_data && errmsg, "");
 
     switch (err_data->err_code)
     {

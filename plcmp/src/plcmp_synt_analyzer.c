@@ -38,7 +38,7 @@ char* plcmp_synt_analyzer_errmsg_by_errdata(
 static inline void plcmp_synt_analyzer_set_default_err_data(
     plcmp_synt_analyzer_error_data_t *err_data)
 {
-    PLCMP_UTILS_ASSERT(err_data);
+    PLCMP_UTILS_ASSERT(err_data, "");
     memset(err_data, 0, sizeof(plcmp_synt_analyzer_error_data_t));
     err_data->err_code = PLCMP_SYNT_ANALYZER_SUCCESS;
 }

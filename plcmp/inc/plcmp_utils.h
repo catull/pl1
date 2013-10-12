@@ -14,7 +14,14 @@
  * @param:
  * 'condition' has any arithmetic or logic type 
  */
-#define PLCMP_UTILS_ASSERT(condition) assert((condition))
+#define PLCMP_UTILS_ASSERT(condition, format, ...)                             \
+    do {                                                                       \
+        if (!(condition))                                                      \
+        {                                                                      \
+            fprintf(stderr, format "\n", ##__VA_ARGS__);                       \
+            assert((condition));                                               \
+        }                                                                      \
+    } while (0)
 
 /*
  * Macro allocates memory
@@ -27,9 +34,11 @@
         (pointer) = malloc((size));                                            \
         if (NULL == (pointer))                                                 \
         {                                                                      \
-            printf("Error of allocating memory with size = %lu "               \
-                   "bytes for '" #pointer "' pointer. Assert\n", (size));      \
-            PLCMP_UTILS_ASSERT(0);                                             \
+            PLCMP_UTILS_ASSERT(                                                \
+                0,                                                             \
+                "Error of allocating memory with size = %lu "                  \
+                "bytes for '" #pointer "' pointer. Assert\n",                  \
+                (size));                                                       \
         }                                                                      \
         (pointer);                                                             \
     })
@@ -51,12 +60,13 @@
         (pointer) = calloc((number_of_elements), (size_of_element));           \
         if (NULL == (pointer))                                                 \
         {                                                                      \
-            printf("Error of clear allocating memory with "                    \
-                   "number_of_elements = %i size_of_element = %lu "            \
-                   "bytes for '" #pointer "' pointer. Assert\n",               \
-                   (number_of_elements),                                       \
-                   (size_of_element));                                         \
-            PLCMP_UTILS_ASSERT(0);                                             \
+            PLCMP_UTILS_ASSERT(                                                \
+                0,                                                             \
+                "Error of clear allocating memory with "                       \
+                "number_of_elements = %i size_of_element = %lu "               \
+                "bytes for '" #pointer "' pointer. Assert\n",                  \
+                (number_of_elements),                                          \
+                (size_of_element));                                            \
         }                                                                      \
         (pointer);                                                             \
     })
@@ -80,8 +90,9 @@
         }                                                                      \
         else                                                                   \
         {                                                                      \
-            printf("Try to release NULL-pointer: '" #pointer "'. Assert\n");   \
-            PLCMP_UTILS_ASSERT(0);                                             \
+            PLCMP_UTILS_ASSERT(                                                \
+                0,                                                             \
+                "Try to release NULL-pointer: '" #pointer "'");                \
         }                                                                      \
     } while(0)
 
@@ -101,7 +112,7 @@
 #define PLCMP_UTILS_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name,         \
                                                         p_pl1_fp_name)         \
     do {                                                                       \
-        PLCMP_UTILS_ASSERT(!(p_asm_fp_name));                                  \
+        PLCMP_UTILS_ASSERT(p_pl1_fp_name, "");                                 \
         p_asm_fp_name = strdup((p_pl1_fp_name));                               \
         p_asm_fp_name[strlen((p_asm_fp_name)) - 4] = '\0';                     \
         strcat(p_asm_fp_name, ".ass");                                         \
