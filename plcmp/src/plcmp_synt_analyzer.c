@@ -118,7 +118,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         else
         {
             --i;
-            goto L3;
+            goto L2;
         }
     }
 
@@ -160,7 +160,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         if (!adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)]
                            [plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)])
         {
-            goto L3;
+            goto L2;
         }
 
         plcmp_goal_add_achieved(goals_achieved, 
@@ -178,7 +178,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                        [plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)])
     {
         --i;
-        goto L3;
+        goto L2;
     }
 
     plcmp_goal_add_interim(goals_interim, synt_rules_table[j].sym_design, i, j);
@@ -186,7 +186,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     j = synt_rules_table[j].next;
     goto L1;
 
-    L3:
+    L2:
 
     if (synt_rules_table[j].alt != 0)
     {
@@ -207,7 +207,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
             j = goals_achieved->last->tb_rules_next_goal_ind;
             plcmp_goal_remove_last_achieved(goals_achieved);
-            goto L3;
+            goto L2;
         }
 
         if (synt_rules_table[j].prev == 0)
@@ -225,7 +225,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             {
                 j = goals_achieved->last->tb_rules_next_goal_ind;
                 plcmp_goal_remove_last_achieved(goals_achieved);
-                goto L3;
+                goto L2;
             }
         }
     }
@@ -233,7 +233,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     if (synt_rules_table[j].prev > 0)
     {
         --i;
-        goto L3;
+        goto L2;
     }
 
     j = goals_interim->last->tb_rules_ind;
@@ -254,6 +254,6 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     else
     {
         --i;
-        goto L3;
+        goto L2;
     }
 }
