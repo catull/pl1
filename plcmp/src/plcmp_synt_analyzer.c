@@ -111,7 +111,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         return err_data;
     }
 
-    j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].synt_rule_tb_ind;
+    j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
     j = next_rule_ind(j);
 
     L1:
@@ -141,12 +141,13 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     {
         --i;
 
-        if (streq(synt_rules_table[j].sym_design, goals_interim->last->sym_title))
+        if (streq(synt_rules_table[j].sym_design,
+                  goals_interim->last->sym_title))
         {
             plcmp_goal_add_achieved(goals_achieved,
                                     goals_interim->last->sym_title,
                                     goals_interim->last->src_text_left_ind,
-                                    goals_interim->last->tb_rules_ind,
+                                    goals_interim->last->tb_rules_reach_ind,
                                     i,
                                     j);
 
@@ -160,12 +161,12 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             if (adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)]
                               [plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)])
             {
-                j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)].synt_rule_tb_ind;
+                j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)].tb_rules_ind;
                 j = next_rule_ind(j);
                 goto L1;
             }
 
-            j = goals_interim->last->tb_rules_ind;
+            j = goals_interim->last->tb_rules_reach_ind;
             plcmp_goal_remove_last_interim(goals_interim);
 
             j = next_rule_ind(j);
@@ -184,7 +185,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                                 0,
                                 i,
                                 j);
-        j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].synt_rule_tb_ind;
+        j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].tb_rules_ind;
         j = next_rule_ind(j);
         goto L1;
     }
@@ -197,7 +198,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     }
 
     plcmp_goal_add_interim(goals_interim, synt_rules_table[j].sym_design, i, j);
-    j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].synt_rule_tb_ind;
+    j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
     j = next_rule_ind(j);
     goto L1;
 
@@ -218,7 +219,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             plcmp_goal_add_interim(goals_interim,
                                    goals_achieved->last->sym_title,
                                    goals_achieved->last->src_text_beg_ind,
-                                   goals_achieved->last->tb_rules_ind);
+                                   goals_achieved->last->tb_rules_reach_ind);
 
             j = goals_achieved->last->tb_rules_next_goal_ind;
             plcmp_goal_remove_last_achieved(goals_achieved);
@@ -230,7 +231,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             if (streq(goals_interim->last->sym_title,
                       goals_achieved->last->sym_title))
             {
-                j = goals_interim->last->tb_rules_ind;
+                j = goals_interim->last->tb_rules_reach_ind;
                 plcmp_goal_remove_last_interim(goals_interim);
 
                 j = next_rule_ind(j);
@@ -251,7 +252,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         goto L2;
     }
 
-    j = goals_interim->last->tb_rules_ind;
+    j = goals_interim->last->tb_rules_reach_ind;
     plcmp_goal_remove_last_interim(goals_interim);
 
     if (999 == j)

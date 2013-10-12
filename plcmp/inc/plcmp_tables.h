@@ -22,7 +22,7 @@ typedef enum typeof_symbol_s {
 
 typedef struct input_sym_s {
     sym_title_t sym_title;
-    tb_rules_ind_t synt_rule_tb_ind;
+    tb_rules_ind_t tb_rules_ind;
     typeof_sym_t type;
 } input_sym_t;
 
