@@ -123,7 +123,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     {
         --i;
 
-        if (!strcmp(synt_rules_table[j].sym_design, p_goals->stack[p_goals->count - 1].sym_title))
+        if (streq(synt_rules_table[j].sym_design, p_goals->stack[p_goals->count - 1].sym_title))
         {
             plcmp_goal_add_achieved(p_goals_achieved,
                                     p_goals->stack[p_goals->count - 1].sym_title,
@@ -132,14 +132,15 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                                     i,
                                     j);
 
-            if (!strcmp(p_goals->stack[p_goals->count - 1].sym_title, "PRO"))
+            if (streq(p_goals->stack[p_goals->count - 1].sym_title, "PRO"))
             {
                 /* Successful finish of the syntax analysis */
                 plcmp_goal_destroy_goals_interim_stack(&p_goals);
                 return err_data;
             }
 
-            if (adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(p_goals->stack[p_goals->count - 1].sym_title, 3)][plcmp_tables_get_input_syms_tb_ind(p_goals->stack[p_goals->count - 1].sym_title, 3)])
+            if (adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(p_goals->stack[p_goals->count - 1].sym_title, 3)]
+                              [plcmp_tables_get_input_syms_tb_ind(p_goals->stack[p_goals->count - 1].sym_title, 3)])
             {
                 j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(p_goals->stack[p_goals->count - 1].sym_title, 3)].synt_rule_tb_ind;
                 goto L3;
@@ -208,8 +209,8 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     if ((input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].type == NON_TERM ) && (synt_rules_table[j].prev == 0))
     {
 
-        if (!strcmp(p_goals->stack[p_goals->count - 1].sym_title,
-                    p_goals_achieved->stack[p_goals_achieved->count - 1].sym_title))
+        if (streq(p_goals->stack[p_goals->count - 1].sym_title,
+                  p_goals_achieved->stack[p_goals_achieved->count - 1].sym_title))
         {
             goto L6;
         }
