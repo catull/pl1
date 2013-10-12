@@ -47,11 +47,12 @@ static inline void plcmp_synt_analyzer_set_default_err_data(
  * It constructs parse tree and returns error data if it will be */
 struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     char const compact_pl1_src_text[],
-    goals_achieved_stack_t *goals_achieved)
+    goals_achieved_stack_t **p_goals_achieved)
 {
-    /* It's stack of goals and pointer on it.
+    /* It's stack of interim goals
      * Later stack will be normally created by function call */
     goals_interim_stack_t *goals_interim = NULL;
+    goals_achieved_stack_t *goals_achieved = NULL;
     plcmp_synt_analyzer_error_data_t err_data;
 
     /* Current index in the compact text */
@@ -62,17 +63,21 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
      * It is necessary for sending part of source text if error will occur */
     int i_max = 0;
 
-    /* Create stack of goals */
+    PLCMP_UTILS_ASSERT(p_goals_achieved, "");
+
+    /* Create stack of interim goals */
     goals_interim = plcmp_goal_create_goals_interim_stack();
+    /* Create stack of achieved goals */
+    *p_goals_achieved = plcmp_goal_create_goals_achieved_stack();
+    goals_achieved = *p_goals_achieved;
     /* Clear error data structure for later using 
      * and set default successful value for error code */
     plcmp_synt_analyzer_set_default_err_data(&err_data);
-
     /* Construct reachability matrix */
     plcmp_tables_build_reach_mtrx();
 
+    /* Let's start */
     plcmp_goal_add_interim(goals_interim, "PRO", i, 999);
-
     if (!adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(
                             &compact_pl1_src_text[i], 1)]
                        [plcmp_tables_get_input_syms_tb_ind("PRO", 3)])

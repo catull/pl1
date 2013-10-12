@@ -29,6 +29,6 @@ char* plcmp_synt_analyzer_errmsg_by_errdata(
  * It constructs parse tree and returns error data if it will be */
 struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     char const compact_pl1_src_text[],
-    goals_achieved_stack_t *p_goals_achieved);
+    goals_achieved_stack_t **p_goals_achieved);
 
 #endif /* PLCMP_SYNT_ANALYZER_H */

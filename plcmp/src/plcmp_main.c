@@ -186,13 +186,10 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
         goto error_lex_analyzer;
     }
 
-    /* Create stack of achieved goals */
-    goals_achieved = plcmp_goal_create_goals_achieved_stack();
-
     /* Syntax analysis of the source text and filling stack of goals achived */
     err_data.synt_analyzer_err_data =
         plcmp_synt_analyzer_syntax_analysis(compact_pl1_src_text,
-                                            goals_achieved);
+                                            &goals_achieved);
     if (PLCMP_SYNT_ANALYZER_SUCCESS != err_data.synt_analyzer_err_data.err_code)
     {
         /* Error in syntax of the source PL1-text.
