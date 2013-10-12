@@ -3,10 +3,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "plcmp_utils.h"
 #include "plcmp_goal.h"
 #include "plcmp_synt_analyzer.h"
 #include "plcmp_tables.h"
+#include "plcmp_utils.h"
 
 /* Subroutine constructs error message by 
  * error data of syntax analyzer module */

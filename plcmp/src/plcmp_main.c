@@ -261,7 +261,7 @@ int main(int const argc, char const *argv[])
     }
 
     /* Copy name of translated program from input argument */
-    PLCMP_UTILS_ALLOC_MEM_AND_COPY_FP_STR(p_pl1_fp_name, argv[1]);
+    p_pl1_fp_name = strdup(argv[1]);
 
     /* Length of PL1 file path must be greater than 4 symbols.
      * Minimum file path is extension '.pli' */ 

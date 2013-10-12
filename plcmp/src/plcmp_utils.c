@@ -8,7 +8,8 @@
 /* Check equality of two strings */
 int streq(char const *restrict str_1, char const *restrict str_2)
 {
-    return !strcmp(str_1, str_2);
+    return (str_1 && str_2) ? 
+           ((*(str_1) == *(str_2)) && !strcmp(str_1, str_2)) : -1;
 }
 
 /* Subroutine concatenates strings will be passed trought the parameters and
