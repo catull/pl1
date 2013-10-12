@@ -97,9 +97,6 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     }
 
     j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].synt_rule_tb_ind;
-
-    L3:
-
     j = synt_rules_table[j].next;
 
     L31:
@@ -115,7 +112,8 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     {
         if (compact_pl1_src_text[i] == synt_rules_table[j].sym_design[0])
         {
-            goto L3;
+            j = synt_rules_table[j].next;
+            goto L31;
         }
         else
         {
@@ -148,7 +146,8 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                               [plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)])
             {
                 j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)].synt_rule_tb_ind;
-                goto L3;
+                j = synt_rules_table[j].next;
+                goto L31;
             }
 
             L6:
@@ -156,7 +155,8 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             j = goals_interim->last->tb_rules_ind;
             plcmp_goal_remove_last_interim(goals_interim);
 
-            goto L3;
+            j = synt_rules_table[j].next;
+            goto L31;
         }
 
         if (!adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)]
@@ -172,7 +172,8 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                                 i,
                                 j);
         j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].synt_rule_tb_ind;
-        goto L3;
+        j = synt_rules_table[j].next;
+        goto L31;
     }
 
     if (!adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)]
@@ -184,7 +185,8 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     plcmp_goal_add_interim(goals_interim, synt_rules_table[j].sym_design, i, j);
     j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].synt_rule_tb_ind;
-    goto L3;
+    j = synt_rules_table[j].next;
+    goto L31;
 
     L9:
 
