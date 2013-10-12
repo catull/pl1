@@ -161,11 +161,11 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         }
 
         plcmp_goal_add_achieved(goals_achieved, 
-                          synt_rules_table[j].sym_design,
-                          goals_interim->last->src_text_left_ind,
-                          0,
-                          i,
-                          j);
+                                synt_rules_table[j].sym_design,
+                                goals_interim->last->src_text_left_ind,
+                                0,
+                                i,
+                                j);
         j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].synt_rule_tb_ind;
         goto L3;
     }
@@ -193,24 +193,26 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     j = synt_rules_table[j].prev;
 
-    if ((input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].type == NON_TERM ) && (synt_rules_table[j].prev > 0))
+    if ((input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].type == NON_TERM ) &&
+        (synt_rules_table[j].prev > 0))
     {
         plcmp_goal_add_interim(goals_interim,
-                       goals_achieved->stack[goals_achieved->count - 1].sym_title,
-                       goals_achieved->stack[goals_achieved->count - 1].src_text_beg_ind,
-                       goals_achieved->stack[goals_achieved->count - 1].tb_rules_ind);
+                               goals_achieved->last->sym_title,
+                               goals_achieved->last->src_text_beg_ind,
+                               goals_achieved->last->tb_rules_ind);
 
         L10:
 
-        j = goals_achieved->stack[goals_achieved->count - 1].tb_rules_next_goal_ind;
+        j = goals_achieved->last->tb_rules_next_goal_ind;
         plcmp_goal_remove_last_achieved(goals_achieved);
         goto L9;
     }
 
-    if ((input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].type == NON_TERM ) && (synt_rules_table[j].prev == 0))
+    if ((input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].type == NON_TERM ) &&
+        (synt_rules_table[j].prev == 0))
     {
         if (streq(goals_interim->last->sym_title,
-                  goals_achieved->stack[goals_achieved->count - 1].sym_title))
+                  goals_achieved->last->sym_title))
         {
             goto L6;
         }

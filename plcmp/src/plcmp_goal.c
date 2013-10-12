@@ -69,9 +69,9 @@ void plcmp_goal_remove_last_achieved(goals_achieved_stack_t *p_goals_achieved)
         memset(&p_goals_achieved->stack[*count - 1],
                0,
                sizeof(p_goals_achieved->stack[*count - 1]));
+        --(*count);
         p_goals_achieved->last =
             (*count) ? &p_goals_achieved->stack[*count - 1] : NULL;
-        --(*count);
     }
     else
     {
