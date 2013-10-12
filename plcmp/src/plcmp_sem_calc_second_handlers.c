@@ -142,9 +142,12 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
             if (!strcmp(SYM[i].name, FORMT[0]) &&
                 (strlen(SYM[i].name) == strlen(FORMT[0])))
             {
+
                 switch (SYM[i].type)
                 {
                     case 'B':
+                        clear_assembler_card();
+
                         if (SYM[i].capacity <= 15)
                         {
                             memcpy(assembler_card.OPERAC, "LH", 2);
@@ -154,7 +157,6 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                             memcpy(assembler_card.OPERAC, "L", 1);
                         }
 
-                        clear_assembler_card();
                         strcpy(assembler_card.OPERAND, "RRAB,");
                         strcat(assembler_card.OPERAND, FORMT[0]);
                         assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
@@ -188,7 +190,7 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                 switch (SYM[i].type)
                 {
                     case 'B':
-
+                        clear_assembler_card();
                         switch (g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len])
                         {
                             case '+':
@@ -227,7 +229,6 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                                 return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR;
                         }
 
-                        clear_assembler_card();
                         strcpy(assembler_card.OPERAND, "RRAB,");
                         strcat(assembler_card.OPERAND, FORMT[IFORMT - 1]);
                         assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
