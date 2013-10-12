@@ -96,8 +96,6 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         return err_data;
     }
 
-    L2:
-
     j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].synt_rule_tb_ind;
 
     L3:
@@ -183,7 +181,8 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     }
 
     plcmp_goal_add_interim(goals_interim, synt_rules_table[j].sym_design, i, j);
-    goto L2;
+    j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].synt_rule_tb_ind;
+    goto L3;
 
     L8:
 
