@@ -7,27 +7,28 @@
 #include "plcmp_utils.h"
 
 /* Subroutine adds a new goal into stack of goals */
-void plcmp_goal_add_interim(goals_interim_stack_t *intr_goals,
+void plcmp_goal_add_interim(goals_interim_stack_t *restrict interim_goals,
                             char const *goal_title,
                             index_t src_text_left_ind,
                             tb_rules_ind_t tb_rules_reach_ind)
 {
-    intr_goals->last = &intr_goals->stack[intr_goals->count];
-    strcpy(intr_goals->last->sym_title, goal_title);
-    intr_goals->last->src_text_left_ind = src_text_left_ind;
-    intr_goals->last->tb_rules_reach_ind = tb_rules_reach_ind;
-    ++intr_goals->count;
+    interim_goals->last = &interim_goals->stack[interim_goals->count];
+    strcpy(interim_goals->last->sym_title, goal_title);
+    interim_goals->last->src_text_left_ind = src_text_left_ind;
+    interim_goals->last->tb_rules_reach_ind = tb_rules_reach_ind;
+    ++interim_goals->count;
 }
 
 /* Subroutine removes last goal from the stack of goals */
-void plcmp_goal_remove_last_interim(goals_interim_stack_t *restrict intr_goals)
+void plcmp_goal_remove_last_interim(
+    goals_interim_stack_t *restrict interim_goals)
 {
-    if (intr_goals->count)
+    if (interim_goals->count)
     {
-        memset(intr_goals->last, 0, sizeof(*intr_goals->last));
-        --intr_goals->count;
-        intr_goals->last = intr_goals->count ? 
-            &intr_goals->stack[intr_goals->count - 1] : NULL;
+        memset(interim_goals->last, 0, sizeof(*interim_goals->last));
+        --interim_goals->count;
+        interim_goals->last = interim_goals->count ? 
+            &interim_goals->stack[interim_goals->count - 1] : NULL;
     }
     else
     {
@@ -39,32 +40,33 @@ void plcmp_goal_remove_last_interim(goals_interim_stack_t *restrict intr_goals)
 }
 
 /* Subroutine adds a goal achieved into stack of goals achieved */
-void plcmp_goal_add_achieved(goals_achieved_stack_t *p_goals_achieved,
+void plcmp_goal_add_achieved(goals_achieved_stack_t *restrict goals_achieved,
                              char const *goal_achieved_title,
                              index_t src_text_beg_ind,
                              tb_rules_ind_t tb_rules_reach_ind,
                              index_t src_text_end_ind,
                              tb_rules_ind_t tb_rules_next_goal_ind)
 {
-    p_goals_achieved->last = &p_goals_achieved->stack[p_goals_achieved->count];
-    strcpy(p_goals_achieved->last->sym_title, goal_achieved_title);
-    p_goals_achieved->last->src_text_beg_ind = src_text_beg_ind;
-    p_goals_achieved->last->tb_rules_reach_ind = tb_rules_reach_ind;
-    p_goals_achieved->last->src_text_end_ind = src_text_end_ind;
-    p_goals_achieved->last->tb_rules_next_goal_ind = tb_rules_next_goal_ind;
-    ++p_goals_achieved->count;
+    goals_achieved->last = &goals_achieved->stack[goals_achieved->count];
+    strcpy(goals_achieved->last->sym_title, goal_achieved_title);
+    goals_achieved->last->src_text_beg_ind = src_text_beg_ind;
+    goals_achieved->last->tb_rules_reach_ind = tb_rules_reach_ind;
+    goals_achieved->last->src_text_end_ind = src_text_end_ind;
+    goals_achieved->last->tb_rules_next_goal_ind = tb_rules_next_goal_ind;
+    ++goals_achieved->count;
 }
 
 /* Subroutine removes last goal achieved from the stack of goals achieved */
-void plcmp_goal_remove_last_achieved(goals_achieved_stack_t *p_goals_achieved)
+void plcmp_goal_remove_last_achieved(
+    goals_achieved_stack_t *restrict goals_achieved)
 {
-    if (p_goals_achieved->count)
+    if (goals_achieved->count)
     {
 
-        memset(p_goals_achieved->last, 0, sizeof(*p_goals_achieved->last));
-        --p_goals_achieved->count;
-        p_goals_achieved->last = p_goals_achieved->count ? 
-            &p_goals_achieved->stack[p_goals_achieved->count - 1] : NULL;
+        memset(goals_achieved->last, 0, sizeof(*goals_achieved->last));
+        --goals_achieved->count;
+        goals_achieved->last = goals_achieved->count ? 
+            &goals_achieved->stack[goals_achieved->count - 1] : NULL;
     }
     else
     {
