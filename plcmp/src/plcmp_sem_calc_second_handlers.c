@@ -55,7 +55,6 @@ static void record_assembler_card(void)
 {
     memcpy(assembler_out_text[IASSTXT], &assembler_card, 80);
     ++IASSTXT;
-    clear_assembler_card();
 }
 
 /* Function translates 'long int' value written as string of ASCII-code
@@ -155,6 +154,7 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                             memcpy(assembler_card.OPERAC, "L", 1);
                         }
 
+                        clear_assembler_card();
                         strcpy(assembler_card.OPERAND, "RRAB,");
                         strcat(assembler_card.OPERAND, FORMT[0]);
                         assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
@@ -227,6 +227,7 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                                 return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR;
                         }
 
+                        clear_assembler_card();
                         strcpy(assembler_card.OPERAND, "RRAB,");
                         strcat(assembler_card.OPERAND, FORMT[IFORMT - 1]);
                         assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
@@ -330,6 +331,7 @@ enum plcmp_sem_calc_error_code_e SOEN(void const *param)
 
     /* Formation of the mnemonic machine operation 'BCR'
      * for returning to the caller */
+    clear_assembler_card();
     memcpy(assembler_card.OPERAC, "BCR", 3);
     memcpy(assembler_card.OPERAND, "15,14", 5);
     memcpy(assembler_card.COMM, "Exit from the program", 21);
@@ -343,6 +345,7 @@ enum plcmp_sem_calc_error_code_e SOEN(void const *param)
     {
         if (isalpha(SYM[i].name[0]))
         {
+            clear_assembler_card();
             int t_flag = 'P' != SYM[i].type;
             if (t_flag)
             {
@@ -385,6 +388,7 @@ enum plcmp_sem_calc_error_code_e SOEN(void const *param)
 
     /* Formation of 'EQU' pseudo operation
      * Definition of the number of RBASE register */
+    clear_assembler_card();
     memcpy(assembler_card.METKA, "RBASE", 5);
     memcpy(assembler_card.OPERAC, "EQU", 3);
     memcpy(assembler_card.OPERAND, "15", 2);
@@ -392,12 +396,14 @@ enum plcmp_sem_calc_error_code_e SOEN(void const *param)
 
     /* Formation of 'EQU' pseudo operation
      * Defininition of the number of RRAB register */
+    clear_assembler_card();
     memcpy(assembler_card.METKA, "RRAB", 4);
     memcpy(assembler_card.OPERAC, "EQU", 3);
     memcpy(assembler_card.OPERAND, "4", 1);
     record_assembler_card();
 
     /* Formation of 'END' pseudo operation */
+    clear_assembler_card();
     memcpy(assembler_card.OPERAC, "END", 3);
     strcpy(assembler_card.OPERAND, FORMT[1]);
     assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
@@ -419,6 +425,7 @@ enum plcmp_sem_calc_error_code_e SOPA(void const *param)
         if (!strcmp(SYM[i].name, FORMT[0]) &&
             strlen(SYM[i].name) == strlen(FORMT[0]))
         {
+            clear_assembler_card();
             switch (SYM[i].type)
             {
                 case 'B':
@@ -519,6 +526,7 @@ enum plcmp_sem_calc_error_code_e SOPR(void const *param)
     FORM(goal_achieved);
 
     /* Formation of pseudo operation 'START' */
+    clear_assembler_card();
     strcpy(assembler_card.METKA, FORMT[0]);
     assembler_card.METKA[strlen(assembler_card.METKA)] = ' ';
     memcpy(assembler_card.OPERAC, "START", 5);
@@ -527,12 +535,14 @@ enum plcmp_sem_calc_error_code_e SOPR(void const *param)
     record_assembler_card();
 
     /* Formation of mnemonic machine operation 'BALR' */
+    clear_assembler_card();
     memcpy(assembler_card.OPERAC, "BALR", 4 );
     memcpy(assembler_card.OPERAND, "RBASE,0", 7);
     memcpy(assembler_card.COMM, "Load base register", 18);
     record_assembler_card();
 
     /* Formation of pseudo operation 'USING' */
+    clear_assembler_card();
     memcpy(assembler_card.OPERAC, "USING", 5);
     memcpy(assembler_card.OPERAND, "*,RBASE", 7);
     memcpy(assembler_card.COMM, "Assign base register", 20);
