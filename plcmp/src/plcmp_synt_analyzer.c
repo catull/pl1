@@ -205,8 +205,6 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                                    goals_achieved->last->src_text_beg_ind,
                                    goals_achieved->last->tb_rules_ind);
 
-            L4:
-
             j = goals_achieved->last->tb_rules_next_goal_ind;
             plcmp_goal_remove_last_achieved(goals_achieved);
             goto L3;
@@ -225,7 +223,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             }
             else
             {
-                goto L4;
+                j = goals_achieved->last->tb_rules_next_goal_ind;
+                plcmp_goal_remove_last_achieved(goals_achieved);
+                goto L3;
             }
         }
     }
