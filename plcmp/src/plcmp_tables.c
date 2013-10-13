@@ -6,7 +6,7 @@
 /* Table of the syntax rules that is written in the form 
  * of recognition, grouped in "bushes" and represented 
  * as bidirectional list with alternate branching */
-synt_rule_t synt_rules_table[NSINT] = {
+synt_rule_t const synt_rules_table[NSINT] = {
     /*  __________ _________ _______ _______ ______
        |  NN      :    next : prev  :  node : alt  |
        |__________:_________:_______:_______:______| */
@@ -285,7 +285,7 @@ synt_rule_t synt_rules_table[NSINT] = {
 
 /* Table of inputs in "bushes" (roots) of the grammar rules.
  * This table contains root symbols type (terminal or non-terminal property) */
-input_sym_t input_syms_table[NVXOD] = {
+input_sym_t const input_syms_table[NVXOD] = {
 /*    ___________ ___________ _____ ______
      |    NN     |    symbol |input| type |
      |___________|___________|_____|______|                                  */
@@ -349,7 +349,7 @@ input_sym_t input_syms_table[NVXOD] = {
 };
 
 /* Adjacency matrix which will become reachability matrix afterward */
-char adj_reach_mtrx[NVXOD][NNETRM] = {
+bool_t adj_reach_mtrx[NVXOD][NNETRM] = {
 /*   __________ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___
     |       AVI:BUK:CIF:IDE:IPE:IPR:LIT:MAN:ODC:OEN:OPA:OPR:PRO:RZR:TEL:ZNK:STC|CON|
     |__________:___:___:___:___:___:___:___:___:___:___:___:___:___:___:___:___|___| */
