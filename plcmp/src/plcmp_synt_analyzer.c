@@ -104,28 +104,21 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     /* Create stack of interim goals */
     goals_interim = plcmp_goal_create_goals_interim_stack();
     /* Create stack of achieved goals */
-    *p_goals_achieved = plcmp_goal_create_goals_achieved_stack();
-    goals_achieved = *p_goals_achieved;
+    goals_achieved = plcmp_goal_create_goals_achieved_stack();
     /* Construct reachability matrix */
     plcmp_tables_build_reach_mtrx();
 
     /* Let's start */
     plcmp_goal_add_interim(goals_interim, "PRO", i, 999);
-    if (!adj_reach_mtrx[inputs_tb_ind(
-                            &compact_pl1_src_text[i], 1)]
+    if (!adj_reach_mtrx[inputs_tb_ind(&compact_pl1_src_text[i], 1)]
                        [inputs_tb_ind("PRO", 3)])
     {
-        plcmp_goal_destroy_goals_interim_stack(&goals_interim);
-
-        /* Prepare error data for return to main module */
         err_data.err_code = PLCMP_SYNT_ANALYZER_SYNTAX_ERROR;
-
         memcpy(err_data.src_text_part,
                &compact_pl1_src_text[i_max],
                PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
         err_data.src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN] = '\0';
-
-        goto quit;
+        goto error;
     }
 
     j = input_syms_table[inputs_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
@@ -170,9 +163,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
             if (streq(goals_interim->last->sym_title, "PRO"))
             {
-                /* Successful finish of the syntax analysis */
-                plcmp_goal_destroy_goals_interim_stack(&goals_interim);
-                goto quit;
+                goto success;
             }
 
             if (adj_reach_mtrx[inputs_tb_ind(goals_interim->last->sym_title, 3)]
@@ -274,15 +265,12 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     if (999 == j)
     {
-        plcmp_goal_destroy_goals_interim_stack(&goals_interim);
-
-        /* Prepare error data for return to main module */
         err_data.err_code = PLCMP_SYNT_ANALYZER_SYNTAX_ERROR;
-        
-        memcpy(err_data.src_text_part, &compact_pl1_src_text[i_max], PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
+        memcpy(err_data.src_text_part,
+               &compact_pl1_src_text[i_max], 
+               PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
         err_data.src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN] = '\0';
-
-        goto quit;
+        goto error;
     }
     else
     {
@@ -290,7 +278,12 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         goto L2;
     }
 
-    quit:
+    error:
+    plcmp_goal_destroy_goals_achieved_stack(&goals_achieved);
+
+    success:
+    plcmp_goal_destroy_goals_interim_stack(&goals_interim);
+    *p_goals_achieved = goals_achieved;
 
     return err_data;
 }
