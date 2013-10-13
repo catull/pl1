@@ -47,7 +47,7 @@ static inline char const* plcmp_main_messages_errmsg_by_errcode(
 
 /* Subroutine prints translation's result using main error data */
 static void plcmp_main_messages_print_translation_result(
-    plcmp_main_error_data_t const *err_data)
+    plcmp_main_error_data_t const *restrict err_data)
 {
     PLCMP_UTILS_ASSERT(err_data, "");
 
