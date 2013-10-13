@@ -55,17 +55,17 @@ void plcmp_tables_build_reach_mtrx(void)
 
 static inline int next_rule_ind(int j)
 {
-    return synt_rules_table[j].next;
+    return rules_tb[j].next;
 }
 
 static inline int prev_rule_ind(int j)
 {
-    return synt_rules_table[j].prev;
+    return rules_tb[j].prev;
 }
 
 static inline int alt_rule_ind(int j)
 {
-    return synt_rules_table[j].alt;
+    return rules_tb[j].alt;
 }
 
 /* Subroutine sets default values for syntax analyzer's error data structure */
@@ -113,7 +113,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         goto error;
     }
 
-    j = input_syms_table[inputs_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
+    j = inputs_tb[inputs_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
     j = next_rule_ind(j);
 
     L1:
@@ -125,9 +125,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         i_max = i;
     }
 
-    if (TERM == input_syms_table[inputs_tb_ind(synt_rules_table[j].sym_design, 3)].type)
+    if (TERM == inputs_tb[inputs_tb_ind(rules_tb[j].sym_design, 3)].type)
     {
-        if (compact_pl1_src_text[i] == synt_rules_table[j].sym_design[0])
+        if (compact_pl1_src_text[i] == rules_tb[j].sym_design[0])
         {
             j = next_rule_ind(j);
             goto L1;
@@ -139,11 +139,11 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         }
     }
 
-    if ('*' == synt_rules_table[next_rule_ind(j)].sym_design[0])
+    if ('*' == rules_tb[next_rule_ind(j)].sym_design[0])
     {
         --i;
 
-        if (streq(synt_rules_table[j].sym_design,
+        if (streq(rules_tb[j].sym_design,
                   goals_interim->last->sym_title))
         {
             plcmp_goal_add_achieved(goals_achieved,
@@ -161,7 +161,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             if (adj_reach_mtrx[inputs_tb_ind(goals_interim->last->sym_title, 3)]
                               [inputs_tb_ind(goals_interim->last->sym_title, 3)])
             {
-                j = input_syms_table[inputs_tb_ind(goals_interim->last->sym_title, 3)].tb_rules_ind;
+                j = inputs_tb[inputs_tb_ind(goals_interim->last->sym_title, 3)].tb_rules_ind;
                 j = next_rule_ind(j);
                 goto L1;
             }
@@ -173,32 +173,32 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             goto L1;
         }
 
-        if (!adj_reach_mtrx[inputs_tb_ind(synt_rules_table[j].sym_design, 3)]
+        if (!adj_reach_mtrx[inputs_tb_ind(rules_tb[j].sym_design, 3)]
                            [inputs_tb_ind(goals_interim->last->sym_title, 3)])
         {
             goto L2;
         }
 
         plcmp_goal_add_achieved(goals_achieved, 
-                                synt_rules_table[j].sym_design,
+                                rules_tb[j].sym_design,
                                 goals_interim->last->src_text_left_ind,
                                 0,
                                 i,
                                 j);
-        j = input_syms_table[inputs_tb_ind(synt_rules_table[j].sym_design, 3)].tb_rules_ind;
+        j = inputs_tb[inputs_tb_ind(rules_tb[j].sym_design, 3)].tb_rules_ind;
         j = next_rule_ind(j);
         goto L1;
     }
 
     if (!adj_reach_mtrx[inputs_tb_ind(&compact_pl1_src_text[i], 1)]
-                       [inputs_tb_ind(synt_rules_table[j].sym_design, 3)])
+                       [inputs_tb_ind(rules_tb[j].sym_design, 3)])
     {
         --i;
         goto L2;
     }
 
-    plcmp_goal_add_interim(goals_interim, synt_rules_table[j].sym_design, i, j);
-    j = input_syms_table[inputs_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
+    plcmp_goal_add_interim(goals_interim, rules_tb[j].sym_design, i, j);
+    j = inputs_tb[inputs_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
     j = next_rule_ind(j);
     goto L1;
 
@@ -212,7 +212,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     j = prev_rule_ind(j);
 
-    if (NON_TERM == input_syms_table[inputs_tb_ind(synt_rules_table[j].sym_design, 3)].type)
+    if (NON_TERM == inputs_tb[inputs_tb_ind(rules_tb[j].sym_design, 3)].type)
     {
         if (prev_rule_ind(j) > 0)
         {

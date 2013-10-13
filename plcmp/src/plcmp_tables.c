@@ -6,7 +6,7 @@
 /* Table of the syntax rules that is written in the form 
  * of recognition, grouped in "bushes" and represented 
  * as bidirectional list with alternate branching */
-rule_t const synt_rules_table[NSINT] = {
+rule_t const rules_tb[NSINT] = {
     /*  __________ _________ _______ _______ ______
        |  NN      :    next : prev  :  node : alt  |
        |__________:_________:_______:_______:______| */
@@ -285,7 +285,7 @@ rule_t const synt_rules_table[NSINT] = {
 
 /* Table of inputs in "bushes" (roots) of the grammar rules.
  * This table contains root symbols type (terminal or non-terminal property) */
-input_t const input_syms_table[NVXOD] = {
+input_t const inputs_tb[NVXOD] = {
 /*    ___________ ___________ _____ ______
      |    NN     |    symbol |input| type |
      |___________|___________|_____|______|                                  */
@@ -432,14 +432,14 @@ index_t inputs_tb_ind(char const *p_str_symbol, unsigned int symbol_str_len)
         unsigned int k = 0;
         /* Comparing each symbol each other */
         while((k != symbol_str_len) && 
-              (p_str_symbol[k] == input_syms_table[i].sym_title[k]))
+              (p_str_symbol[k] == inputs_tb[i].sym_title[k]))
         {
             ++k;
         }
         if ((k == symbol_str_len) &&
-            (input_syms_table[i].sym_title[k] == '\0' || input_syms_table[i].sym_title[k] == ' '))
+            (inputs_tb[i].sym_title[k] == '\0' || inputs_tb[i].sym_title[k] == ' '))
         {
-            /* We found necessary string with sought-for symbol in the input_syms_table-table */
+            /* We found necessary string with sought-for symbol in the inputs_tb-table */
             break;
         }
         continue;
