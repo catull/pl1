@@ -107,8 +107,6 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
     }
 }
 
-/* Subroutine constructs error message by 
- * error data of semantic calculator module */
 char* plcmp_sem_calc_errmsg_by_errdata(
     plcmp_sem_calc_error_data_t const *err_data,
     char errmsg[])
@@ -210,8 +208,6 @@ char* plcmp_sem_calc_errmsg_by_errdata(
     return errmsg;
 }
 
-/* Subroutine for semantic calculation of the achieved goals made by syntax analyzer 
- * and for generation output assembler file */
 struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
     char const p_asm_fp_name[],
     char const compact_pl1_src_text[],
@@ -254,7 +250,7 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
         int dst_index = 0;
         for (dst_index = 0; dst_index < p_goals_achieved->count; dst_index++)
         {
-            int hand_num = plcmp_tables_get_input_syms_tb_ind(p_goals_achieved->stack[dst_index].sym_title, 3);
+            int hand_num = inputs_tb_ind(p_goals_achieved->stack[dst_index].sym_title, 3);
             switch (hand_num + 1)
             {
                 /* PRO */

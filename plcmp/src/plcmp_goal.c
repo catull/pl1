@@ -6,11 +6,10 @@
 #include "plcmp_tables.h"
 #include "plcmp_utils.h"
 
-/* Subroutine adds a new goal into stack of goals */
 void plcmp_goal_add_interim(goals_interim_stack_t *restrict interim_goals,
                             char const *goal_title,
                             index_t src_text_left_ind,
-                            tb_rules_ind_t tb_rules_reach_ind)
+                            index_t tb_rules_reach_ind)
 {
     interim_goals->last = &interim_goals->stack[interim_goals->count];
     strcpy(interim_goals->last->sym_title, goal_title);
@@ -19,7 +18,6 @@ void plcmp_goal_add_interim(goals_interim_stack_t *restrict interim_goals,
     ++interim_goals->count;
 }
 
-/* Subroutine removes last goal from the stack of goals */
 void plcmp_goal_remove_last_interim(
     goals_interim_stack_t *restrict interim_goals)
 {
@@ -39,13 +37,12 @@ void plcmp_goal_remove_last_interim(
     }
 }
 
-/* Subroutine adds a goal achieved into stack of goals achieved */
 void plcmp_goal_add_achieved(goals_achieved_stack_t *restrict goals_achieved,
                              char const *goal_achieved_title,
                              index_t src_text_beg_ind,
-                             tb_rules_ind_t tb_rules_reach_ind,
+                             index_t tb_rules_reach_ind,
                              index_t src_text_end_ind,
-                             tb_rules_ind_t tb_rules_next_goal_ind)
+                             index_t tb_rules_next_goal_ind)
 {
     goals_achieved->last = &goals_achieved->stack[goals_achieved->count];
     strcpy(goals_achieved->last->sym_title, goal_achieved_title);
@@ -56,7 +53,6 @@ void plcmp_goal_add_achieved(goals_achieved_stack_t *restrict goals_achieved,
     ++goals_achieved->count;
 }
 
-/* Subroutine removes last goal achieved from the stack of goals achieved */
 void plcmp_goal_remove_last_achieved(
     goals_achieved_stack_t *restrict goals_achieved)
 {

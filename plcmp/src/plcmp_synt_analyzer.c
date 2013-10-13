@@ -8,8 +8,6 @@
 #include "plcmp_tables.h"
 #include "plcmp_utils.h"
 
-/* Subroutine constructs error message by 
- * error data of syntax analyzer module */
 char* plcmp_synt_analyzer_errmsg_by_errdata(
     plcmp_synt_analyzer_error_data_t const *err_data,
     char errmsg[])
@@ -32,6 +30,27 @@ char* plcmp_synt_analyzer_errmsg_by_errdata(
             break;
     }
     return errmsg;
+}
+
+void plcmp_tables_build_reach_mtrx(void)
+{
+    int i1 = 0;
+    for (; i1 < NNETRM; i1++)
+    {
+        int i2 = 0;
+        for (; i2 < NVXOD; i2++)
+        {
+            if (adj_reach_mtrx[i2][i1] && (i1 != i2))
+            {
+                int i3 = 0;
+                for (; i3 < NNETRM; i3++)
+                {
+                    adj_reach_mtrx[i2][i3] = 
+                        adj_reach_mtrx[i2][i3] || adj_reach_mtrx[i1][i3];
+                }
+            }
+        }
+    }
 }
 
 static inline int next_rule_ind(int j)
@@ -58,8 +77,6 @@ static inline void plcmp_synt_analyzer_set_default_err_data(
     err_data->err_code = PLCMP_SYNT_ANALYZER_SUCCESS;
 }
 
-/* Subroutine of syntax analyzer. 
- * It constructs parse tree and returns error data if it will be */
 struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     char const compact_pl1_src_text[],
     goals_achieved_stack_t **p_goals_achieved)
@@ -94,9 +111,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     /* Let's start */
     plcmp_goal_add_interim(goals_interim, "PRO", i, 999);
-    if (!adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(
+    if (!adj_reach_mtrx[inputs_tb_ind(
                             &compact_pl1_src_text[i], 1)]
-                       [plcmp_tables_get_input_syms_tb_ind("PRO", 3)])
+                       [inputs_tb_ind("PRO", 3)])
     {
         plcmp_goal_destroy_goals_interim_stack(&goals_interim);
 
@@ -111,7 +128,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         goto quit;
     }
 
-    j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
+    j = input_syms_table[inputs_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
     j = next_rule_ind(j);
 
     L1:
@@ -123,7 +140,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         i_max = i;
     }
 
-    if (TERM == input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].type)
+    if (TERM == input_syms_table[inputs_tb_ind(synt_rules_table[j].sym_design, 3)].type)
     {
         if (compact_pl1_src_text[i] == synt_rules_table[j].sym_design[0])
         {
@@ -158,10 +175,10 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                 goto quit;
             }
 
-            if (adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)]
-                              [plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)])
+            if (adj_reach_mtrx[inputs_tb_ind(goals_interim->last->sym_title, 3)]
+                              [inputs_tb_ind(goals_interim->last->sym_title, 3)])
             {
-                j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)].tb_rules_ind;
+                j = input_syms_table[inputs_tb_ind(goals_interim->last->sym_title, 3)].tb_rules_ind;
                 j = next_rule_ind(j);
                 goto L1;
             }
@@ -173,8 +190,8 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             goto L1;
         }
 
-        if (!adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)]
-                           [plcmp_tables_get_input_syms_tb_ind(goals_interim->last->sym_title, 3)])
+        if (!adj_reach_mtrx[inputs_tb_ind(synt_rules_table[j].sym_design, 3)]
+                           [inputs_tb_ind(goals_interim->last->sym_title, 3)])
         {
             goto L2;
         }
@@ -185,20 +202,20 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
                                 0,
                                 i,
                                 j);
-        j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].tb_rules_ind;
+        j = input_syms_table[inputs_tb_ind(synt_rules_table[j].sym_design, 3)].tb_rules_ind;
         j = next_rule_ind(j);
         goto L1;
     }
 
-    if (!adj_reach_mtrx[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)]
-                       [plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)])
+    if (!adj_reach_mtrx[inputs_tb_ind(&compact_pl1_src_text[i], 1)]
+                       [inputs_tb_ind(synt_rules_table[j].sym_design, 3)])
     {
         --i;
         goto L2;
     }
 
     plcmp_goal_add_interim(goals_interim, synt_rules_table[j].sym_design, i, j);
-    j = input_syms_table[plcmp_tables_get_input_syms_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
+    j = input_syms_table[inputs_tb_ind(&compact_pl1_src_text[i], 1)].tb_rules_ind;
     j = next_rule_ind(j);
     goto L1;
 
@@ -212,7 +229,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     j = prev_rule_ind(j);
 
-    if (NON_TERM == input_syms_table[plcmp_tables_get_input_syms_tb_ind(synt_rules_table[j].sym_design, 3)].type)
+    if (NON_TERM == input_syms_table[inputs_tb_ind(synt_rules_table[j].sym_design, 3)].type)
     {
         if (prev_rule_ind(j) > 0)
         {

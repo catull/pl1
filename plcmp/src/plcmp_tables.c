@@ -6,7 +6,7 @@
 /* Table of the syntax rules that is written in the form 
  * of recognition, grouped in "bushes" and represented 
  * as bidirectional list with alternate branching */
-synt_rule_t const synt_rules_table[NSINT] = {
+rule_t const synt_rules_table[NSINT] = {
     /*  __________ _________ _______ _______ ______
        |  NN      :    next : prev  :  node : alt  |
        |__________:_________:_______:_______:______| */
@@ -285,7 +285,7 @@ synt_rule_t const synt_rules_table[NSINT] = {
 
 /* Table of inputs in "bushes" (roots) of the grammar rules.
  * This table contains root symbols type (terminal or non-terminal property) */
-input_sym_t const input_syms_table[NVXOD] = {
+input_t const input_syms_table[NVXOD] = {
 /*    ___________ ___________ _____ ______
      |    NN     |    symbol |input| type |
      |___________|___________|_____|______|                                  */
@@ -424,18 +424,9 @@ bool_t adj_reach_mtrx[NVXOD][NNETRM] = {
     /*|____________________________________________________________________________| */
 };
 
-/* Function finds necessary string with sought-for symbol in the 'input_syms_table'-table 
- * and returns string-index of input_syms_table-table.
- * 
- * @param1: const char *p_str_symbol
- * C-string containing name of sought-for symbol
- *
- * @param2: unsigned int symbol_str_len
- * Length of the string of sought-for symbol
- */
-unsigned int plcmp_tables_get_input_syms_tb_ind(char const *p_str_symbol, unsigned int symbol_str_len)
+index_t inputs_tb_ind(char const *p_str_symbol, unsigned int symbol_str_len)
 {
-    unsigned int i;
+    index_t i;
     for (i = 0; i < NVXOD; i++)
     {
         unsigned int k = 0;
@@ -454,30 +445,5 @@ unsigned int plcmp_tables_get_input_syms_tb_ind(char const *p_str_symbol, unsign
         continue;
     }
 
-    return NVXOD == i ? -1 : i;
-}
-
-/* Subroutine constructs table of the
- * successors of the adjacency matrix
- * of the Uorshell's algorithm
- */
-void plcmp_tables_build_reach_mtrx(void)
-{
-    int i1 = 0;
-    for (; i1 < NNETRM; i1++)
-    {
-        int i2 = 0;
-        for (; i2 < NVXOD; i2++)
-        {
-            if (adj_reach_mtrx[i2][i1] && (i1 != i2))
-            {
-                int i3 = 0;
-                for (; i3 < NNETRM; i3++)
-                {
-                    adj_reach_mtrx[i2][i3] = 
-                        adj_reach_mtrx[i2][i3] || adj_reach_mtrx[i1][i3];
-                }
-            }
-        }
-    }
+    return NVXOD == i ? INCORRECT_INDEX : i;
 }

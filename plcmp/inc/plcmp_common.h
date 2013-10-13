@@ -32,4 +32,6 @@ typedef char sym_design_t[4];
 typedef unsigned int index_t;
 typedef _Bool bool_t;
 
+#define INCORRECT_INDEX (~(index_t)0)
+
 #endif

@@ -11,7 +11,7 @@
 typedef struct goal_interim_s {
     sym_title_t sym_title;
     index_t src_text_left_ind;
-    tb_rules_ind_t tb_rules_reach_ind;
+    index_t tb_rules_reach_ind;
 } goal_interim_t;
 
 /* */
@@ -25,9 +25,9 @@ typedef struct goals_interim_stack_s {
 typedef struct goal_achieved_s {
     sym_title_t sym_title;
     index_t src_text_beg_ind;
-    tb_rules_ind_t tb_rules_reach_ind;
+    index_t tb_rules_reach_ind;
     index_t src_text_end_ind;
-    tb_rules_ind_t tb_rules_next_goal_ind; 
+    index_t tb_rules_next_goal_ind; 
 } goal_achieved_t;
 
 /* */
@@ -83,7 +83,7 @@ static inline void plcmp_goal_destroy_goals_interim_stack(
 void plcmp_goal_add_interim(goals_interim_stack_t *restrict interim_goals,
                             char const *goal_title,
                             index_t src_text_left_ind,
-                            tb_rules_ind_t tb_rules_reach_ind);
+                            index_t tb_rules_reach_ind);
 
 /* Subroutine removes last goal from the stack of goals */
 void plcmp_goal_remove_last_interim(
@@ -93,9 +93,9 @@ void plcmp_goal_remove_last_interim(
 void plcmp_goal_add_achieved(goals_achieved_stack_t *restrict goals_achieved,
                              char const *goal_achieved_title,
                              index_t src_text_beg_ind,
-                             tb_rules_ind_t tb_rules_reach_ind,
+                             index_t tb_rules_reach_ind,
                              index_t src_text_end_ind,
-                             tb_rules_ind_t tb_rules_next_goal_ind);
+                             index_t tb_rules_next_goal_ind);
 
 /* Subroutine removes last goal achieved from the stack of goals achieved */
 void plcmp_goal_remove_last_achieved(
