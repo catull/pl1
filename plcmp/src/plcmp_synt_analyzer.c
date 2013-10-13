@@ -81,8 +81,6 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     char const compact_pl1_src_text[],
     goals_achieved_stack_t **p_goals_achieved)
 {
-    /* It's stack of interim goals
-     * Later stack will be normally created by function call */
     goals_interim_stack_t *goals_interim = NULL;
     goals_achieved_stack_t *goals_achieved = NULL;
     plcmp_synt_analyzer_error_data_t err_data;
@@ -97,15 +95,9 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     PLCMP_UTILS_ASSERT(p_goals_achieved, "");
 
-    /* Clear error data structure for later using 
-     * and set default successful value for error code */
     plcmp_synt_analyzer_set_default_err_data(&err_data);
-
-    /* Create stack of interim goals */
     goals_interim = plcmp_goal_create_goals_interim_stack();
-    /* Create stack of achieved goals */
     goals_achieved = plcmp_goal_create_goals_achieved_stack();
-    /* Construct reachability matrix */
     plcmp_tables_build_reach_mtrx();
 
     /* Let's start */
