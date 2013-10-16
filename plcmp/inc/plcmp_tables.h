@@ -80,7 +80,7 @@ extern sym_t const ascii_rel[];
 /* Table of the syntax rules that is written in the form 
  * of recognition, grouped in "bushes" and represented 
  * as bidirectional list with alternate branching */
-extern rule_t const rules[NSINT];
+extern rule_t const rules[];
 
 /* Table of inputs in "bushes" (roots) of the grammar rules.
  * This table contains root symbols type (terminal or non-terminal property) */
