@@ -4,53 +4,13 @@
 #include "plcmp_symbols.h"
 #include "plcmp_tables.h"
 
-sym_t const ascii_rel[] = {
-    ['A']    = SYM_A,
-    ['B']    = SYM_B,
-    ['C']    = SYM_C,
-    ['D']    = SYM_D,
-    ['E']    = SYM_E,
-    ['M']    = SYM_M,
-    ['P']    = SYM_P,
-    ['X']    = SYM_X,
-    ['0']    = SYM_0,
-    ['1']    = SYM_1,
-    ['2']    = SYM_2,
-    ['3']    = SYM_3,
-    ['4']    = SYM_4,
-    ['5']    = SYM_5,
-    ['6']    = SYM_6,
-    ['7']    = SYM_7,
-    ['8']    = SYM_8,
-    ['9']    = SYM_9,
-    ['+']    = SYM_PLUS,
-    ['-']    = SYM_MINUS,
-    [':']    = SYM_COLON,
-    ['+']    = SYM_PLUS,
-    ['I']    = SYM_I,
-    ['R']    = SYM_R,
-    ['N']    = SYM_N,
-    ['O']    = SYM_O,
-    ['T']    = SYM_T,
-    ['S']    = SYM_S,
-    ['(']    = SYM_LEFT_PARENTHESIS,
-    [')']    = SYM_RIGHT_PARENTHESIS,
-    [' ']    = SYM_SPACE,
-    [';']    = SYM_SEMICOLON,
-    ['L']    = SYM_L,
-    ['F']    = SYM_F,
-    ['=']    = SYM_ASSIGN,
-    ['H']    = SYM_H,
-    ['*']    = SYM_MUL,
-    ['\'']   = SYM_SINGLE_QUOTE,
-    ['!']    = SYM_EXCL_POINT
-};
+sym_t ascii_rel[ASCII_SYMBOLS_COUNT];
 
 rule_t const rules[] = {
     /*  __________ ___________________ ________________________________________ _________________________
        |  NN      :         next      :       prev      :          node         :          alt          |
        |__________:___________________:_________________:_______________________:_______________________| */
-    {/*.    0     .*/ INCORRECT_INDEX , INCORRECT_INDEX , SYM_WRONG_RULE        ,    INCORRECT_INDEX    },
+    {/*.    0     .*/ INCORRECT_INDEX , INCORRECT_INDEX , SYM_INCORRECT         ,    INCORRECT_INDEX    },
      /*                                                                                                  input with the symbol - 0      */
     {/*.    1     .*/     2           ,     0           , SYM_0                 ,    0                  },
     {/*.    2     .*/     3           ,     1           , SYM_CIF               ,    0                  },
@@ -465,3 +425,73 @@ enum sym_type_e type_of_sym(sym_t sym)
            sym < SYM_COUNT ? SYM_TERM : SYM_UNDEFINED_TYPE;
 }
 
+void plcmp_tables_build_reach_mtrx(void)
+{
+    int i1 = 0;
+    for (; i1 < SYM_NTERMS_COUNT; i1++)
+    {
+        int i2 = 0;
+        for (; i2 < SYM_COUNT; i2++)
+        {
+            if (adj_reach_mtrx[i2][i1] && (i1 != i2))
+            {
+                int i3 = 0;
+                for (; i3 < SYM_NTERMS_COUNT; i3++)
+                {
+                    adj_reach_mtrx[i2][i3] = 
+                        adj_reach_mtrx[i2][i3] || adj_reach_mtrx[i1][i3];
+                }
+            }
+        }
+    }
+}
+
+
+void plcmp_tables_init_ascii_relation(void)
+{
+    int i;
+    for (i = 0; i < ARRAY_SIZE(ascii_rel); i++)
+    {
+        ascii_rel[i] = -1;
+    }
+
+    ascii_rel['A']  = SYM_A;
+    ascii_rel['B']  = SYM_B;
+    ascii_rel['C']  = SYM_C;
+    ascii_rel['D']  = SYM_D;
+    ascii_rel['E']  = SYM_E;
+    ascii_rel['M']  = SYM_M;
+    ascii_rel['P']  = SYM_P;
+    ascii_rel['X']  = SYM_X;
+    ascii_rel['0']  = SYM_0;
+    ascii_rel['1']  = SYM_1;
+    ascii_rel['2']  = SYM_2;
+    ascii_rel['3']  = SYM_3;
+    ascii_rel['4']  = SYM_4;
+    ascii_rel['5']  = SYM_5;
+    ascii_rel['6']  = SYM_6;
+    ascii_rel['7']  = SYM_7;
+    ascii_rel['8']  = SYM_8;
+    ascii_rel['9']  = SYM_9;
+    ascii_rel['+']  = SYM_PLUS;
+    ascii_rel['-']  = SYM_MINUS;
+    ascii_rel[':']  = SYM_COLON;
+    ascii_rel['+']  = SYM_PLUS;
+    ascii_rel['I']  = SYM_I;
+    ascii_rel['R']  = SYM_R;
+    ascii_rel['N']  = SYM_N;
+    ascii_rel['O']  = SYM_O;
+    ascii_rel['T']  = SYM_T;
+    ascii_rel['S']  = SYM_S;
+    ascii_rel['(']  = SYM_LEFT_PARENTHESIS;
+    ascii_rel[')']  = SYM_RIGHT_PARENTHESIS;
+    ascii_rel[' ']  = SYM_SPACE;
+    ascii_rel[';']  = SYM_SEMICOLON;
+    ascii_rel['L']  = SYM_L;
+    ascii_rel['F']  = SYM_F;
+    ascii_rel['=']  = SYM_ASSIGN;
+    ascii_rel['H']  = SYM_H;
+    ascii_rel['*']  = SYM_MUL;
+    ascii_rel['\''] = SYM_SINGLE_QUOTE;
+    ascii_rel['!']  = SYM_EXCL_POINT;
+}

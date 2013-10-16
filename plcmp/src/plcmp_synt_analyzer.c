@@ -51,27 +51,6 @@ char* plcmp_synt_analyzer_errmsg_by_errdata(
     return errmsg;
 }
 
-void plcmp_tables_build_reach_mtrx(void)
-{
-    int i1 = 0;
-    for (; i1 < SYM_NTERMS_COUNT; i1++)
-    {
-        int i2 = 0;
-        for (; i2 < SYM_COUNT; i2++)
-        {
-            if (adj_reach_mtrx[i2][i1] && (i1 != i2))
-            {
-                int i3 = 0;
-                for (; i3 < SYM_NTERMS_COUNT; i3++)
-                {
-                    adj_reach_mtrx[i2][i3] = 
-                        adj_reach_mtrx[i2][i3] || adj_reach_mtrx[i1][i3];
-                }
-            }
-        }
-    }
-}
-
 typedef enum parser_state_e {
     PARSER_STATE_SUCCESSFUL_FINISH,
     PARSER_STATE_FAILURE_FINISH,
@@ -321,6 +300,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     g_goals_interim = plcmp_goal_create_goals_interim_stack();
     g_goals_achieved = plcmp_goal_create_goals_achieved_stack();
     plcmp_tables_build_reach_mtrx();
+    plcmp_tables_init_ascii_relation();
 
     /* Check reachability of goal "PRO" by current terminal symbol */
     if (!adj_reach_mtrx[ascii_rel[(int)g_p_src_text[csrc_ind]]][SYM_PRO])

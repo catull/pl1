@@ -70,8 +70,8 @@ typedef enum sym_e {
 #undef SYM_TERMS
 #define SYM_COUNT (SYM_EXCL_POINT + 1)
 #define SYM_TERMS_COUNT (SYM_COUNT - SYM_NTERMS_COUNT)
-#define SYM_END_RULE SYM_COUNT
-#define SYM_WRONG_RULE (SYM_END_RULE + 1)
+    SYM_END_RULE = SYM_COUNT,
+    SYM_INCORRECT = SYM_END_RULE + 1
 } sym_t;
 
 #undef SYM_X

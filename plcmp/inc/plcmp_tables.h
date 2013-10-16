@@ -7,6 +7,8 @@
 #include "plcmp_symbols.h"
 #include "plcmp_utils.h"
 
+#define ASCII_SYMBOLS_COUNT 256
+
 #define NO_INPUT 0
 typedef enum input_e {
     INPUT_SYM_AVI               = 164,
@@ -75,7 +77,7 @@ typedef struct rule_s {
 } rule_t;
 
 /* ASCII relation to symbols */
-extern sym_t const ascii_rel[];
+sym_t ascii_rel[ASCII_SYMBOLS_COUNT];
 
 /* Table of the syntax rules that is written in the form 
  * of recognition, grouped in "bushes" and represented 
@@ -89,6 +91,8 @@ extern input_t const inputs[SYM_COUNT];
 /* Adjacency matrix which will become reachability matrix afterward */
 extern bool_t adj_reach_mtrx[SYM_COUNT][SYM_NTERMS_COUNT];
 
+void plcmp_tables_build_reach_mtrx(void);
+void plcmp_tables_init_ascii_relation(void);
 enum sym_type_e type_of_sym(sym_t sym);
 
 #endif /* PLCMP_TABLES_H */
