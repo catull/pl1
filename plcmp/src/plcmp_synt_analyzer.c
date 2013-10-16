@@ -8,42 +8,14 @@
 #include "plcmp_tables.h"
 #include "plcmp_utils.h"
 
-#define SYM_NTERM_X(s) #s,
-#define SYM_NTERMS_TB                   \
-    SYM_NTERM_X(AVI)                  \
-    SYM_NTERM_X(BUK)                  \
-    SYM_NTERM_X(CIF)                  \
-    SYM_NTERM_X(IDE)                  \
-    SYM_NTERM_X(IPE)                  \
-    SYM_NTERM_X(IPR)                  \
-    SYM_NTERM_X(LIT)                  \
-    SYM_NTERM_X(MAN)                  \
-    SYM_NTERM_X(ODC)                  \
-    SYM_NTERM_X(OEN)                  \
-    SYM_NTERM_X(OPA)                  \
-    SYM_NTERM_X(OPR)                  \
-    SYM_NTERM_X(PRO)                  \
-    SYM_NTERM_X(RZR)                  \
-    SYM_NTERM_X(TEL)                  \
-    SYM_NTERM_X(ZNK)                  \
-    SYM_NTERM_X(STC)                  \
-    SYM_NTERM_X(CON)
-
-static const char *syms[] = {
-    SYM_NTERMS_TB
-};
-
-#undef SYM_NTERMS_TB
-#undef SYM_NTERM_X
-
 static char const *g_p_src_text;
 /* Current index in the compact text */
-static int csrc_ind = 0;
+static int csrc_ind;
 /* Current index in the table of grammar rules */
-static int crl_ind = 0;
+static int crl_ind;
 /* Maximum index of processed compact source text 
  * It is necessary for sending part of source text if error will occur */
-static int src_indmax = 0;
+static int src_indmax;
 
 static goals_interim_stack_t *g_goals_interim;
 static goals_achieved_stack_t *g_goals_achieved;
