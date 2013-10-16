@@ -11,11 +11,6 @@
 
 #define PLCMP_UTILS_ASSERT(condition) assert((condition))
 
-/* Macro asserts the condition 
- *
- * @param:
- * 'condition' has any arithmetic or logic type 
- */
 #define PLCMP_UTILS_ASSERT_MSG(condition, format, ...)                         \
     do {                                                                       \
         if (!(condition))                                                      \
@@ -25,12 +20,6 @@
         }                                                                      \
     } while (0)
 
-/*
- * Macro allocates memory
- *
- * @param1:
- * 'pointer' has any pointer type
- */
 #define PLCMP_UTILS_MALLOC_MEM(pointer, size)                                  \
     ({                                                                         \
         (pointer) = malloc((size));                                            \
@@ -45,16 +34,6 @@
         (pointer);                                                             \
     })
 
-/*
- * Macro allocates memory and sets to zero
- *
- * @param1:
- * 'pointer' has any pointer type
- * @param2:
- * 'number_of_elements' has 'size_t' type
- * @param3:
- * 'size_of_element' has 'size_t' type
- */
 #define PLCMP_UTILS_CALLOC_MEM(pointer,                                        \
                                number_of_elements,                             \
                                size_of_element)                                \
@@ -73,16 +52,6 @@
         (pointer);                                                             \
     })
 
-
-/*
- * Macro deallocates earlier allocated memory
- *
- * @param1:
- * 'pointer' has any pointer type
- *
- * @param2:
- * 'what' has 'char*' type
- */
 #define PLCMP_UTILS_RELEASE_MEM(pointer)                                       \
     do {                                                                       \
         if ((pointer))                                                         \
