@@ -24,7 +24,7 @@ enum plcmp_sem_calc_error_code_e AVI(int entry, void const *param)
             errcode = SAVI(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -49,7 +49,7 @@ enum plcmp_sem_calc_error_code_e BUK(int entry, void const *param)
             errcode = SBUK(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -74,7 +74,7 @@ enum plcmp_sem_calc_error_code_e CIF(int entry, void const *param)
             errcode = SCIF(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -99,7 +99,7 @@ enum plcmp_sem_calc_error_code_e IDE(int entry, void const *param)
             errcode = SIDE(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -123,7 +123,7 @@ enum plcmp_sem_calc_error_code_e IPE(int entry, void const *param)
             errcode = SIPE(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -148,7 +148,7 @@ enum plcmp_sem_calc_error_code_e IPR(int entry, void const *param)
             errcode = SIPR(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -173,7 +173,7 @@ enum plcmp_sem_calc_error_code_e LIT(int entry, void const *param)
             errcode = SLIT(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -198,7 +198,7 @@ enum plcmp_sem_calc_error_code_e MAN(int entry, void const *param)
             errcode = SMAN(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -223,7 +223,7 @@ enum plcmp_sem_calc_error_code_e ODC(int entry, void const *param)
             errcode = SODC(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -248,7 +248,7 @@ enum plcmp_sem_calc_error_code_e OEN(int entry, void const *param)
             errcode = SOEN(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -273,7 +273,7 @@ enum plcmp_sem_calc_error_code_e OPA(int entry, void const *param)
             errcode = SOPA(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -298,7 +298,7 @@ enum plcmp_sem_calc_error_code_e OPR(int entry, void const *param)
             errcode = SOPR(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -323,7 +323,7 @@ enum plcmp_sem_calc_error_code_e PRO(int entry, void const *param)
             errcode = SPRO(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -348,7 +348,7 @@ enum plcmp_sem_calc_error_code_e RZR(int entry, void const *param)
             errcode = SRZR(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -374,7 +374,7 @@ enum plcmp_sem_calc_error_code_e TEL(int entry, void const *param)
             errcode = STEL(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -399,7 +399,7 @@ enum plcmp_sem_calc_error_code_e ZNK(int entry, void const *param)
             errcode = SZNK(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -424,7 +424,7 @@ enum plcmp_sem_calc_error_code_e STC(int entry, void const *param)
             errcode = SSTC(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 
@@ -449,7 +449,7 @@ enum plcmp_sem_calc_error_code_e CON(int entry, void const *param)
             errcode = SCON(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0, "");
+            PLCMP_UTILS_ASSERT(0);
             break;
     }
 

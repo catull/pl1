@@ -47,9 +47,9 @@ static inline char const* plcmp_main_messages_errmsg_by_errcode(
 
 /* Subroutine prints translation's result using main error data */
 static void plcmp_main_messages_print_translation_result(
-    plcmp_main_error_data_t const *restrict err_data)
+    plcmp_main_error_data_t const *err_data)
 {
-    PLCMP_UTILS_ASSERT(err_data, "");
+    PLCMP_UTILS_ASSERT(err_data);
 
     if (PLCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data->main_err_code)
     {
@@ -142,7 +142,7 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(
 static inline void plcmp_main_set_default_err_data(
     plcmp_main_error_data_t *err_data)
 {
-    PLCMP_UTILS_ASSERT(err_data, "");
+    PLCMP_UTILS_ASSERT(err_data);
     /* Clear error data structure and set default 
      * successful parameters before modules call */
     memset(err_data, 0, sizeof(plcmp_main_error_data_t));
@@ -215,10 +215,10 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
         goto error_sem_calculator;
     }
 
-    error_synt_analyzer:
     error_sem_calculator:
     plcmp_goal_destroy_goals_achieved_stack(&goals_achieved);
 
+    error_synt_analyzer:
     error_lex_analyzer:
     return err_data;
 }

@@ -11,12 +11,8 @@
 #define NCEL 20
 /* The limited size of the stack of the goals achieved */
 #define NDST 500
-/* The limited size of the table of inputs */
-#define NVXOD 56
 /* The limited size of the string of compact text */
 #define NSTROKA 200
-/* The limited size of the list of non-terminals */
-#define NNETRM 18
 /* The limited size of the output text */
 #define MAXLTXT 50
 /* The limited size of formatted interpreted fragment of the source text */
@@ -27,8 +23,6 @@
  * the source text (80 symbols +1 symbol for endline)*/
 #define LINELEN 81
 
-typedef char sym_title_t[4];
-typedef char sym_design_t[4];
 typedef unsigned int index_t;
 typedef _Bool bool_t;
 

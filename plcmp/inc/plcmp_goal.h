@@ -9,9 +9,9 @@
 
 /* Structure for the stack of goals */
 typedef struct goal_interim_s {
-    sym_title_t sym_title;
+    sym_t sym;
     index_t src_text_left_ind;
-    index_t tb_rules_reach_ind;
+    index_t rules_saved_ind;
 } goal_interim_t;
 
 /* */
@@ -23,11 +23,11 @@ typedef struct goals_interim_stack_s {
 
 /* Structure for the stack of goals achieved */
 typedef struct goal_achieved_s {
-    sym_title_t sym_title;
+    sym_t sym;
     index_t src_text_beg_ind;
-    index_t tb_rules_reach_ind;
+    index_t rules_saved_ind;
     index_t src_text_end_ind;
-    index_t tb_rules_next_goal_ind; 
+    index_t rules_reach_goal_ind; 
 } goal_achieved_t;
 
 /* */
@@ -53,8 +53,7 @@ static inline goals_achieved_stack_t*
 static inline void plcmp_goal_destroy_goals_achieved_stack(
     goals_achieved_stack_t **goals_achieved)
 {
-    PLCMP_UTILS_ASSERT(NULL != goals_achieved && NULL != *goals_achieved,
-                       "Can't destroy goals achieved stack");
+    PLCMP_UTILS_ASSERT(NULL != goals_achieved && NULL != *goals_achieved);
     PLCMP_UTILS_RELEASE_MEM(*goals_achieved);
 }
 
@@ -74,31 +73,30 @@ static inline goals_interim_stack_t*
 static inline void plcmp_goal_destroy_goals_interim_stack(
     goals_interim_stack_t **goals)
 {
-    PLCMP_UTILS_ASSERT(NULL != goals && NULL != *goals,
-                       "Can't destroy goals achieved stack");
+    PLCMP_UTILS_ASSERT(NULL != goals && NULL != *goals);
     PLCMP_UTILS_RELEASE_MEM(*goals);
 }
 
 /* Subroutine adds a new goal into stack of goals */
-void plcmp_goal_add_interim(goals_interim_stack_t *restrict interim_goals,
-                            char const *goal_title,
+void plcmp_goal_add_interim(goals_interim_stack_t *interim_goals,
+                            sym_t sym,
                             index_t src_text_left_ind,
-                            index_t tb_rules_reach_ind);
+                            index_t rules_saved_ind);
 
 /* Subroutine removes last goal from the stack of goals */
 void plcmp_goal_remove_last_interim(
-    goals_interim_stack_t *restrict interim_goals);
+    goals_interim_stack_t *interim_goals);
 
 /* Subroutine adds a goal achieved into stack of goals achieved */
-void plcmp_goal_add_achieved(goals_achieved_stack_t *restrict goals_achieved,
-                             char const *goal_achieved_title,
+void plcmp_goal_add_achieved(goals_achieved_stack_t *goals_achieved,
+                             sym_t sym,
                              index_t src_text_beg_ind,
-                             index_t tb_rules_reach_ind,
+                             index_t rules_saved_ind,
                              index_t src_text_end_ind,
-                             index_t tb_rules_next_goal_ind);
+                             index_t rules_reach_goal_ind);
 
 /* Subroutine removes last goal achieved from the stack of goals achieved */
 void plcmp_goal_remove_last_achieved(
-    goals_achieved_stack_t *restrict goals_achieved);
+    goals_achieved_stack_t *goals_achieved);
 
 #endif /* PLCMP_GOAL_H */

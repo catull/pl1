@@ -8,6 +8,7 @@
 #include "plcmp_goal.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_sem_calc_handlers.h"
+#include "plcmp_symbols.h"
 #include "plcmp_tables.h"
 
 /* This array of structures is the table of labels' names of variables
@@ -111,7 +112,7 @@ char* plcmp_sem_calc_errmsg_by_errdata(
     plcmp_sem_calc_error_data_t const *err_data,
     char errmsg[])
 {
-    PLCMP_UTILS_ASSERT(err_data && errmsg, "");
+    PLCMP_UTILS_ASSERT(err_data && errmsg);
 
     switch (err_data->err_code)
     {
@@ -223,7 +224,7 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
     memset(&err_data, 0, sizeof(plcmp_sem_calc_error_data_t));
     err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS;
 
-    plcmp_sem_calc_handler_t *handler[NNETRM] = {
+    plcmp_sem_calc_handler_t *handler[SYM_NTERMS_COUNT] = {
         /*    1  */ AVI,
         /*    2  */ BUK,
         /*    3  */ CIF,
@@ -247,10 +248,10 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
     /* First and second phases of semantic calculation */
     for (sem_calc_phase = 1; sem_calc_phase < 3; sem_calc_phase++)
     {
-        int dst_index = 0;
+        unsigned int dst_index = 0;
         for (dst_index = 0; dst_index < p_goals_achieved->count; dst_index++)
         {
-            int hand_num = inputs_tb_ind(p_goals_achieved->stack[dst_index].sym_title, 3);
+            index_t hand_num = p_goals_achieved->stack[dst_index].sym;
             switch (hand_num + 1)
             {
                 /* PRO */
@@ -270,10 +271,11 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
                  * Prepare and send error data to the caller 
                  */
                 cook_error_data(&err_data, p_goals_achieved->stack[dst_index]);
-                return err_data;
+                goto error;
             }
         }
     }
 
+    error:
     return err_data;
 }

@@ -10,7 +10,8 @@
 /* Enumerate defines error codes of syntax analyzer module */
 typedef enum plcmp_synt_analyzer_error_code_e {
     PLCMP_SYNT_ANALYZER_SUCCESS = 0,
-    PLCMP_SYNT_ANALYZER_SYNTAX_ERROR = 1
+    PLCMP_SYNT_ANALYZER_SYNTAX_ERROR,
+    PLCMP_SYNT_ANALYZER_WRONG_STATE
 } plcmp_synt_analyzer_error_code_t;
 
 /* Structure defines content of the error data of syntax analyzer module */
