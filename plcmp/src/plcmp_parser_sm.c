@@ -262,9 +262,6 @@ enum plcmp_parser_sm_error_code_e plcmp_parser_sm_run(void)
     do {
         switch (next_state)
         {
-            case PARSER_STATE_SUCCESSFUL_FINISH:
-                err_code = PLCMP_PARSER_SM_SUCCESS;
-                break;
             case PARSER_STATE_GO_NEXT:
                 next_state = go_next();
                 break;
@@ -285,6 +282,9 @@ enum plcmp_parser_sm_error_code_e plcmp_parser_sm_run(void)
                 break;
             case PARSER_STATE_ADD_ACHIEVED_LAST_INTERIM_GOAL:
                 next_state = go_add_achieved_last_interim_goal();
+                break;
+            case PARSER_STATE_SUCCESSFUL_FINISH:
+                err_code = PLCMP_PARSER_SM_SUCCESS;
                 break;
             /* Failure */
             case PARSER_STATE_SYNTAX_ANALYSIS_ERROR:
