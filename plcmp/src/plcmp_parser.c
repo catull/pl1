@@ -22,7 +22,6 @@ static struct plcmp_parser_error_data_s plcmp_parser_form_err_data(
             err_data.err_code = PLCMP_PARSER_SYNTAX_ERROR;
             break;
         case PLCMP_PARSER_SM_WRONG_STATE_ERROR:
-        case PLCMP_PARSER_SM_UNKNOWN_STATE_ERROR:
         case PLCMP_PARSER_SM_UNITIALIZED_ESSENTIAL_PARAMS_ERROR:
             err_data.err_code = PLCMP_PARSER_INTERNAL_ERROR;
             break;
