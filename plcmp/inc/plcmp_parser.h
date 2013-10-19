@@ -11,7 +11,7 @@
 typedef enum plcmp_parser_error_code_e {
     PLCMP_PARSER_SUCCESS = 0,
     PLCMP_PARSER_SYNTAX_ERROR,
-    PLCMP_PARSER_WRONG_STATE
+    PLCMP_PARSER_INTERNAL_ERROR
 } plcmp_parser_error_code_t;
 
 /* Structure defines content of the error data of syntax analyzer module */
@@ -22,8 +22,9 @@ typedef struct plcmp_parser_error_data_s {
 
 /* Subroutine constructs error message 
  * by error data of syntax analyzer module */
-char* plcmp_parser_errmsg_by_errdata(plcmp_parser_error_data_t const *err_data,
-                                     char errmsg[]);
+char const* plcmp_parser_errmsg_by_errdata(
+    plcmp_parser_error_data_t const *err_data,
+    char errmsg[]);
 
 /* Subroutine of syntax analyzer. 
  * It constructs parse tree and returns error data if it will be */

@@ -139,19 +139,20 @@ static enum plcmp_main_error_code_e plcmp_main_read_pl1_file(
 }
 
 /* Subroutine sets default values for main error data structure */ 
-static inline void plcmp_main_set_default_err_data(
-    plcmp_main_error_data_t *err_data)
+static inline struct plcmp_main_error_data_s
+    plcmp_main_set_default_err_data(void)
 {
-    PLCMP_UTILS_ASSERT(err_data);
+    plcmp_main_error_data_t err_data;
     /* Clear error data structure and set default 
      * successful parameters before modules call */
-    memset(err_data, 0, sizeof(plcmp_main_error_data_t));
-    *err_data = (plcmp_main_error_data_t){ 
+    memset(&err_data, 0, sizeof(err_data));
+    err_data = (plcmp_main_error_data_t){ 
         .main_err_code = PLCMP_MAIN_SUCCESS,
         .lexer_err_data.err_code = PLCMP_LEXER_SUCCESS,
         .parser_err_data.err_code = PLCMP_PARSER_SUCCESS,
         .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
     };
+    return err_data;
 }
 
 /* Subroutine processes source PL1-text by calling 
@@ -166,9 +167,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     char compact_pl1_src_text[NSTROKA] = { '\0' };
     /* Stack of goals achieved */
     goals_achieved_stack_t *goals_achieved = NULL;
-    plcmp_main_error_data_t err_data;
-
-    plcmp_main_set_default_err_data(&err_data);
+    plcmp_main_error_data_t err_data = plcmp_main_set_default_err_data();
 
     /* Lexical analysis of the source text */
     err_data.lexer_err_data =
@@ -224,8 +223,8 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
 }
 
 /* This program organizes the sequential processing of the source text:
- * - the lexical analyzer
- * - the syntax analyzer
+ * - the lexical analyzer (lexer)
+ * - the syntax analyzer (parser)
  * - the semantic calculator 
  * Successful result of this PL1 high level compiler is '.ass' assembler file
  * Unsuccessful result is an error message 
@@ -246,9 +245,7 @@ int main(int const argc, char const *argv[])
     char *p_pl1_fp_name = NULL, *p_asm_fp_name = NULL;
     /* Length of the PL1 file path string */
     size_t pl1_fp_len = 0;
-    plcmp_main_error_data_t err_data;
-
-    plcmp_main_set_default_err_data(&err_data);
+    plcmp_main_error_data_t err_data = plcmp_main_set_default_err_data();
 
     /* Current program must contains one real parameter */
     if (argc != 2)
