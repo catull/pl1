@@ -18,9 +18,8 @@ typedef struct plcmp_lexer_error_data_s {
 
 /* Subroutine constructs error message 
  * by error code of lexical analyzer module */
-char* plcmp_lexer_errmsg_by_errdata(
-    plcmp_lexer_error_data_t const *err_data,
-    char errmsg[]);
+char* plcmp_lexer_errmsg_by_errdata(plcmp_lexer_error_data_t const *err_data,
+                                    char errmsg[]);
 
 /* Subroutine of primitive lexical analyzer 
  * It compresses the source text by removing 

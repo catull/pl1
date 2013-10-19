@@ -50,9 +50,8 @@ static int symbol_into_list(char const list[], char sym)
     return 0;
 }
 
-char* plcmp_lexer_errmsg_by_errdata(
-    plcmp_lexer_error_data_t const *err_data,
-    char errmsg[])
+char* plcmp_lexer_errmsg_by_errdata(plcmp_lexer_error_data_t const *err_data,
+                                    char errmsg[])
 {
     switch (err_data->err_code)
     {

@@ -20,9 +20,8 @@ static int src_indmax;
 static goals_interim_stack_t *g_goals_interim;
 static goals_achieved_stack_t *g_goals_achieved;
 
-char* plcmp_parser_errmsg_by_errdata(
-    plcmp_parser_error_data_t const *err_data,
-    char errmsg[])
+char* plcmp_parser_errmsg_by_errdata(plcmp_parser_error_data_t const *err_data,
+                                     char errmsg[])
 {
     switch (err_data->err_code)
     {
@@ -72,62 +71,59 @@ static enum parser_state_e go_next(void)
 
 static enum parser_state_e go_forward(void)
 {
-    while (1)
+    ++csrc_ind;
+
+    if (csrc_ind > src_indmax)
     {
-        ++csrc_ind;
+        src_indmax = csrc_ind;
+    }
 
-        if (csrc_ind > src_indmax)
+    if (SYM_NON_TERM == type_of_sym(rules[crl_ind].sym))
+    {
+        if (SYM_END_RULE == rules[rules[crl_ind].next].sym)
         {
-            src_indmax = csrc_ind;
-        }
-
-        if (SYM_NON_TERM == type_of_sym(rules[crl_ind].sym))
-        {
-            if (SYM_END_RULE == rules[rules[crl_ind].next].sym)
+            --csrc_ind;
+            if (rules[crl_ind].sym == g_goals_interim->last->sym)
             {
-                --csrc_ind;
-                if (rules[crl_ind].sym == g_goals_interim->last->sym)
-                {
-                    return PARSER_STATE_ADD_ACHIEVED_LAST_INTERIM_GOAL;
-                }
-                else if (adj_reach_mtrx[rules[crl_ind].sym]
-                                       [g_goals_interim->last->sym])
-                {
-                    return PARSER_STATE_ADD_ACHIEVED_GOAL;
-                }
-                else
-                {
-                    return rules[crl_ind].alt ? PARSER_STATE_GO_ALTERNATE
-                                              : PARSER_STATE_GO_PREV;
-                }
+                return PARSER_STATE_ADD_ACHIEVED_LAST_INTERIM_GOAL;
             }
-            else if (adj_reach_mtrx[ascii_rel[(int)g_p_src_text[csrc_ind]]]
-                                   [rules[crl_ind].sym])
+            else if (adj_reach_mtrx[rules[crl_ind].sym]
+                                   [g_goals_interim->last->sym])
             {
-                plcmp_goal_add_interim(g_goals_interim,
-                                       rules[crl_ind].sym,
-                                       csrc_ind,
-                                       crl_ind);
-                crl_ind = inputs[ascii_rel[(int)g_p_src_text[csrc_ind]]];
-                return PARSER_STATE_GO_NEXT;
+                return PARSER_STATE_ADD_ACHIEVED_GOAL;
             }
             else
             {
-                --csrc_ind;
                 return rules[crl_ind].alt ? PARSER_STATE_GO_ALTERNATE
                                           : PARSER_STATE_GO_PREV;
             }
-        } 
-        else if (ascii_rel[(int)g_p_src_text[csrc_ind]] != rules[crl_ind].sym)
+        }
+        else if (adj_reach_mtrx[ascii_rel[(int)g_p_src_text[csrc_ind]]]
+                               [rules[crl_ind].sym])
+        {
+            plcmp_goal_add_interim(g_goals_interim,
+                                   rules[crl_ind].sym,
+                                   csrc_ind,
+                                   crl_ind);
+            crl_ind = inputs[ascii_rel[(int)g_p_src_text[csrc_ind]]];
+            return PARSER_STATE_GO_NEXT;
+        }
+        else
         {
             --csrc_ind;
             return rules[crl_ind].alt ? PARSER_STATE_GO_ALTERNATE
                                       : PARSER_STATE_GO_PREV;
         }
-        else
-        {
-            return PARSER_STATE_GO_NEXT;
-        }
+    } 
+    else if (ascii_rel[(int)g_p_src_text[csrc_ind]] != rules[crl_ind].sym)
+    {
+        --csrc_ind;
+        return rules[crl_ind].alt ? PARSER_STATE_GO_ALTERNATE
+                                  : PARSER_STATE_GO_PREV;
+    }
+    else
+    {
+        return PARSER_STATE_GO_NEXT;
     }
 }
 
@@ -139,93 +135,67 @@ static enum parser_state_e go_alternate(void)
 
 static enum parser_state_e go_prev(void)
 {
-    while (1)
+    crl_ind = rules[crl_ind].prev;
+
+    if (SYM_NON_TERM != type_of_sym(rules[crl_ind].sym))
     {
-        crl_ind = rules[crl_ind].prev;
-        if (SYM_NON_TERM != type_of_sym(rules[crl_ind].sym))
+        if (rules[crl_ind].prev > 0)
         {
-            if (rules[crl_ind].prev > 0)
+            --csrc_ind;
+            return rules[crl_ind].alt ? PARSER_STATE_GO_ALTERNATE :
+                                        PARSER_STATE_GO_PREV;
+        }
+        else
+        {
+            crl_ind = g_goals_interim->last->rules_saved_ind;
+            plcmp_goal_remove_last_interim(g_goals_interim);
+            if (999 == crl_ind)
             {
-                --csrc_ind;
-                if (rules[crl_ind].alt)
-                {
-                    return PARSER_STATE_GO_ALTERNATE;
-                }
-                else
-                {
-                    continue;
-                }
+                return PARSER_STATE_SYNTAX_ANALYSIS_ERROR;
             }
             else
             {
+                --csrc_ind;
+                return rules[crl_ind].alt ? PARSER_STATE_GO_ALTERNATE :
+                                            PARSER_STATE_GO_PREV;
+            }
+        }
+    }
+    else
+    {
+        if (rules[crl_ind].prev > 0)
+        {
+            plcmp_goal_add_interim(g_goals_interim,
+                                   g_goals_achieved->last->sym,
+                                   g_goals_achieved->last->src_text_beg_ind,
+                                   g_goals_achieved->last->rules_saved_ind);
+            crl_ind = g_goals_achieved->last->rules_reach_goal_ind;
+            plcmp_goal_remove_last_achieved(g_goals_achieved);
+
+            return rules[crl_ind].alt ? PARSER_STATE_GO_ALTERNATE :
+                                            PARSER_STATE_GO_PREV;
+        }
+        else if (!rules[crl_ind].prev)
+        {
+            if (g_goals_interim->last->sym == g_goals_achieved->last->sym)
+            {
                 crl_ind = g_goals_interim->last->rules_saved_ind;
                 plcmp_goal_remove_last_interim(g_goals_interim);
-                if (999 == crl_ind)
-                {
-                    return PARSER_STATE_SYNTAX_ANALYSIS_ERROR;
-                }
-                else
-                {
-                    --csrc_ind;
-                    if (rules[crl_ind].alt)
-                    {
-                        return PARSER_STATE_GO_ALTERNATE;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
+                return PARSER_STATE_GO_NEXT;
+            }
+            else
+            {
+                crl_ind = g_goals_achieved->last->rules_reach_goal_ind;
+                plcmp_goal_remove_last_achieved(g_goals_achieved);
+
+                return rules[crl_ind].alt ? PARSER_STATE_GO_ALTERNATE :
+                                            PARSER_STATE_GO_PREV;
             }
         }
         else
         {
-            if (rules[crl_ind].prev > 0)
-            {
-                plcmp_goal_add_interim(g_goals_interim,
-                                       g_goals_achieved->last->sym,
-                                       g_goals_achieved->last->src_text_beg_ind,
-                                       g_goals_achieved->last->rules_saved_ind);
-                crl_ind = g_goals_achieved->last->rules_reach_goal_ind;
-                plcmp_goal_remove_last_achieved(g_goals_achieved);
-
-                if (rules[crl_ind].alt)
-                {
-                    return PARSER_STATE_GO_ALTERNATE;
-                }
-                else
-                {
-                    continue;
-                }
-            }
-            else if (!rules[crl_ind].prev)
-            {
-                if (g_goals_interim->last->sym == g_goals_achieved->last->sym)
-                {
-                    crl_ind = g_goals_interim->last->rules_saved_ind;
-                    plcmp_goal_remove_last_interim(g_goals_interim);
-                    return PARSER_STATE_GO_NEXT;
-                }
-                else
-                {
-                    crl_ind = g_goals_achieved->last->rules_reach_goal_ind;
-                    plcmp_goal_remove_last_achieved(g_goals_achieved);
-
-                    if (rules[crl_ind].alt)
-                    {
-                        return PARSER_STATE_GO_ALTERNATE;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-            }
-            else
-            {
-                /* TODO */
-                PLCMP_UTILS_ASSERT(0);
-            }
+            /* TODO */
+            PLCMP_UTILS_ASSERT(0);
         }
     }
 }

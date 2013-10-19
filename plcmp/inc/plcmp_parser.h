@@ -22,9 +22,8 @@ typedef struct plcmp_parser_error_data_s {
 
 /* Subroutine constructs error message 
  * by error data of syntax analyzer module */
-char* plcmp_parser_errmsg_by_errdata(
-    plcmp_parser_error_data_t const *err_data,
-    char errmsg[]);
+char* plcmp_parser_errmsg_by_errdata(plcmp_parser_error_data_t const *err_data,
+                                     char errmsg[]);
 
 /* Subroutine of syntax analyzer. 
  * It constructs parse tree and returns error data if it will be */
