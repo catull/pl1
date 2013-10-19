@@ -66,19 +66,19 @@ static void plcmp_main_messages_print_translation_result(
             case PLCMP_MAIN_LEXER_ERROR:
                 printf("Lexical analyzer error message: %s\n",
                        plcmp_lexer_errmsg_by_errdata(
-                           &err_data->lexer_err_data,
+                           &err_data->err_data.lexer,
                            errmsg));
                 break;
             case PLCMP_MAIN_PARSER_ERROR:
                 printf("Syntax analyzer error message: %s\n",
                        plcmp_parser_errmsg_by_errdata(
-                           &err_data->parser_err_data,
+                           &err_data->err_data.parser,
                            errmsg));
                 break;
             case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
                 printf("Semantic calculator error message: %s\n",
                        plcmp_sem_calc_errmsg_by_errdata(
-                           &err_data->sem_calc_err_data,
+                           &err_data->err_data.sem_calc,
                            errmsg));
                 break;
             default:
@@ -147,10 +147,7 @@ static inline struct plcmp_main_error_data_s
      * successful parameters before modules call */
     memset(&err_data, 0, sizeof(err_data));
     err_data = (plcmp_main_error_data_t){ 
-        .main_err_code = PLCMP_MAIN_SUCCESS,
-        .lexer_err_data.err_code = PLCMP_LEXER_SUCCESS,
-        .parser_err_data.err_code = PLCMP_PARSER_SUCCESS,
-        .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
+        .main_err_code = PLCMP_MAIN_SUCCESS
     };
     return err_data;
 }
@@ -170,45 +167,45 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     plcmp_main_error_data_t err_data = plcmp_main_set_default_err_data();
 
     /* Lexical analysis of the source text */
-    err_data.lexer_err_data =
+    err_data.err_data.lexer =
         plcmp_lexer_compress_src_text(compact_pl1_src_text,
                                       NSTROKA,
                                       pl1_src_text,
                                       pl1_src_text_len);
-    if (PLCMP_LEXER_SUCCESS != err_data.lexer_err_data.err_code)
+    if (PLCMP_LEXER_SUCCESS != err_data.err_data.lexer.err_code)
     {
         /* Error in lexical analyzer of PL1-text.
          * Error data has already contained into 
-         * 'err_data.lexer_err_data' structure
+         * 'err_data.err_data.lexer' structure
          * because lexical analyzer has already returned its */
         err_data.main_err_code = PLCMP_MAIN_LEXER_ERROR;
         goto error_lexer;
     }
 
     /* Syntax analysis of the source text and filling stack of goals achived */
-    err_data.parser_err_data =
+    err_data.err_data.parser =
         plcmp_parser_syntax_analysis(compact_pl1_src_text,
                                      &goals_achieved);
-    if (PLCMP_PARSER_SUCCESS != err_data.parser_err_data.err_code)
+    if (PLCMP_PARSER_SUCCESS != err_data.err_data.parser.err_code)
     {
         /* Error in syntax of the source PL1-text.
          * Error data has already contained into
-         * 'err_data.parser_err_data' structure
+         * 'err_data.err_data.parser' structure
          * because syntax analyzer has already returned its */
         err_data.main_err_code = PLCMP_MAIN_PARSER_ERROR;
         goto error_parser;
     }
 
     /* Semantic calculation */
-    err_data.sem_calc_err_data =
+    err_data.err_data.sem_calc =
         plcmp_sem_calc_gen_asm_code(p_asm_fp_name,
                                     compact_pl1_src_text,
                                     goals_achieved);
-    if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.sem_calc_err_data.err_code)
+    if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.err_data.sem_calc.err_code)
     {
         /* Error in execution logic of the source PL1-text
          * Error data has already contained into
-         * 'err_data.sem_calc_err_data' structure
+         * 'err_data.err_data.sem_calc' structure
          * because semantic calculator has already returned its */
         err_data.main_err_code = PLCMP_MAIN_SEM_CALCULATOR_ERROR;
         goto error_sem_calculator;

@@ -28,9 +28,11 @@ typedef enum plcmp_main_error_code_e {
 /* Structure defines content of the error data of main module */
 typedef struct plcmp_main_error_data_s {
     plcmp_main_error_code_t main_err_code;
-    plcmp_lexer_error_data_t lexer_err_data;
-    plcmp_parser_error_data_t parser_err_data;
-    plcmp_sem_calc_error_data_t sem_calc_err_data;
+    union {
+        plcmp_lexer_error_data_t lexer;
+        plcmp_parser_error_data_t parser;
+        plcmp_sem_calc_error_data_t sem_calc;
+    } err_data;
 } plcmp_main_error_data_t;
 
 #endif /* PLCMP_MAIN_H */
