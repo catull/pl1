@@ -323,7 +323,7 @@ enum plcmp_parser_sm_error_code_e plcmp_parser_sm_run(void)
     g_src_indmax = g_csrc_ind;
     g_s_crl_ind = inputs[ascii_rel[(int)g_p_src_text[g_csrc_ind]]];
 
-    for (next_state = PARSER_STATE_GO_NEXT; handlers[next_state]; )
+    for (next_state = PARSER_STATE_CHECK_INITIAL_PARAMS; handlers[next_state]; )
     {
         next_state = handlers[next_state](&err_code);
     }
