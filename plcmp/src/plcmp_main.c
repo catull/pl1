@@ -8,7 +8,7 @@
 #include "plcmp_lex_analyzer.h"
 #include "plcmp_main.h"
 #include "plcmp_sem_calc.h"
-#include "plcmp_synt_analyzer.h"
+#include "plcmp_parser.h"
 #include "plcmp_utils.h"
 
 #define MAX_TRANSLATION_ERROR_RESULT_MESSAGE_LEN 100
@@ -36,7 +36,7 @@ static inline char const* plcmp_main_messages_errmsg_by_errcode(
                    "while reading file with the source text";
         case PLCMP_MAIN_LEX_ANALYZER_ERROR:
             return "Error in lexical analyzer";
-        case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
+        case PLCMP_MAIN_PARSER_ERROR:
             return "Error in syntax analyzer";
         case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
             return "Error in semantic calculator";
@@ -69,10 +69,10 @@ static void plcmp_main_messages_print_translation_result(
                            &err_data->lex_analyzer_err_data,
                            errmsg));
                 break;
-            case PLCMP_MAIN_SYNT_ANALYZER_ERROR:
+            case PLCMP_MAIN_PARSER_ERROR:
                 printf("Syntax analyzer error message: %s\n",
-                       plcmp_synt_analyzer_errmsg_by_errdata(
-                           &err_data->synt_analyzer_err_data,
+                       plcmp_parser_errmsg_by_errdata(
+                           &err_data->parser_err_data,
                            errmsg));
                 break;
             case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
@@ -149,7 +149,7 @@ static inline void plcmp_main_set_default_err_data(
     *err_data = (plcmp_main_error_data_t){ 
         .main_err_code = PLCMP_MAIN_SUCCESS,
         .lex_analyzer_err_data.err_code = PLCMP_LEX_ANALYZER_SUCCESS,
-        .synt_analyzer_err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS,
+        .parser_err_data.err_code = PLCMP_PARSER_SUCCESS,
         .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
     };
 }
@@ -187,17 +187,17 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     }
 
     /* Syntax analysis of the source text and filling stack of goals achived */
-    err_data.synt_analyzer_err_data =
-        plcmp_synt_analyzer_syntax_analysis(compact_pl1_src_text,
+    err_data.parser_err_data =
+        plcmp_parser_syntax_analysis(compact_pl1_src_text,
                                             &goals_achieved);
-    if (PLCMP_SYNT_ANALYZER_SUCCESS != err_data.synt_analyzer_err_data.err_code)
+    if (PLCMP_PARSER_SUCCESS != err_data.parser_err_data.err_code)
     {
         /* Error in syntax of the source PL1-text.
          * Error data has already contained into
-         * 'err_data.synt_analyzer_err_data' structure
+         * 'err_data.parser_err_data' structure
          * because syntax analyzer has already returned its */
-        err_data.main_err_code = PLCMP_MAIN_SYNT_ANALYZER_ERROR;
-        goto error_synt_analyzer;
+        err_data.main_err_code = PLCMP_MAIN_PARSER_ERROR;
+        goto error_parser;
     }
 
     /* Semantic calculation */
@@ -218,7 +218,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     error_sem_calculator:
     plcmp_goal_destroy_goals_achieved_stack(&goals_achieved);
 
-    error_synt_analyzer:
+    error_parser:
     error_lex_analyzer:
     return err_data;
 }

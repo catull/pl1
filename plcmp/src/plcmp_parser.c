@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include "plcmp_goal.h"
-#include "plcmp_synt_analyzer.h"
+#include "plcmp_parser.h"
 #include "plcmp_tables.h"
 #include "plcmp_utils.h"
 
@@ -20,22 +20,22 @@ static int src_indmax;
 static goals_interim_stack_t *g_goals_interim;
 static goals_achieved_stack_t *g_goals_achieved;
 
-char* plcmp_synt_analyzer_errmsg_by_errdata(
-    plcmp_synt_analyzer_error_data_t const *err_data,
+char* plcmp_parser_errmsg_by_errdata(
+    plcmp_parser_error_data_t const *err_data,
     char errmsg[])
 {
     switch (err_data->err_code)
     {
-        case PLCMP_SYNT_ANALYZER_SUCCESS:
+        case PLCMP_PARSER_SUCCESS:
             strcpy(errmsg, "No error occured");
             break;
-        case PLCMP_SYNT_ANALYZER_SYNTAX_ERROR:
+        case PLCMP_PARSER_SYNTAX_ERROR:
             strcats(errmsg,
                     "Error in syntax of the source text: ",
                     err_data->src_text_part,
                     NULL);
             break;
-        case PLCMP_SYNT_ANALYZER_WRONG_STATE:
+        case PLCMP_PARSER_WRONG_STATE:
             strcats(errmsg,
                     "Unknown state of syntax analyzer. "
                     "Part of source text: ",
@@ -271,26 +271,26 @@ static enum parser_state_e go_add_achieved_last_interim_goal(void)
     }
 }
 
-static struct plcmp_synt_analyzer_error_data_s
-    plcmp_synt_analyzer_form_err_data(plcmp_synt_analyzer_error_code_t err_code)
+static struct plcmp_parser_error_data_s
+    plcmp_parser_form_err_data(plcmp_parser_error_code_t err_code)
 {
-    plcmp_synt_analyzer_error_data_t err_data = {
+    plcmp_parser_error_data_t err_data = {
         .err_code = err_code
     };
     strncpy(err_data.src_text_part,
             &g_p_src_text[src_indmax],
-            PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN);
-    err_data.src_text_part[PLCMP_SYNT_ANALYZER_SRC_TEXT_PART_LEN] = '\0';
+            PLCMP_PARSER_SRC_TEXT_PART_LEN);
+    err_data.src_text_part[PLCMP_PARSER_SRC_TEXT_PART_LEN] = '\0';
     return err_data;
 }
 
-struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
+struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(
     char const compact_pl1_src_text[],
     goals_achieved_stack_t **p_goals_achieved)
 {
     parser_state_t next_state = PARSER_STATE_NOTHING_TODO;
-    plcmp_synt_analyzer_error_data_t err_data = {
-        .err_code = PLCMP_SYNT_ANALYZER_SUCCESS
+    plcmp_parser_error_data_t err_data = {
+        .err_code = PLCMP_PARSER_SUCCESS
     };
 
     g_p_src_text = compact_pl1_src_text;
@@ -305,8 +305,8 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
     /* Check reachability of goal "PRO" by current terminal symbol */
     if (!adj_reach_mtrx[ascii_rel[(int)g_p_src_text[csrc_ind]]][SYM_PRO])
     {
-        err_data = plcmp_synt_analyzer_form_err_data(
-            PLCMP_SYNT_ANALYZER_SYNTAX_ERROR);
+        err_data = plcmp_parser_form_err_data(
+            PLCMP_PARSER_SYNTAX_ERROR);
         goto error;
     }
     /* Set the first interim goal "PRO" */
@@ -321,7 +321,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
         switch (next_state)
         {
             case PARSER_STATE_SUCCESSFUL_FINISH:
-                err_data.err_code = PLCMP_SYNT_ANALYZER_SUCCESS;
+                err_data.err_code = PLCMP_PARSER_SUCCESS;
                 break;
             case PARSER_STATE_GO_NEXT:
                 next_state = go_next();
@@ -344,10 +344,10 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
             case PARSER_STATE_SYNTAX_ANALYSIS_ERROR:
             case PARSER_STATE_NOTHING_TODO:
             default:
-                err_data = plcmp_synt_analyzer_form_err_data(
+                err_data = plcmp_parser_form_err_data(
                     (next_state == PARSER_STATE_SYNTAX_ANALYSIS_ERROR) ?
-                                    PLCMP_SYNT_ANALYZER_SYNTAX_ERROR   :
-                                    PLCMP_SYNT_ANALYZER_WRONG_STATE);
+                                    PLCMP_PARSER_SYNTAX_ERROR   :
+                                    PLCMP_PARSER_WRONG_STATE);
                 next_state = PARSER_STATE_FAILURE_FINISH;
                 break;
         }
@@ -358,7 +358,7 @@ struct plcmp_synt_analyzer_error_data_s plcmp_synt_analyzer_syntax_analysis(
 
     plcmp_goal_destroy_goals_interim_stack(&g_goals_interim);
 
-    if (PLCMP_SYNT_ANALYZER_SUCCESS != err_data.err_code)
+    if (PLCMP_PARSER_SUCCESS != err_data.err_code)
     {
         plcmp_goal_destroy_goals_achieved_stack(&g_goals_achieved);
     }
