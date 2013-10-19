@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "plcmp_common.h"
-#include "plcmp_lex_analyzer.h"
+#include "plcmp_lexer.h"
 #include "plcmp_utils.h"
 
 static char const list_1[] = {
@@ -50,16 +50,16 @@ static int symbol_into_list(char const list[], char sym)
     return 0;
 }
 
-char* plcmp_lex_analyzer_errmsg_by_errdata(
-    plcmp_lex_analyzer_error_data_t const *err_data,
+char* plcmp_lexer_errmsg_by_errdata(
+    plcmp_lexer_error_data_t const *err_data,
     char errmsg[])
 {
     switch (err_data->err_code)
     {
-        case PLCMP_LEX_ANALYZER_SUCCESS:
+        case PLCMP_LEXER_SUCCESS:
             strcpy(errmsg, "No error occured");
             break;
-        case PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW:
+        case PLCMP_LEXER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW:
             strcpy(errmsg,
                    "Overflow of the compact text buffer "
                    "while lexical analysis was processing");
@@ -71,7 +71,7 @@ char* plcmp_lex_analyzer_errmsg_by_errdata(
     return errmsg;
 }
 
-struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(
+struct plcmp_lexer_error_data_s plcmp_lexer_compress_src_text(
     char compact_pl1_src_text[],
     size_t compact_text_maxlen,
     char pl1_src_text[][LINELEN],
@@ -81,10 +81,10 @@ struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(
     /* Last processed symbol in the compact source PL1-text */
     char prev_processed_symb = '\0';
 
-    plcmp_lex_analyzer_error_data_t err_data;
+    plcmp_lexer_error_data_t err_data;
 
-    memset(&err_data, 0, sizeof(plcmp_lex_analyzer_error_data_t));
-    err_data.err_code = PLCMP_LEX_ANALYZER_SUCCESS;
+    memset(&err_data, 0, sizeof(plcmp_lexer_error_data_t));
+    err_data.err_code = PLCMP_LEXER_SUCCESS;
 
     for (i1 = 0; i1 < pl1_src_text_len; i1++)
     {
@@ -153,7 +153,7 @@ struct plcmp_lex_analyzer_error_data_s plcmp_lex_analyzer_compress_src_text(
             if (i3 == compact_text_maxlen)
             {
                 err_data.err_code =
-                    PLCMP_LEX_ANALYZER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW;
+                    PLCMP_LEXER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW;
                 goto error;
             }
         }

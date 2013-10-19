@@ -5,7 +5,7 @@
 
 #include "plcmp_common.h"
 #include "plcmp_goal.h"
-#include "plcmp_lex_analyzer.h"
+#include "plcmp_lexer.h"
 #include "plcmp_main.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_parser.h"
@@ -34,7 +34,7 @@ static inline char const* plcmp_main_messages_errmsg_by_errcode(
         case PLCMP_MAIN_PROGRAM_BUFFER_OVERFLOW_ERROR:
             return "Overflow of the program buffer "
                    "while reading file with the source text";
-        case PLCMP_MAIN_LEX_ANALYZER_ERROR:
+        case PLCMP_MAIN_LEXER_ERROR:
             return "Error in lexical analyzer";
         case PLCMP_MAIN_PARSER_ERROR:
             return "Error in syntax analyzer";
@@ -63,10 +63,10 @@ static void plcmp_main_messages_print_translation_result(
                plcmp_main_messages_errmsg_by_errcode(err_data->main_err_code));
         switch(err_data->main_err_code)
         {
-            case PLCMP_MAIN_LEX_ANALYZER_ERROR:
+            case PLCMP_MAIN_LEXER_ERROR:
                 printf("Lexical analyzer error message: %s\n",
-                       plcmp_lex_analyzer_errmsg_by_errdata(
-                           &err_data->lex_analyzer_err_data,
+                       plcmp_lexer_errmsg_by_errdata(
+                           &err_data->lexer_err_data,
                            errmsg));
                 break;
             case PLCMP_MAIN_PARSER_ERROR:
@@ -148,7 +148,7 @@ static inline void plcmp_main_set_default_err_data(
     memset(err_data, 0, sizeof(plcmp_main_error_data_t));
     *err_data = (plcmp_main_error_data_t){ 
         .main_err_code = PLCMP_MAIN_SUCCESS,
-        .lex_analyzer_err_data.err_code = PLCMP_LEX_ANALYZER_SUCCESS,
+        .lexer_err_data.err_code = PLCMP_LEXER_SUCCESS,
         .parser_err_data.err_code = PLCMP_PARSER_SUCCESS,
         .sem_calc_err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS,
     };
@@ -171,19 +171,19 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     plcmp_main_set_default_err_data(&err_data);
 
     /* Lexical analysis of the source text */
-    err_data.lex_analyzer_err_data =
-        plcmp_lex_analyzer_compress_src_text(compact_pl1_src_text,
+    err_data.lexer_err_data =
+        plcmp_lexer_compress_src_text(compact_pl1_src_text,
                                              NSTROKA,
                                              pl1_src_text,
                                              pl1_src_text_len);
-    if (PLCMP_LEX_ANALYZER_SUCCESS != err_data.lex_analyzer_err_data.err_code)
+    if (PLCMP_LEXER_SUCCESS != err_data.lexer_err_data.err_code)
     {
         /* Error in lexical analyzer of PL1-text.
          * Error data has already contained into 
-         * 'err_data.lex_analyzer_err_data' structure
+         * 'err_data.lexer_err_data' structure
          * because lexical analyzer has already returned its */
-        err_data.main_err_code = PLCMP_MAIN_LEX_ANALYZER_ERROR;
-        goto error_lex_analyzer;
+        err_data.main_err_code = PLCMP_MAIN_LEXER_ERROR;
+        goto error_lexer;
     }
 
     /* Syntax analysis of the source text and filling stack of goals achived */
@@ -219,7 +219,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     plcmp_goal_destroy_goals_achieved_stack(&goals_achieved);
 
     error_parser:
-    error_lex_analyzer:
+    error_lexer:
     return err_data;
 }
 
