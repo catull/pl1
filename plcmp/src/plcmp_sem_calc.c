@@ -108,7 +108,7 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
     }
 }
 
-char* plcmp_sem_calc_errmsg_by_errdata(
+char const* plcmp_sem_calc_errmsg_by_errdata(
     plcmp_sem_calc_error_data_t const *err_data,
     char errmsg[])
 {

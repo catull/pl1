@@ -43,7 +43,7 @@ struct sym_s {
 
 /* Subroutine constructs error message 
  * by error data of semantic calculator module */
-char* plcmp_sem_calc_errmsg_by_errdata(
+char const* plcmp_sem_calc_errmsg_by_errdata(
     plcmp_sem_calc_error_data_t const *err_data,
     char errmsg[]);
 

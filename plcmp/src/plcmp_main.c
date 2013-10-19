@@ -172,9 +172,9 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     /* Lexical analysis of the source text */
     err_data.lexer_err_data =
         plcmp_lexer_compress_src_text(compact_pl1_src_text,
-                                             NSTROKA,
-                                             pl1_src_text,
-                                             pl1_src_text_len);
+                                      NSTROKA,
+                                      pl1_src_text,
+                                      pl1_src_text_len);
     if (PLCMP_LEXER_SUCCESS != err_data.lexer_err_data.err_code)
     {
         /* Error in lexical analyzer of PL1-text.
@@ -188,7 +188,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     /* Syntax analysis of the source text and filling stack of goals achived */
     err_data.parser_err_data =
         plcmp_parser_syntax_analysis(compact_pl1_src_text,
-                                            &goals_achieved);
+                                     &goals_achieved);
     if (PLCMP_PARSER_SUCCESS != err_data.parser_err_data.err_code)
     {
         /* Error in syntax of the source PL1-text.
