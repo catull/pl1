@@ -40,9 +40,9 @@ goals_achieved_stack_t *g_goals_achieved = NULL;
 #define PARSER_SM_STATE_HANDLERS_TABLE      \
     X(check_initial_params)                 \
     X(start_process)                        \
-    X(go_next_rule)                              \
-    X(go_alt_rule)                         \
-    X(go_prev_rule)                              \
+    X(go_next_rule)                         \
+    X(go_alt_rule)                          \
+    X(go_prev_rule)                         \
     X(go_forward)                           \
     X(go_end_rule)                          \
     X(go_add_achieved_goal)                 \
