@@ -89,7 +89,8 @@ static enum parser_sm_state_e start_process(
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
     /* Check reachability of goal "PRO" by current terminal symbol */
-    if (!adj_reach_mtrx[ascii_rel[(int)g_p_src_text[g_csrc_ind]]][SYM_PRO])
+    if (ascii_rel[(int)g_p_src_text[g_csrc_ind]] < 0
+        && !adj_reach_mtrx[ascii_rel[(int)g_p_src_text[g_csrc_ind]]][SYM_PRO])
     {
         *err_code = PLCMP_PARSER_SM_SYNTAX_ERROR;
         return PARSER_STATE_FAILURE_FINISH;
