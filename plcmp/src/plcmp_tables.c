@@ -452,7 +452,7 @@ void plcmp_tables_init_ascii_relation(void)
     int i;
     for (i = 0; i < ARRAY_SIZE(ascii_rel); i++)
     {
-        ascii_rel[i] = -1;
+        ascii_rel[i] = SYM_INCORRECT;
     }
 
     ascii_rel['A']  = SYM_A;

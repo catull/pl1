@@ -86,11 +86,11 @@ static enum parser_sm_state_e check_initial_params(
 static enum parser_sm_state_e start_process(
     plcmp_parser_sm_error_code_t *err_code)
 {
+    sym_t term = ascii_rel[(int)g_p_src_text[g_csrc_ind]];
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
     /* Check reachability of goal "PRO" by current terminal symbol */
-    if (ascii_rel[(int)g_p_src_text[g_csrc_ind]] < 0
-        && !adj_reach_mtrx[ascii_rel[(int)g_p_src_text[g_csrc_ind]]][SYM_PRO])
+    if (SYM_INCORRECT == term || !adj_reach_mtrx[term][SYM_PRO])
     {
         *err_code = PLCMP_PARSER_SM_SYNTAX_ERROR;
         return PARSER_STATE_FAILURE_FINISH;
@@ -99,7 +99,7 @@ static enum parser_sm_state_e start_process(
     /* Let's start. Set the first interim goal "PRO" */
     plcmp_goal_add_interim(g_goals_interim, SYM_PRO, g_csrc_ind, 999);
     g_src_indmax = g_csrc_ind;
-    g_s_crl_ind = inputs[ascii_rel[(int)g_p_src_text[g_csrc_ind]]];
+    g_s_crl_ind = inputs[term];
 
     return PARSER_STATE_GO_NEXT;
 }
@@ -204,9 +204,11 @@ static enum parser_sm_state_e go_prev(
 static enum parser_sm_state_e go_forward(
     plcmp_parser_sm_error_code_t *err_code)
 {
+    sym_t term = SYM_INCORRECT;
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
     ++g_csrc_ind;
+    term = ascii_rel[(int)g_p_src_text[g_csrc_ind]];
 
     if (g_csrc_ind > g_src_indmax)
     {
@@ -219,14 +221,18 @@ static enum parser_sm_state_e go_forward(
         {
             return PARSER_STATE_GO_END_RULE;
         }
-        else if (adj_reach_mtrx[ascii_rel[(int)g_p_src_text[g_csrc_ind]]]
-                               [rules[g_s_crl_ind].sym])
+        else if (SYM_INCORRECT == term)
+        {
+            *err_code = PLCMP_PARSER_SM_SYNTAX_ERROR;
+            return PARSER_STATE_FAILURE_FINISH;
+        }
+        else if (adj_reach_mtrx[term][rules[g_s_crl_ind].sym])
         {
             plcmp_goal_add_interim(g_goals_interim,
                                    rules[g_s_crl_ind].sym,
                                    g_csrc_ind,
                                    g_s_crl_ind);
-            g_s_crl_ind = inputs[ascii_rel[(int)g_p_src_text[g_csrc_ind]]];
+            g_s_crl_ind = inputs[term];
 
             return PARSER_STATE_GO_NEXT;
         }
@@ -237,8 +243,15 @@ static enum parser_sm_state_e go_forward(
             return rules[g_s_crl_ind].alt ? PARSER_STATE_GO_ALTERNATE
                                           : PARSER_STATE_GO_PREV;
         }
-    } 
-    else if (ascii_rel[(int)g_p_src_text[g_csrc_ind]] != rules[g_s_crl_ind].sym)
+    }
+    else if (SYM_INCORRECT == term)
+    {
+        printf("%s\n %d\n", g_p_src_text, strlen(g_p_src_text));
+        printf(">>> %c %d %d %d\n", g_p_src_text[g_csrc_ind], g_p_src_text[g_csrc_ind], term, g_csrc_ind);
+        *err_code = PLCMP_PARSER_SM_SYNTAX_ERROR;
+        return PARSER_STATE_FAILURE_FINISH;
+    }
+    else if (term != rules[g_s_crl_ind].sym)
     {
         --g_csrc_ind;
 
