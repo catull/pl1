@@ -1,5 +1,7 @@
 /* encoding: UTF-8 */
 
+#include <stddef.h>
+
 #include "plcmp_goal.h"
 #include "plcmp_parser_sm.h"
 #include "plcmp_tables.h"

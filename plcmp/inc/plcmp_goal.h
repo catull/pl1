@@ -3,6 +3,7 @@
 #ifndef PLCMP_GOAL_H
 #define PLCMP_GOAL_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "plcmp_common.h"
