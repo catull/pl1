@@ -11,8 +11,6 @@
 #include "plcmp_parser.h"
 #include "plcmp_utils.h"
 
-#define MAX_TRANSLATION_ERROR_RESULT_MESSAGE_LEN 100
-
 /* Subroutine constructs error message by error code of main module */
 static inline char const* plcmp_main_messages_errmsg_by_errcode(
     plcmp_main_error_code_t err_code)
@@ -57,29 +55,24 @@ static void plcmp_main_messages_print_translation_result(
     }
     else
     {
-        char errmsg[MAX_TRANSLATION_ERROR_RESULT_MESSAGE_LEN] = { '\0' };
-
         printf("Translation is interrupted\nReason: %s\n",
                plcmp_main_messages_errmsg_by_errcode(err_data->main_err_code));
         switch(err_data->main_err_code)
         {
             case PLCMP_MAIN_LEXER_ERROR:
                 printf("Lexical analyzer error message: %s\n",
-                       plcmp_lexer_errmsg_by_errdata(
-                           &err_data->err_data.lexer,
-                           errmsg));
+                       PLCMP_LEXER_ERRMSG_BY_ERRDATA(
+                            &err_data->err_data.lexer));
                 break;
             case PLCMP_MAIN_PARSER_ERROR:
                 printf("Syntax analyzer error message: %s\n",
-                       plcmp_parser_errmsg_by_errdata(
-                           &err_data->err_data.parser,
-                           errmsg));
+                       PLCMP_PARSER_ERRMSG_BY_ERRDATA(
+                            &err_data->err_data.parser));
                 break;
             case PLCMP_MAIN_SEM_CALCULATOR_ERROR:
                 printf("Semantic calculator error message: %s\n",
-                       plcmp_sem_calc_errmsg_by_errdata(
-                           &err_data->err_data.sem_calc,
-                           errmsg));
+                       PLCMP_SEM_CALC_ERRMSG_BY_ERRDATA(
+                            &err_data->err_data.sem_calc));
                 break;
             default:
                 break;

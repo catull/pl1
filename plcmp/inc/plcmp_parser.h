@@ -3,9 +3,11 @@
 #ifndef PLCMP_PARSER_H
 #define PLCMP_PARSER_H
 
+#include <alloca.h>
 #include "plcmp_goal.h"
 
 #define PLCMP_PARSER_SRC_TEXT_PART_LEN 20
+#define PLCMP_PARSER_MAX_ERRMSG_LEN 100
 
 /* Enumerate defines error codes of syntax analyzer module */
 typedef enum plcmp_parser_error_code_e {
@@ -25,6 +27,10 @@ typedef struct plcmp_parser_error_data_s {
 char const* plcmp_parser_errmsg_by_errdata(
     plcmp_parser_error_data_t const *err_data,
     char errmsg[]);
+
+#define PLCMP_PARSER_ERRMSG_BY_ERRDATA(err_data)                        \
+    plcmp_parser_errmsg_by_errdata(err_data,                            \
+                                   alloca(PLCMP_PARSER_MAX_ERRMSG_LEN))
 
 /* Subroutine of syntax analyzer. 
  * It constructs parse tree and returns error data if it will be */

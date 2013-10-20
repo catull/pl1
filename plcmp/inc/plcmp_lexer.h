@@ -3,7 +3,11 @@
 #ifndef PLCMP_LEXER_H
 #define PLCMP_LEXER_H
 
+#include <alloca.h>
+
 #include "plcmp_utils.h"
+
+#define PLCMP_LEXER_MAX_ERRMSG_LEN 100
 
 /* Enumerate defines error codes of lexical analyzer module */
 typedef enum plcmp_lexer_error_code_e {
@@ -21,6 +25,10 @@ typedef struct plcmp_lexer_error_data_s {
 char const* plcmp_lexer_errmsg_by_errdata(
     plcmp_lexer_error_data_t const *err_data,
     char errmsg[]);
+
+#define PLCMP_LEXER_ERRMSG_BY_ERRDATA(err_data)                         \
+    plcmp_lexer_errmsg_by_errdata(err_data,                             \
+                                  alloca(PLCMP_LEXER_MAX_ERRMSG_LEN))
 
 /* Subroutine of primitive lexical analyzer 
  * It compresses the source text by removing 

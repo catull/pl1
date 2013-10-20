@@ -3,10 +3,13 @@
 #ifndef PLCMP_SEM_CALC_H
 #define PLCMP_SEM_CALC_H
 
+#include <alloca.h>
+
 #include "plcmp_goal.h"
 #include "plcmp_utils.h"
 
 #define PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN 20
+#define PLCMP_SEM_CALC_MAX_ERRMSG_LEN 100
 
 /* Enumerate defines error codes of semantic calculator module */
 typedef enum plcmp_sem_calc_error_code_e {
@@ -46,6 +49,10 @@ struct sym_s {
 char const* plcmp_sem_calc_errmsg_by_errdata(
     plcmp_sem_calc_error_data_t const *err_data,
     char errmsg[]);
+
+#define PLCMP_SEM_CALC_ERRMSG_BY_ERRDATA(err_data)                          \
+    plcmp_sem_calc_errmsg_by_errdata(err_data,                              \
+                                     alloca(PLCMP_SEM_CALC_MAX_ERRMSG_LEN))
 
 /* Subroutine for semantic calculation 
  * of the achieved goals made by syntax analyzer 
