@@ -68,6 +68,7 @@ static parser_sm_state_handler_t *handlers[PARSER_STATE_COUNT_STATES] = {
         go_add_achieved_last_interim_goal
 };
 
+/* PARSER_STATE_CHECK_INITIAL_PARAMS */
 static enum parser_sm_state_e check_initial_params(
     plcmp_parser_sm_error_code_t *err_code)
 {
@@ -83,6 +84,7 @@ static enum parser_sm_state_e check_initial_params(
     return PARSER_STATE_START_PROCESS;
 }
 
+/* PARSER_STATE_START_PROCESS */
 static enum parser_sm_state_e start_process(
     plcmp_parser_sm_error_code_t *err_code)
 {
@@ -104,6 +106,7 @@ static enum parser_sm_state_e start_process(
     return PARSER_STATE_GO_NEXT;
 }
 
+/* PARSER_STATE_GO_NEXT */
 static enum parser_sm_state_e go_next(
     plcmp_parser_sm_error_code_t *err_code)
 {
@@ -115,6 +118,7 @@ static enum parser_sm_state_e go_next(
     return PARSER_STATE_GO_FORWARD;
 }
 
+/* PARSER_STATE_GO_ALTERNATE */
 static enum parser_sm_state_e go_alternate(
     plcmp_parser_sm_error_code_t *err_code)
 {
@@ -126,6 +130,7 @@ static enum parser_sm_state_e go_alternate(
     return PARSER_STATE_GO_FORWARD;
 }
 
+/* PARSER_STATE_GO_PREV */
 static enum parser_sm_state_e go_prev(
     plcmp_parser_sm_error_code_t *err_code)
 {
@@ -201,6 +206,7 @@ static enum parser_sm_state_e go_prev(
     return PARSER_STATE_FAILURE_FINISH;
 }
 
+/* PARSER_STATE_GO_FORWARD */
 static enum parser_sm_state_e go_forward(
     plcmp_parser_sm_error_code_t *err_code)
 {
@@ -265,6 +271,7 @@ static enum parser_sm_state_e go_forward(
     return PARSER_STATE_FAILURE_FINISH;
 }
 
+/* PARSER_STATE_GO_END_RULE */
 static enum parser_sm_state_e go_end_rule(
     plcmp_parser_sm_error_code_t *err_code)
 {
@@ -291,6 +298,7 @@ static enum parser_sm_state_e go_end_rule(
     return PARSER_STATE_FAILURE_FINISH;
 }
 
+/* PARSER_STATE_ADD_ACHIEVED_GOAL */
 static enum parser_sm_state_e go_add_achieved_goal(
     plcmp_parser_sm_error_code_t *err_code)
 {
@@ -307,6 +315,7 @@ static enum parser_sm_state_e go_add_achieved_goal(
     return PARSER_STATE_GO_NEXT;
 }
 
+/* PARSER_STATE_ADD_ACHIEVED_LAST_INTERIM_GOAL */
 static enum parser_sm_state_e go_add_achieved_last_interim_goal(
     plcmp_parser_sm_error_code_t *err_code)
 {
