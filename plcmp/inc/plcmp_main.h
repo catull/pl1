@@ -6,8 +6,8 @@
 #include <string.h>
 
 #include "plcmp_lexer.h"
-#include "plcmp_sem_calc.h"
 #include "plcmp_parser.h"
+#include "plcmp_sem_calc.h"
 #include "plcmp_utils.h"
 
 /* Enumerate defines error codes of main module */

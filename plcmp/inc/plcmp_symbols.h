@@ -1,27 +1,10 @@
 #ifndef PLCMP_SYMBOLS_H
 #define PLCMP_SYMBOLS_H
 
+#include "plcmp_nterms.h"
+
 #define SYM_X(s) SYM_##s,
 
-#define SYM_NTERMS              \
-    SYM_X(AVI)                  \
-    SYM_X(BUK)                  \
-    SYM_X(CIF)                  \
-    SYM_X(IDE)                  \
-    SYM_X(IPE)                  \
-    SYM_X(IPR)                  \
-    SYM_X(LIT)                  \
-    SYM_X(MAN)                  \
-    SYM_X(ODC)                  \
-    SYM_X(OEN)                  \
-    SYM_X(OPA)                  \
-    SYM_X(OPR)                  \
-    SYM_X(PRO)                  \
-    SYM_X(RZR)                  \
-    SYM_X(TEL)                  \
-    SYM_X(ZNK)                  \
-    SYM_X(STC)                  \
-    SYM_X(CON)
 #define SYM_TERMS               \
     SYM_X(A)                    \
     SYM_X(B)                    \
@@ -64,7 +47,6 @@
 
 typedef enum sym_e {
     SYM_NTERMS
-#undef SYM_NTERMS
 #define SYM_NTERMS_COUNT (SYM_CON + 1)
     SYM_TERMS
 #undef SYM_TERMS
