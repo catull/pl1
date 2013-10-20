@@ -3,9 +3,13 @@
 #ifndef PLCMP_GOAL_H
 #define PLCMP_GOAL_H
 
+#include <stdint.h>
+
 #include "plcmp_common.h"
 #include "plcmp_utils.h"
 #include "plcmp_tables.h"
+
+typedef uint32_t stack_counter_t;
 
 /* Structure for the stack of goals */
 typedef struct goal_interim_s {
@@ -16,7 +20,7 @@ typedef struct goal_interim_s {
 
 /* */
 typedef struct goals_interim_stack_s {
-    unsigned int count;
+    stack_counter_t count;
     goal_interim_t *last;
     goal_interim_t stack[];
 } goals_interim_stack_t;
@@ -32,7 +36,7 @@ typedef struct goal_achieved_s {
 
 /* */
 typedef struct goals_achieved_stack_s {
-    unsigned int count;
+    stack_counter_t count;
     goal_achieved_t *last;
     goal_achieved_t stack[];
 } goals_achieved_stack_t;
