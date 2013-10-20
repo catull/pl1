@@ -246,8 +246,6 @@ static enum parser_sm_state_e go_forward(
     }
     else if (SYM_INCORRECT == term)
     {
-        printf("%s\n %d\n", g_p_src_text, strlen(g_p_src_text));
-        printf(">>> %c %d %d %d\n", g_p_src_text[g_csrc_ind], g_p_src_text[g_csrc_ind], term, g_csrc_ind);
         *err_code = PLCMP_PARSER_SM_SYNTAX_ERROR;
         return PARSER_STATE_FAILURE_FINISH;
     }
