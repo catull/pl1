@@ -54,7 +54,7 @@ char const* plcmp_parser_errmsg_by_errdata(
             break;
         case PLCMP_PARSER_INTERNAL_ERROR:
             strcats(errmsg,
-                    "Unknown state of syntax analyzer. "
+                    "Internal error of syntax analyzer occurred. "
                     "Part of source text: ",
                     err_data->src_text_part,
                     NULL);
@@ -96,9 +96,15 @@ struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(
     sm_err_code = plcmp_parser_sm_run();
     if (PLCMP_PARSER_SM_SUCCESS != sm_err_code)
     {
+        if (g_src_indmax < 0)
+        {
+            g_src_indmax = 0;
+        }
         err_data = plcmp_parser_form_err_data(sm_err_code,
                                               &g_p_src_text[g_src_indmax]);
     }
+
+    plcmp_parser_sm_clear_params();
 
     plcmp_goal_destroy_goals_interim_stack(&g_goals_interim);
     if (PLCMP_PARSER_SUCCESS != err_data.err_code)

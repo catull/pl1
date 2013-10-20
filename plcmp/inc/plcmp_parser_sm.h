@@ -11,5 +11,6 @@ typedef enum plcmp_parser_sm_error_code_e {
 } plcmp_parser_sm_error_code_t;
 
 enum plcmp_parser_sm_error_code_e plcmp_parser_sm_run(void);
+void plcmp_parser_sm_clear_params(void);
 
 #endif /* PLCMP_PARSER_SM_H */

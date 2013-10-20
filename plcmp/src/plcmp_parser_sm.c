@@ -354,3 +354,11 @@ enum plcmp_parser_sm_error_code_e plcmp_parser_sm_run(void)
 
     return err_code;
 }
+
+void plcmp_parser_sm_clear_params(void)
+{
+    g_p_src_text = NULL;
+    g_csrc_ind = -1;
+    g_s_crl_ind = -1;
+    g_src_indmax = -1;
+}
