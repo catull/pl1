@@ -191,11 +191,6 @@ static enum parser_sm_state_e go_prev_rule(
                 return PARSER_STATE_REMOVE_LAST_ACHIEVED_GOAL;
             }
         }
-        else
-        {
-            /* TODO */
-            PLCMP_UTILS_ASSERT(0);
-        }
     }
     else
     {
