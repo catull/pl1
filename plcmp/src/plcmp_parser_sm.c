@@ -18,7 +18,7 @@ typedef enum parser_sm_state_e {
     PARSER_STATE_GO_END_RULE,
     PARSER_STATE_ADD_ACHIEVED_GOAL,
     PARSER_STATE_ADD_ACHIEVED_LAST_INTERIM_GOAL,
-    PARSER_STATE_GO_INPUT_OF_CURRENT_NTERM_SYMBOL,
+    PARSER_STATE_GO_INPUT_OF_CURRENT_NTERM_SYM,
     PARSER_STATE_COUNT_STATES
 } parser_sm_state_t;
 
@@ -68,7 +68,7 @@ static parser_sm_state_handler_t *handlers[PARSER_STATE_COUNT_STATES] = {
     [PARSER_STATE_ADD_ACHIEVED_GOAL] = go_add_achieved_goal,
     [PARSER_STATE_ADD_ACHIEVED_LAST_INTERIM_GOAL] = 
         go_add_achieved_last_interim_goal,
-    [PARSER_STATE_GO_INPUT_OF_CURRENT_NTERM_SYMBOL] = go_input_of_current_nterm_sym
+    [PARSER_STATE_GO_INPUT_OF_CURRENT_NTERM_SYM] = go_input_of_current_nterm_sym
 };
 
 /* PARSER_STATE_CHECK_INITIAL_PARAMS */
@@ -299,7 +299,7 @@ static enum parser_sm_state_e go_end_rule(
     return PARSER_STATE_FAILURE_FINISH;
 }
 
-/* PARSER_STATE_GO_INPUT_OF_CURRENT_NTERM_SYMBOL */
+/* PARSER_STATE_GO_INPUT_OF_CURRENT_NTERM_SYM */
 static enum parser_sm_state_e go_input_of_current_nterm_sym(
     plcmp_parser_sm_error_code_t *err_code)
 {
@@ -320,7 +320,7 @@ static enum parser_sm_state_e go_add_achieved_goal(
                             g_csrc_ind,
                             g_s_crl_ind);
 
-    return PARSER_STATE_GO_INPUT_OF_CURRENT_NTERM_SYMBOL;
+    return PARSER_STATE_GO_INPUT_OF_CURRENT_NTERM_SYM;
 }
 
 /* PARSER_STATE_ADD_ACHIEVED_LAST_INTERIM_GOAL */
@@ -346,7 +346,7 @@ static enum parser_sm_state_e go_add_achieved_last_interim_goal(
         if (adj_reach_mtrx[rules[g_s_crl_ind].sym]
                           [rules[g_s_crl_ind].sym])
         {
-            return PARSER_STATE_GO_INPUT_OF_CURRENT_NTERM_SYMBOL;
+            return PARSER_STATE_GO_INPUT_OF_CURRENT_NTERM_SYM;
         }
         else
         {
