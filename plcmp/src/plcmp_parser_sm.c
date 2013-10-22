@@ -42,52 +42,6 @@ int g_src_indmax = -1;
 goals_interim_stack_t *g_goals_interim = NULL;
 goals_achieved_stack_t *g_goals_achieved = NULL;
 
-#define X(s) static parser_sm_state_handler_t s;
-#define PARSER_SM_STATE_HANDLERS_TABLE      \
-    X(go_check_initial_params)              \
-    X(go_start_process)                     \
-    X(go_next_rule)                         \
-    X(go_alt_rule)                          \
-    X(go_prev_rule)                         \
-    X(go_forward)                           \
-    X(go_end_rule)                          \
-    X(go_add_interim_goal)                  \
-    X(go_cancel_last_interim_goal)          \
-    X(go_remove_last_interim_goal)          \
-    X(go_add_achieved_goal)                 \
-    X(go_cancel_last_achieved_goal)         \
-    X(go_remove_last_achieved_goal)         \
-    X(go_add_achieved_last_interim_goal)    \
-    X(go_input_of_current_rule)
-
-PARSER_SM_STATE_HANDLERS_TABLE
-
-#undef X
-#undef PARSER_SM_STATE_HANDLERS_TABLE
-
-static parser_sm_state_handler_t *handlers[PARSER_STATE_COUNT_STATES] = {
-    [PARSER_STATE_SUCCESSFUL_FINISH] = NULL,
-    [PARSER_STATE_FAILURE_FINISH] = NULL,
-    [PARSER_STATE_GO_CHECK_INITIAL_PARAMS] = go_check_initial_params,
-    [PARSER_STATE_GO_START_PROCESS] = go_start_process,
-    [PARSER_STATE_GO_NEXT_RULE] = go_next_rule,
-    [PARSER_STATE_GO_ALT_RULE] = go_alt_rule,
-    [PARSER_STATE_GO_PREV_RULE] = go_prev_rule,
-    [PARSER_STATE_GO_FORWARD] = go_forward,
-    [PARSER_STATE_GO_END_RULE] = go_end_rule,
-    [PARSER_STATE_GO_ADD_INTERIM_GOAL] = go_add_interim_goal,
-    [PARSER_STATE_GO_CANCEL_LAST_INTERIM_GOAL] = go_cancel_last_interim_goal,
-    [PARSER_STATE_GO_REMOVE_LAST_INTERIM_GOAL] = go_remove_last_interim_goal,
-    [PARSER_STATE_GO_ADD_ACHIEVED_GOAL] = go_add_achieved_goal,
-    [PARSER_STATE_GO_CANCEL_LAST_ACHIEVED_GOAL] = go_cancel_last_achieved_goal,
-    [PARSER_STATE_GO_REMOVE_LAST_ACHIEVED_GOAL] = go_remove_last_achieved_goal,
-    [PARSER_STATE_GO_ADD_ACHIEVED_LAST_INTERIM_GOAL] =
-        go_add_achieved_last_interim_goal,
-    [PARSER_STATE_GO_INPUT_OF_CURRENT_RULE] =
-        go_input_of_current_rule
-
-};
-
 /* PARSER_STATE_GO_CHECK_INITIAL_PARAMS */
 static enum parser_sm_state_e go_check_initial_params(
     plcmp_parser_sm_error_code_t *err_code)
@@ -428,7 +382,34 @@ enum plcmp_parser_sm_error_code_e plcmp_parser_sm_run(void)
     plcmp_parser_sm_error_code_t err_code = PLCMP_PARSER_SM_SUCCESS;
     parser_sm_state_t next_state = PARSER_STATE_GO_CHECK_INITIAL_PARAMS;
 
-    for (next_state = PARSER_STATE_GO_CHECK_INITIAL_PARAMS; handlers[next_state]; )
+    parser_sm_state_handler_t *handlers[PARSER_STATE_COUNT_STATES] = {
+        [PARSER_STATE_SUCCESSFUL_FINISH] = NULL,
+        [PARSER_STATE_FAILURE_FINISH] = NULL,
+        [PARSER_STATE_GO_CHECK_INITIAL_PARAMS] = go_check_initial_params,
+        [PARSER_STATE_GO_START_PROCESS] = go_start_process,
+        [PARSER_STATE_GO_NEXT_RULE] = go_next_rule,
+        [PARSER_STATE_GO_ALT_RULE] = go_alt_rule,
+        [PARSER_STATE_GO_PREV_RULE] = go_prev_rule,
+        [PARSER_STATE_GO_FORWARD] = go_forward,
+        [PARSER_STATE_GO_END_RULE] = go_end_rule,
+        [PARSER_STATE_GO_ADD_INTERIM_GOAL] = go_add_interim_goal,
+        [PARSER_STATE_GO_CANCEL_LAST_INTERIM_GOAL] =
+            go_cancel_last_interim_goal,
+        [PARSER_STATE_GO_REMOVE_LAST_INTERIM_GOAL] =
+            go_remove_last_interim_goal,
+        [PARSER_STATE_GO_ADD_ACHIEVED_GOAL] = go_add_achieved_goal,
+        [PARSER_STATE_GO_CANCEL_LAST_ACHIEVED_GOAL] =
+            go_cancel_last_achieved_goal,
+        [PARSER_STATE_GO_REMOVE_LAST_ACHIEVED_GOAL] =
+            go_remove_last_achieved_goal,
+        [PARSER_STATE_GO_ADD_ACHIEVED_LAST_INTERIM_GOAL] =
+            go_add_achieved_last_interim_goal,
+        [PARSER_STATE_GO_INPUT_OF_CURRENT_RULE] =
+            go_input_of_current_rule
+    };
+
+    for (next_state = PARSER_STATE_GO_CHECK_INITIAL_PARAMS;
+         handlers[next_state]; )
     {
         next_state = handlers[next_state](&err_code);
     }
