@@ -423,4 +423,6 @@ void plcmp_parser_sm_clear_params(void)
     g_csrc_ind = -1;
     g_s_crl_ind = -1;
     g_src_indmax = -1;
+    g_goals_interim = NULL;
+    g_goals_achieved = NULL;
 }

@@ -104,14 +104,14 @@ struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(
                                               &g_p_src_text[g_src_indmax]);
     }
 
-    plcmp_parser_sm_clear_params();
-
     plcmp_goal_destroy_goals_interim_stack(&g_goals_interim);
     if (PLCMP_PARSER_SUCCESS != err_data.err_code)
     {
         plcmp_goal_destroy_goals_achieved_stack(&g_goals_achieved);
     }
     *p_goals_achieved = g_goals_achieved;
+
+    plcmp_parser_sm_clear_params();
 
     return err_data;
 }
