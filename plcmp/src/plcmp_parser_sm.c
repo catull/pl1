@@ -39,8 +39,8 @@ int g_s_crl_ind = -1;
  * It is necessary for sending part of source text if error will occur */
 int g_src_indmax = -1;
 
-goals_interim_stack_t *g_goals_interim = NULL;
-goals_achieved_stack_t *g_goals_achieved = NULL;
+goals_interim_stack_t *g_goals_interim;
+goals_achieved_stack_t *g_goals_achieved;
 
 /* PARSER_STATE_GO_CHECK_INITIAL_PARAMS */
 static enum parser_sm_state_e go_check_initial_params(
