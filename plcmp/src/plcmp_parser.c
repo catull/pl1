@@ -47,24 +47,19 @@ char const* plcmp_parser_errmsg_by_errdata(
             strcpy(errmsg, "No error occured");
             break;
         case PLCMP_PARSER_SYNTAX_ERROR:
-            strcats(errmsg,
-                    "Error in syntax of the source text: ",
-                    err_data->src_text_part,
-                    NULL);
+            strcpy(errmsg, "Error in syntax of the source text.");
             break;
         case PLCMP_PARSER_INTERNAL_ERROR:
-            strcats(errmsg,
-                    "Internal error of syntax analyzer occurred. "
-                    "Part of source text: ",
-                    err_data->src_text_part,
-                    NULL);
+            strcpy(errmsg, "Internal error of syntax analyzer occurred.");
             break;
         default:
             strcpy(errmsg,
                    "Unknown error code in error data "
-                   "for generating error message");
+                   "for generating error message.");
             break;
     }
+
+    strcats(errmsg, " Part of source text: ", err_data->src_text_part, NULL);
     return errmsg;
 }
 
