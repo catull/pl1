@@ -61,8 +61,8 @@ static enum parser_sm_state_e go_check_initial_params(
 static enum parser_sm_state_e go_start_process(
     plcmp_parser_sm_error_code_t *err_code)
 {
-    sym_t term = ascii_rel[(int)g_p_src_text[g_csrc_ind]];
     *err_code = PLCMP_PARSER_SM_SUCCESS;
+    sym_t term = ascii_rel[(int)g_p_src_text[g_csrc_ind]];
 
     /* Check reachability of goal "PRO" by current terminal symbol */
     if (SYM_INCORRECT == term || !adj_reach_mtrx[term][SYM_PRO])
@@ -177,8 +177,8 @@ static enum parser_sm_state_e go_end_rule(
 static enum parser_sm_state_e go_forward(
     plcmp_parser_sm_error_code_t *err_code)
 {
-    sym_t term = SYM_INCORRECT;
     *err_code = PLCMP_PARSER_SM_SUCCESS;
+    sym_t term = SYM_INCORRECT;
 
     ++g_csrc_ind;
     term = ascii_rel[(int)g_p_src_text[g_csrc_ind]];

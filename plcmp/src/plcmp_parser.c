@@ -77,6 +77,7 @@ struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(
     };
     plcmp_parser_sm_error_code_t sm_err_code = PLCMP_PARSER_SM_SUCCESS;
 
+    /* External variables of parser's state machine */
     extern goals_interim_stack_t *g_goals_interim;
     extern goals_achieved_stack_t *g_goals_achieved;
     extern char const *g_p_src_text;
