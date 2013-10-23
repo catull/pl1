@@ -10,6 +10,11 @@
 #define PLCMP_PARSER_SRC_TEXT_PART_LEN 20
 #define PLCMP_PARSER_MAX_ERRMSG_LEN 100
 
+#if PLCMP_PARSER_MAX_ERRMSG_LEN < PLCMP_PARSER_SRC_TEXT_PART_LEN
+#error macro PLCMP_PARSER_MAX_ERRMSG_LEN less than \
+       macro PLCMP_PARSER_SRC_TEXT_PART_LEN
+#endif
+
 /* Enumerate defines error codes of syntax analyzer module */
 typedef enum plcmp_parser_error_code_e {
     PLCMP_PARSER_SUCCESS = 0,
