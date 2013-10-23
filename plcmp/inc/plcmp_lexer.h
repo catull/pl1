@@ -3,6 +3,7 @@
 #ifndef PLCMP_LEXER_H
 #define PLCMP_LEXER_H
 
+#include <stddef.h>
 #include <alloca.h>
 
 #include "plcmp_utils.h"

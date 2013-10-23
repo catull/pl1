@@ -2,33 +2,34 @@
 
 #include <string.h>
 
-#include "plcmp_target.h"
 #include "plcmp_tables.h"
+#include "plcmp_target.h"
 #include "plcmp_utils.h"
 
-target_interim_t plcmp_target_add_interim(targets_interim_stack_t *interim_targets,
-                                        sym_t sym,
-                                        index_t src_text_left_ind,
-                                        index_t rules_saved_ind)
+target_interim_t plcmp_target_add_interim(
+    targets_interim_stack_t *targets_interim,
+    sym_t sym,
+    index_t src_text_left_ind,
+    index_t rules_saved_ind)
 {
-    interim_targets->last = &interim_targets->stack[interim_targets->count];
-    interim_targets->last->sym = sym;
-    interim_targets->last->src_text_left_ind = src_text_left_ind;
-    interim_targets->last->rules_saved_ind = rules_saved_ind;
-    ++(interim_targets->count);
-    return *(interim_targets->last);
+    targets_interim->last = &targets_interim->stack[targets_interim->count];
+    targets_interim->last->sym = sym;
+    targets_interim->last->src_text_left_ind = src_text_left_ind;
+    targets_interim->last->rules_saved_ind = rules_saved_ind;
+    ++(targets_interim->count);
+    return *(targets_interim->last);
 }
 
 target_interim_t plcmp_target_remove_last_interim(
-    targets_interim_stack_t *interim_targets)
+    targets_interim_stack_t *targets_interim)
 {
-    if (interim_targets->count)
+    if (targets_interim->count)
     {
-        target_interim_t goal = *(interim_targets->last);
-        memset(interim_targets->last, 0, sizeof(*interim_targets->last));
-        --interim_targets->count;
-        interim_targets->last = interim_targets->count ? 
-            &interim_targets->stack[interim_targets->count - 1] : NULL;
+        target_interim_t goal = *(targets_interim->last);
+        memset(targets_interim->last, 0, sizeof(*targets_interim->last));
+        --targets_interim->count;
+        targets_interim->last = targets_interim->count ? 
+            &targets_interim->stack[targets_interim->count - 1] : NULL;
         return goal;
     }
     else

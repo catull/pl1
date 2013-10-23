@@ -83,22 +83,24 @@ static inline void plcmp_target_destroy_targets_interim_stack(
 }
 
 /* Subroutine adds a new goal into stack of goals */
-target_interim_t plcmp_target_add_interim(targets_interim_stack_t *interim_targets,
-                                      sym_t sym,
-                                      index_t src_text_left_ind,
-                                      index_t rules_saved_ind);
+target_interim_t plcmp_target_add_interim(
+    targets_interim_stack_t *targets_interim,
+    sym_t sym,
+    index_t src_text_left_ind,
+    index_t rules_saved_ind);
 
 /* Subroutine removes last goal from the stack of goals */
 target_interim_t plcmp_target_remove_last_interim(
-    targets_interim_stack_t *interim_targets);
+    targets_interim_stack_t *targets_interim);
 
 /* Subroutine adds a goal achieved into stack of goals achieved */
-target_achieved_t plcmp_target_add_achieved(targets_achieved_stack_t *targets_achieved,
-                                        sym_t sym,
-                                        index_t src_text_beg_ind,
-                                        index_t rules_saved_ind,
-                                        index_t src_text_end_ind,
-                                        index_t rules_reach_target_ind);
+target_achieved_t plcmp_target_add_achieved(
+    targets_achieved_stack_t *targets_achieved,
+    sym_t sym,
+    index_t src_text_beg_ind,
+    index_t rules_saved_ind,
+    index_t src_text_end_ind,
+    index_t rules_reach_target_ind);
 
 /* Subroutine removes last goal achieved from the stack of goals achieved */
 target_achieved_t plcmp_target_remove_last_achieved(

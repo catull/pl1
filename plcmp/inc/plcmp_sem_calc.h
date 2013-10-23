@@ -11,6 +11,11 @@
 #define PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN 20
 #define PLCMP_SEM_CALC_MAX_ERRMSG_LEN 100
 
+#if PLCMP_SEM_CALC_MAX_ERRMSG_LEN < PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN
+#error macro PLCMP_SEM_CALC_MAX_ERRMSG_LEN less than \
+       macro PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN
+#endif
+
 /* Enumerate defines error codes of semantic calculator module */
 typedef enum plcmp_sem_calc_error_code_e {
     PLCMP_SEM_CALCULATOR_SUCCESS = 0,

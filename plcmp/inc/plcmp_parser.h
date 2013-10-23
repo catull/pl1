@@ -4,6 +4,7 @@
 #define PLCMP_PARSER_H
 
 #include <alloca.h>
+
 #include "plcmp_target.h"
 
 #define PLCMP_PARSER_SRC_TEXT_PART_LEN 20
