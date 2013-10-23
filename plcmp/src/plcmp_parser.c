@@ -76,7 +76,7 @@ struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(
     extern targets_interim_stack_t *g_targets_interim;
     extern targets_achieved_stack_t *g_targets_achieved;
     extern char const *g_p_src_text;
-    extern int g_csrc_ind;
+    extern int g_cur_src_i;
     extern int g_src_indmax;
 
     PLCMP_UTILS_ASSERT(p_targets_achieved);
@@ -87,7 +87,7 @@ struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(
     g_targets_interim = plcmp_target_create_targets_interim_stack();
     g_targets_achieved = plcmp_target_create_targets_achieved_stack();
     g_p_src_text = compact_pl1_src_text;
-    g_csrc_ind = 0;
+    g_cur_src_i = 0;
 
     /* Run state machine */
     sm_err_code = plcmp_parser_sm_run();
