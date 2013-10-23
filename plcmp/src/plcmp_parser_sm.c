@@ -258,7 +258,7 @@ static enum parser_sm_state_e go_get_out_from_last_interim_target(
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
     g_s_cur_rule_i =
-        plcmp_target_remove_last_interim(g_targets_interim).rules_saved_ind;
+        plcmp_target_remove_last_interim(g_targets_interim).saved_location_of_entry_i;
 
     return PARSER_STATE_GO_NEXT_RULE;
 }
@@ -279,7 +279,7 @@ static enum parser_sm_state_e go_cancel_last_interim_target(
     }
     else
     {
-        g_s_cur_rule_i = target.rules_saved_ind;
+        g_s_cur_rule_i = target.saved_location_of_entry_i;
         --g_cur_src_i;
         return rules[g_s_cur_rule_i].alt ? PARSER_STATE_GO_ALT_RULE
                                       : PARSER_STATE_GO_PREV_RULE;
@@ -297,7 +297,7 @@ static enum parser_sm_state_e go_add_achieved_target(
 
     (void)plcmp_target_add_achieved(g_targets_achieved, 
                                     rules[g_s_cur_rule_i].sym,
-                                    g_targets_interim->last->src_text_left_ind,
+                                    g_targets_interim->last->src_text_left_i,
                                     0,
                                     g_cur_src_i,
                                     g_s_cur_rule_i);
@@ -314,7 +314,7 @@ static enum parser_sm_state_e go_get_in_the_end_of_last_achieved_target(
 
     g_s_cur_rule_i = 
         plcmp_target_remove_last_achieved(
-            g_targets_achieved).rules_reach_target_ind;
+            g_targets_achieved).saved_location_of_end_rule_i;
 
     return rules[g_s_cur_rule_i].alt ? PARSER_STATE_GO_ALT_RULE
                                      : PARSER_STATE_GO_PREV_RULE;
@@ -329,8 +329,8 @@ static enum parser_sm_state_e go_cancel_last_achieved_target(
     (void)plcmp_target_add_interim(
         g_targets_interim,
         g_targets_achieved->last->sym,
-        g_targets_achieved->last->src_text_beg_ind,
-        g_targets_achieved->last->rules_saved_ind);
+        g_targets_achieved->last->src_text_left_i,
+        g_targets_achieved->last->saved_location_of_entry_i);
 
     return PARSER_STATE_GO_GET_IN_THE_END_OF_LAST_ACHIEVED_TARGET;
 }
@@ -343,8 +343,8 @@ static enum parser_sm_state_e go_add_achieved_last_interim_target(
     target_achieved_t target = plcmp_target_add_achieved(
                                 g_targets_achieved,
                                 g_targets_interim->last->sym,
-                                g_targets_interim->last->src_text_left_ind,
-                                g_targets_interim->last->rules_saved_ind,
+                                g_targets_interim->last->src_text_left_i,
+                                g_targets_interim->last->saved_location_of_entry_i,
                                 g_cur_src_i,
                                 g_s_cur_rule_i);
     if (SYM_PRO == target.sym)

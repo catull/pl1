@@ -87,11 +87,11 @@ static void FORM(target_achieved_t achieved_target)
     }
 
     IFORMT = 0;
-    j = achieved_target.src_text_beg_ind;
+    j = achieved_target.src_text_left_i;
 
     FORM1:
 
-    for (i = j; i <= achieved_target.src_text_end_ind + 1; i++)
+    for (i = j; i <= achieved_target.src_text_right_i + 1; i++)
     {
 
         if ('\'' == g_p_compact_pl1_src_text[i] ||
@@ -191,7 +191,7 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                 {
                     case 'B':
                         clear_assembler_card();
-                        switch (g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len])
+                        switch (g_p_compact_pl1_src_text[target_achieved.src_text_right_i - formt_len])
                         {
                             case '+':
                                 if (SYM[i].capacity <= 15)
@@ -216,7 +216,7 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                                 break;
 
                             case '!':
-                                switch (g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len - 1])
+                                switch (g_p_compact_pl1_src_text[target_achieved.src_text_right_i - formt_len - 1])
                                 {
                                     case '!':
                                         break;
@@ -239,10 +239,10 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
 
                     case 'C':
 
-                        switch (g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len])
+                        switch (g_p_compact_pl1_src_text[target_achieved.src_text_right_i - formt_len])
                         {
                             case '!':
-                                switch (g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len - 1])
+                                switch (g_p_compact_pl1_src_text[target_achieved.src_text_right_i - formt_len - 1])
                                 {
                                     case '!':
                                         p_char_syms[char_syms_size] = &SYM[i];

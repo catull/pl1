@@ -40,7 +40,7 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
             break;
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &g_p_compact_pl1_src_text[target_achieved.src_text_beg_ind],
+                   &g_p_compact_pl1_src_text[target_achieved.src_text_left_i],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
@@ -49,7 +49,7 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
             break;
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &g_p_compact_pl1_src_text[target_achieved.src_text_beg_ind],
+                   &g_p_compact_pl1_src_text[target_achieved.src_text_left_i],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
@@ -58,7 +58,7 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
             break;
         case PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &g_p_compact_pl1_src_text[target_achieved.src_text_beg_ind],
+                   &g_p_compact_pl1_src_text[target_achieved.src_text_left_i],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
@@ -70,18 +70,18 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
             size_t formt_len = strlen(FORMT[IFORMT - 1]);
             size_t oper_len = 0;
             memcpy(p_err_data->src_text_part,
-                   &g_p_compact_pl1_src_text[target_achieved.src_text_beg_ind],
+                   &g_p_compact_pl1_src_text[target_achieved.src_text_left_i],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 
             p_err_data->data.operation[oper_len] = 
-                g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len];
+                g_p_compact_pl1_src_text[target_achieved.src_text_right_i - formt_len];
             ++oper_len;
-            if ('!' == g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len] &&
-                '!' == g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len + 1])
+            if ('!' == g_p_compact_pl1_src_text[target_achieved.src_text_right_i - formt_len] &&
+                '!' == g_p_compact_pl1_src_text[target_achieved.src_text_right_i - formt_len + 1])
             {
                 p_err_data->data.operation[oper_len] = 
-                    g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len + 1];
+                    g_p_compact_pl1_src_text[target_achieved.src_text_right_i - formt_len + 1];
                 ++oper_len;
             }
             p_err_data->data.operation[oper_len] = '\0';
@@ -90,7 +90,7 @@ static void cook_error_data(plcmp_sem_calc_error_data_t *p_err_data,
         }
         case PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR:
             memcpy(p_err_data->src_text_part,
-                   &g_p_compact_pl1_src_text[target_achieved.src_text_beg_ind],
+                   &g_p_compact_pl1_src_text[target_achieved.src_text_left_i],
                    PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN);
             p_err_data->src_text_part[PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN] = '\0';
 

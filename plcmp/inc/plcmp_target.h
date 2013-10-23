@@ -15,8 +15,8 @@ typedef uint32_t stack_counter_t;
 /* Structure for the stack of targets */
 typedef struct target_interim_s {
     sym_t sym;
-    index_t src_text_left_ind;
-    index_t rules_saved_ind;
+    index_t src_text_left_i;
+    index_t saved_location_of_entry_i;
 } target_interim_t;
 
 /* */
@@ -29,10 +29,10 @@ typedef struct targets_interim_stack_s {
 /* Structure for the stack of targets achieved */
 typedef struct target_achieved_s {
     sym_t sym;
-    index_t src_text_beg_ind;
-    index_t rules_saved_ind;
-    index_t src_text_end_ind;
-    index_t rules_reach_target_ind; 
+    index_t src_text_left_i;
+    index_t saved_location_of_entry_i;
+    index_t src_text_right_i;
+    index_t saved_location_of_end_rule_i; 
 } target_achieved_t;
 
 /* */
@@ -84,26 +84,26 @@ static inline void plcmp_target_destroy_targets_interim_stack(
 
 /* Subroutine adds a new target into stack of targets */
 target_interim_t plcmp_target_add_interim(
-    targets_interim_stack_t *targets_interim,
+    targets_interim_stack_t *stack,
     sym_t sym,
-    index_t src_text_left_ind,
-    index_t rules_saved_ind);
+    index_t src_text_left_i,
+    index_t saved_location_of_entry_i);
 
 /* Subroutine removes last target from the stack of targets */
 target_interim_t plcmp_target_remove_last_interim(
-    targets_interim_stack_t *targets_interim);
+    targets_interim_stack_t *stack);
 
 /* Subroutine adds a target achieved into stack of targets achieved */
 target_achieved_t plcmp_target_add_achieved(
-    targets_achieved_stack_t *targets_achieved,
+    targets_achieved_stack_t *stack,
     sym_t sym,
-    index_t src_text_beg_ind,
-    index_t rules_saved_ind,
-    index_t src_text_end_ind,
-    index_t rules_reach_target_ind);
+    index_t src_text_left_i,
+    index_t saved_location_of_entry_i,
+    index_t src_text_right_i,
+    index_t saved_location_of_end_rule_i);
 
 /* Subroutine removes last target achieved from the stack of targets achieved */
 target_achieved_t plcmp_target_remove_last_achieved(
-    targets_achieved_stack_t *targets_achieved);
+    targets_achieved_stack_t *stack);
 
 #endif /* PLCMP_TARGET_H */

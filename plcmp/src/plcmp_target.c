@@ -7,29 +7,28 @@
 #include "plcmp_utils.h"
 
 target_interim_t plcmp_target_add_interim(
-    targets_interim_stack_t *targets_interim,
+    targets_interim_stack_t *stack,
     sym_t sym,
-    index_t src_text_left_ind,
-    index_t rules_saved_ind)
+    index_t src_text_left_i,
+    index_t saved_location_of_entry_i)
 {
-    targets_interim->last = &targets_interim->stack[targets_interim->count];
-    targets_interim->last->sym = sym;
-    targets_interim->last->src_text_left_ind = src_text_left_ind;
-    targets_interim->last->rules_saved_ind = rules_saved_ind;
-    ++(targets_interim->count);
-    return *(targets_interim->last);
+    stack->last = &stack->stack[stack->count];
+    stack->last->sym = sym;
+    stack->last->src_text_left_i = src_text_left_i;
+    stack->last->saved_location_of_entry_i = saved_location_of_entry_i;
+    ++(stack->count);
+    return *(stack->last);
 }
 
 target_interim_t plcmp_target_remove_last_interim(
-    targets_interim_stack_t *targets_interim)
+    targets_interim_stack_t *stack)
 {
-    if (targets_interim->count)
+    if (stack->count)
     {
-        target_interim_t target = *(targets_interim->last);
-        memset(targets_interim->last, 0, sizeof(*targets_interim->last));
-        --targets_interim->count;
-        targets_interim->last = targets_interim->count ? 
-            &targets_interim->stack[targets_interim->count - 1] : NULL;
+        target_interim_t target = *(stack->last);
+        memset(stack->last, 0, sizeof(*stack->last));
+        --stack->count;
+        stack->last = stack->count ? &stack->stack[stack->count - 1] : NULL;
         return target;
     }
     else
@@ -42,33 +41,32 @@ target_interim_t plcmp_target_remove_last_interim(
 }
 
 target_achieved_t plcmp_target_add_achieved(
-    targets_achieved_stack_t *targets_achieved,
+    targets_achieved_stack_t *stack,
     sym_t sym,
-    index_t src_text_beg_ind,
-    index_t rules_saved_ind,
-    index_t src_text_end_ind,
-    index_t rules_reach_target_ind)
+    index_t src_text_left_i,
+    index_t saved_location_of_entry_i,
+    index_t src_text_right_i,
+    index_t saved_location_of_end_rule_i)
 {
-    targets_achieved->last = &targets_achieved->stack[targets_achieved->count];
-    targets_achieved->last->sym = sym;
-    targets_achieved->last->src_text_beg_ind = src_text_beg_ind;
-    targets_achieved->last->rules_saved_ind = rules_saved_ind;
-    targets_achieved->last->src_text_end_ind = src_text_end_ind;
-    targets_achieved->last->rules_reach_target_ind = rules_reach_target_ind;
-    ++(targets_achieved->count);
-    return *(targets_achieved->last);
+    stack->last = &stack->stack[stack->count];
+    stack->last->sym = sym;
+    stack->last->src_text_left_i = src_text_left_i;
+    stack->last->saved_location_of_entry_i = saved_location_of_entry_i;
+    stack->last->src_text_right_i = src_text_right_i;
+    stack->last->saved_location_of_end_rule_i = saved_location_of_end_rule_i;
+    ++(stack->count);
+    return *(stack->last);
 }
 
 target_achieved_t plcmp_target_remove_last_achieved(
-    targets_achieved_stack_t *targets_achieved)
+    targets_achieved_stack_t *stack)
 {
-    if (targets_achieved->count)
+    if (stack->count)
     {
-        target_achieved_t target = *(targets_achieved->last);
-        memset(targets_achieved->last, 0, sizeof(*targets_achieved->last));
-        --targets_achieved->count;
-        targets_achieved->last = targets_achieved->count ? 
-            &targets_achieved->stack[targets_achieved->count - 1] : NULL;
+        target_achieved_t target = *(stack->last);
+        memset(stack->last, 0, sizeof(*stack->last));
+        --stack->count;
+        stack->last = stack->count ? &stack->stack[stack->count - 1] : NULL;
         return target;
     }
     else
