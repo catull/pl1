@@ -25,19 +25,19 @@ target_interim_t plcmp_target_remove_last_interim(
 {
     if (targets_interim->count)
     {
-        target_interim_t goal = *(targets_interim->last);
+        target_interim_t target = *(targets_interim->last);
         memset(targets_interim->last, 0, sizeof(*targets_interim->last));
         --targets_interim->count;
         targets_interim->last = targets_interim->count ? 
             &targets_interim->stack[targets_interim->count - 1] : NULL;
-        return goal;
+        return target;
     }
     else
     {
         PLCMP_UTILS_ASSERT_MSG(
             0,
-            "Trying to remove last interim goal from the "
-            "empty stack of interim goals");
+            "Trying to remove last interim target from the "
+            "empty stack of interim targets");
     }
 }
 
@@ -64,18 +64,18 @@ target_achieved_t plcmp_target_remove_last_achieved(
 {
     if (targets_achieved->count)
     {
-        target_achieved_t goal = *(targets_achieved->last);
+        target_achieved_t target = *(targets_achieved->last);
         memset(targets_achieved->last, 0, sizeof(*targets_achieved->last));
         --targets_achieved->count;
         targets_achieved->last = targets_achieved->count ? 
             &targets_achieved->stack[targets_achieved->count - 1] : NULL;
-        return goal;
+        return target;
     }
     else
     {
         PLCMP_UTILS_ASSERT_MSG(
             0,
-            "Trying to remove last achieved goal from the "
-            "empty stack of achieved goals");
+            "Trying to remove last achieved target from the "
+            "empty stack of achieved targets");
     }
 }

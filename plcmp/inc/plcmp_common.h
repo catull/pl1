@@ -5,9 +5,9 @@
 
 /* The limited size of the source text */
 #define MAXNISXTXT 50
-/* The limited size of the stack of the goals */
+/* The limited size of the stack of the targets */
 #define NCEL 20
-/* The limited size of the stack of the goals achieved */
+/* The limited size of the stack of the targets achieved */
 #define NDST 500
 /* The limited size of the string of compact text */
 #define NSTROKA 200

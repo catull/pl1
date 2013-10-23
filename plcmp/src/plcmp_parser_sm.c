@@ -64,14 +64,14 @@ static enum parser_sm_state_e go_start_process(
     *err_code = PLCMP_PARSER_SM_SUCCESS;
     sym_t term = ascii_rel[(int)g_p_src_text[g_cur_src_i]];
 
-    /* Check reachability of goal "PRO" by current terminal symbol */
+    /* Check reachability of target "PRO" by current terminal symbol */
     if (SYM_INCORRECT == term || !adj_reach_mtrx[term][SYM_PRO])
     {
         *err_code = PLCMP_PARSER_SM_SYNTAX_ERROR;
         return PARSER_STATE_FAILURE_FINISH;
     }
 
-    /* Let's start. Set the first interim goal "PRO" */
+    /* Let's start. Set the first interim target "PRO" */
     g_src_indmax = g_cur_src_i;
     (void)plcmp_target_add_interim(g_targets_interim,
                                    SYM_PRO,
@@ -231,7 +231,7 @@ static enum parser_sm_state_e go_forward(
 }
 
 /* PARSER_STATE_GO_GET_IN_NEW_INTERIM_TARGET */
-static enum parser_sm_state_e go_add_interim_goal(
+static enum parser_sm_state_e go_add_interim_target(
     plcmp_parser_sm_error_code_t *err_code)
 {
     *err_code = PLCMP_PARSER_SM_SUCCESS;
@@ -252,7 +252,7 @@ static enum parser_sm_state_e go_add_interim_goal(
 }
 
 /* PARSER_STATE_GO_GET_OUT_FROM_LAST_INTERIM_TARGET */
-static enum parser_sm_state_e go_get_out_from_last_interim_goal(
+static enum parser_sm_state_e go_get_out_from_last_interim_target(
     plcmp_parser_sm_error_code_t *err_code)
 {
     *err_code = PLCMP_PARSER_SM_SUCCESS;
@@ -264,22 +264,22 @@ static enum parser_sm_state_e go_get_out_from_last_interim_goal(
 }
 
 /* PARSER_STATE_GO_CANCEL_LAST_INTERIM_TARGET */
-static enum parser_sm_state_e go_cancel_last_interim_goal(
+static enum parser_sm_state_e go_cancel_last_interim_target(
     plcmp_parser_sm_error_code_t *err_code)
 {
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
-    target_interim_t goal =
+    target_interim_t target =
         plcmp_target_remove_last_interim(g_targets_interim);
 
-    if (SYM_PRO == goal.sym)
+    if (SYM_PRO == target.sym)
     {
         *err_code = PLCMP_PARSER_SM_SYNTAX_ERROR;
         return PARSER_STATE_FAILURE_FINISH;
     }
     else
     {
-        g_s_cur_rule_i = goal.rules_saved_ind;
+        g_s_cur_rule_i = target.rules_saved_ind;
         --g_cur_src_i;
         return rules[g_s_cur_rule_i].alt ? PARSER_STATE_GO_ALT_RULE
                                       : PARSER_STATE_GO_PREV_RULE;
@@ -290,7 +290,7 @@ static enum parser_sm_state_e go_cancel_last_interim_goal(
 }
 
 /* PARSER_STATE_GO_ADD_ACHIEVED_TARGET */
-static enum parser_sm_state_e go_add_achieved_goal(
+static enum parser_sm_state_e go_add_achieved_target(
     plcmp_parser_sm_error_code_t *err_code)
 {
     *err_code = PLCMP_PARSER_SM_SUCCESS;
@@ -321,7 +321,7 @@ static enum parser_sm_state_e go_get_in_the_end_of_last_achieved_target(
 }
 
 /* PARSER_STATE_GO_CANCEL_LAST_ACHIEVED_TARGET */
-static enum parser_sm_state_e go_cancel_last_achieved_goal(
+static enum parser_sm_state_e go_cancel_last_achieved_target(
     plcmp_parser_sm_error_code_t *err_code)
 {
     *err_code = PLCMP_PARSER_SM_SUCCESS;
@@ -336,18 +336,18 @@ static enum parser_sm_state_e go_cancel_last_achieved_goal(
 }
 
 /* PARSER_STATE_GO_ADD_ACHIEVED_LAST_INTERIM_TARGET */
-static enum parser_sm_state_e go_add_achieved_last_interim_goal(
+static enum parser_sm_state_e go_add_achieved_last_interim_target(
     plcmp_parser_sm_error_code_t *err_code)
 {
     *err_code = PLCMP_PARSER_SM_SUCCESS;
-    target_achieved_t goal = plcmp_target_add_achieved(
+    target_achieved_t target = plcmp_target_add_achieved(
                                 g_targets_achieved,
                                 g_targets_interim->last->sym,
                                 g_targets_interim->last->src_text_left_ind,
                                 g_targets_interim->last->rules_saved_ind,
                                 g_cur_src_i,
                                 g_s_cur_rule_i);
-    if (SYM_PRO == goal.sym)
+    if (SYM_PRO == target.sym)
     {
         return PARSER_STATE_SUCCESSFUL_FINISH;
     }
@@ -394,19 +394,19 @@ enum plcmp_parser_sm_error_code_e plcmp_parser_sm_run(void)
         [PARSER_STATE_GO_FORWARD] =
             go_forward,
         [PARSER_STATE_GO_GET_IN_NEW_INTERIM_TARGET] =
-            go_add_interim_goal,
+            go_add_interim_target,
         [PARSER_STATE_GO_GET_OUT_FROM_LAST_INTERIM_TARGET] =
-            go_get_out_from_last_interim_goal,
+            go_get_out_from_last_interim_target,
         [PARSER_STATE_GO_CANCEL_LAST_INTERIM_TARGET] =
-            go_cancel_last_interim_goal,
+            go_cancel_last_interim_target,
         [PARSER_STATE_GO_ADD_ACHIEVED_TARGET] =
-            go_add_achieved_goal,
+            go_add_achieved_target,
         [PARSER_STATE_GO_GET_IN_THE_END_OF_LAST_ACHIEVED_TARGET] =
             go_get_in_the_end_of_last_achieved_target,
         [PARSER_STATE_GO_CANCEL_LAST_ACHIEVED_TARGET] =
-            go_cancel_last_achieved_goal,
+            go_cancel_last_achieved_target,
         [PARSER_STATE_GO_ADD_ACHIEVED_LAST_INTERIM_TARGET] =
-            go_add_achieved_last_interim_goal
+            go_add_achieved_last_interim_target
     };
 
     for (next_state = PARSER_STATE_GO_CHECK_INITIAL_PARAMS;

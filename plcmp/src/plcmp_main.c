@@ -155,7 +155,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
 {
     /* Compact source text */
     char compact_pl1_src_text[NSTROKA] = { '\0' };
-    /* Stack of goals achieved */
+    /* Stack of targets achieved */
     targets_achieved_stack_t *targets_achieved = NULL;
     plcmp_main_error_data_t err_data = plcmp_main_set_default_err_data();
 
@@ -175,7 +175,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
         goto error_lexer;
     }
 
-    /* Syntax analysis of the source text and filling stack of goals achived */
+    /* Syntax analysis of the source text and filling stack of targets achived */
     err_data.err_data.parser =
         plcmp_parser_syntax_analysis(compact_pl1_src_text,
                                      &targets_achieved);

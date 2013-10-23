@@ -267,7 +267,7 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
             if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.err_code)
             {
                 /* Error occured while calculation superposition 
-                 * of the functions of the goals achieved.
+                 * of the functions of the targets achieved.
                  * Prepare and send error data to the caller 
                  */
                 cook_error_data(&err_data, p_targets_achieved->stack[dst_index]);

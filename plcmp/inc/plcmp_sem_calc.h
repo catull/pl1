@@ -60,7 +60,7 @@ char const* plcmp_sem_calc_errmsg_by_errdata(
                                      alloca(PLCMP_SEM_CALC_MAX_ERRMSG_LEN))
 
 /* Subroutine for semantic calculation 
- * of the achieved goals made by syntax analyzer 
+ * of the achieved targets made by syntax analyzer 
  * and for generation output assembler file */
 struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(
     char const p_asm_fp_name[],

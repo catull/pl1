@@ -77,7 +77,7 @@ static long int long_int_str_to_long_int(char const *str_long_value)
     return long_value;
 }
 
-static void FORM(target_achieved_t achieved_goal)
+static void FORM(target_achieved_t achieved_target)
 {
     int i, j;
 
@@ -87,11 +87,11 @@ static void FORM(target_achieved_t achieved_goal)
     }
 
     IFORMT = 0;
-    j = achieved_goal.src_text_beg_ind;
+    j = achieved_target.src_text_beg_ind;
 
     FORM1:
 
-    for (i = j; i <= achieved_goal.src_text_end_ind + 1; i++)
+    for (i = j; i <= achieved_target.src_text_end_ind + 1; i++)
     {
 
         if ('\'' == g_p_compact_pl1_src_text[i] ||
