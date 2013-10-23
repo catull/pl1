@@ -4,11 +4,11 @@
 #include <string.h>
 
 #include "plcmp_common.h"
-#include "plcmp_goal.h"
 #include "plcmp_lexer.h"
 #include "plcmp_main.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_parser.h"
+#include "plcmp_target.h"
 #include "plcmp_utils.h"
 
 /* Subroutine constructs error message by error code of main module */
@@ -156,7 +156,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     /* Compact source text */
     char compact_pl1_src_text[NSTROKA] = { '\0' };
     /* Stack of goals achieved */
-    goals_achieved_stack_t *goals_achieved = NULL;
+    targets_achieved_stack_t *targets_achieved = NULL;
     plcmp_main_error_data_t err_data = plcmp_main_set_default_err_data();
 
     /* Lexical analysis of the source text */
@@ -178,7 +178,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     /* Syntax analysis of the source text and filling stack of goals achived */
     err_data.err_data.parser =
         plcmp_parser_syntax_analysis(compact_pl1_src_text,
-                                     &goals_achieved);
+                                     &targets_achieved);
     if (PLCMP_PARSER_SUCCESS != err_data.err_data.parser.err_code)
     {
         /* Error in syntax of the source PL1-text.
@@ -193,7 +193,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     err_data.err_data.sem_calc =
         plcmp_sem_calc_gen_asm_code(p_asm_fp_name,
                                     compact_pl1_src_text,
-                                    goals_achieved);
+                                    targets_achieved);
     if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.err_data.sem_calc.err_code)
     {
         /* Error in execution logic of the source PL1-text
@@ -205,7 +205,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     }
 
     error_sem_calculator:
-    plcmp_goal_destroy_goals_achieved_stack(&goals_achieved);
+    plcmp_target_destroy_targets_achieved_stack(&targets_achieved);
 
     error_parser:
     error_lexer:

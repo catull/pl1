@@ -5,7 +5,7 @@
 
 #include <alloca.h>
 
-#include "plcmp_goal.h"
+#include "plcmp_target.h"
 #include "plcmp_utils.h"
 
 #define PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN 20
@@ -60,6 +60,6 @@ char const* plcmp_sem_calc_errmsg_by_errdata(
 struct plcmp_sem_calc_error_data_s plcmp_sem_calc_gen_asm_code(
     char const p_asm_fp_name[],
     char const compact_pl1_src_text[],
-    goals_achieved_stack_t const *p_goals_achieved);
+    targets_achieved_stack_t const *p_targets_achieved);
 
 #endif /* PLCMP_SEM_CALC_H */

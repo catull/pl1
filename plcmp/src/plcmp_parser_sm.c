@@ -2,7 +2,7 @@
 
 #include <stddef.h>
 
-#include "plcmp_goal.h"
+#include "plcmp_target.h"
 #include "plcmp_parser_sm.h"
 #include "plcmp_tables.h"
 
@@ -38,8 +38,8 @@ int g_s_crl_ind = -1;
  * It is necessary for sending part of source text if error will occur */
 int g_src_indmax = -1;
 
-goals_interim_stack_t *g_goals_interim;
-goals_achieved_stack_t *g_goals_achieved;
+targets_interim_stack_t *g_targets_interim;
+targets_achieved_stack_t *g_targets_achieved;
 
 /* PARSER_STATE_GO_CHECK_INITIAL_PARAMS */
 static enum parser_sm_state_e go_check_initial_params(
@@ -48,7 +48,7 @@ static enum parser_sm_state_e go_check_initial_params(
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
     if (!g_p_src_text || g_csrc_ind < 0
-        || !g_goals_interim || !g_goals_achieved)
+        || !g_targets_interim || !g_targets_achieved)
     {
         *err_code = PLCMP_PARSER_SM_UNITIALIZED_ESSENTIAL_PARAMS_ERROR;
         return PARSER_STATE_FAILURE_FINISH;
@@ -73,7 +73,7 @@ static enum parser_sm_state_e go_start_process(
 
     /* Let's start. Set the first interim goal "PRO" */
     g_src_indmax = g_csrc_ind;
-    (void)plcmp_goal_add_interim(g_goals_interim,
+    (void)plcmp_target_add_interim(g_targets_interim,
                                  SYM_PRO,
                                  g_csrc_ind,
                                  INCORRECT_INDEX);
@@ -118,7 +118,7 @@ static enum parser_sm_state_e go_prev_rule(
         }
         else if (!rules[g_s_crl_ind].prev)
         {
-            if (g_goals_interim->last->sym == g_goals_achieved->last->sym)
+            if (g_targets_interim->last->sym == g_targets_achieved->last->sym)
             {
                 return PARSER_STATE_GO_REMOVE_LAST_INTERIM_GOAL;
             }
@@ -154,12 +154,12 @@ static enum parser_sm_state_e go_end_rule(
 
     --g_csrc_ind;
 
-    if (rules[g_s_crl_ind].sym == g_goals_interim->last->sym)
+    if (rules[g_s_crl_ind].sym == g_targets_interim->last->sym)
     {
         return PARSER_STATE_GO_ADD_ACHIEVED_LAST_INTERIM_GOAL;
     }
     else if (adj_reach_mtrx[rules[g_s_crl_ind].sym]
-                           [g_goals_interim->last->sym])
+                           [g_targets_interim->last->sym])
     {
         return PARSER_STATE_GO_ADD_ACHIEVED_GOAL;
     }
@@ -239,7 +239,7 @@ static enum parser_sm_state_e go_add_interim_goal(
     sym_t term = ascii_rel[(int)g_p_src_text[g_csrc_ind]];
     if (SYM_INCORRECT != term)
     {
-        (void)plcmp_goal_add_interim(g_goals_interim,
+        (void)plcmp_target_add_interim(g_targets_interim,
                                      rules[g_s_crl_ind].sym,
                                      g_csrc_ind,
                                      g_s_crl_ind);
@@ -258,7 +258,7 @@ static enum parser_sm_state_e go_remove_last_interim_goal(
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
     g_s_crl_ind =
-        plcmp_goal_remove_last_interim(g_goals_interim).rules_saved_ind;
+        plcmp_target_remove_last_interim(g_targets_interim).rules_saved_ind;
 
     return PARSER_STATE_GO_NEXT_RULE;
 }
@@ -269,8 +269,8 @@ static enum parser_sm_state_e go_cancel_last_interim_goal(
 {
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
-    goal_interim_t goal =
-        plcmp_goal_remove_last_interim(g_goals_interim);
+    target_interim_t goal =
+        plcmp_target_remove_last_interim(g_targets_interim);
 
     if (SYM_PRO == goal.sym)
     {
@@ -295,9 +295,9 @@ static enum parser_sm_state_e go_add_achieved_goal(
 {
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
-    (void)plcmp_goal_add_achieved(g_goals_achieved, 
+    (void)plcmp_target_add_achieved(g_targets_achieved, 
                                   rules[g_s_crl_ind].sym,
-                                  g_goals_interim->last->src_text_left_ind,
+                                  g_targets_interim->last->src_text_left_ind,
                                   0,
                                   g_csrc_ind,
                                   g_s_crl_ind);
@@ -313,7 +313,7 @@ static enum parser_sm_state_e go_remove_last_achieved_goal(
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
     g_s_crl_ind = 
-        plcmp_goal_remove_last_achieved(g_goals_achieved).rules_reach_goal_ind;
+        plcmp_target_remove_last_achieved(g_targets_achieved).rules_reach_target_ind;
 
     return rules[g_s_crl_ind].alt ? PARSER_STATE_GO_ALT_RULE
                                   : PARSER_STATE_GO_PREV_RULE;
@@ -325,11 +325,11 @@ static enum parser_sm_state_e go_cancel_last_achieved_goal(
 {
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
-    (void)plcmp_goal_add_interim(
-        g_goals_interim,
-        g_goals_achieved->last->sym,
-        g_goals_achieved->last->src_text_beg_ind,
-        g_goals_achieved->last->rules_saved_ind);
+    (void)plcmp_target_add_interim(
+        g_targets_interim,
+        g_targets_achieved->last->sym,
+        g_targets_achieved->last->src_text_beg_ind,
+        g_targets_achieved->last->rules_saved_ind);
 
     return PARSER_STATE_GO_REMOVE_LAST_ACHIEVED_GOAL;
 }
@@ -339,11 +339,11 @@ static enum parser_sm_state_e go_add_achieved_last_interim_goal(
     plcmp_parser_sm_error_code_t *err_code)
 {
     *err_code = PLCMP_PARSER_SM_SUCCESS;
-    goal_achieved_t goal = plcmp_goal_add_achieved(
-                               g_goals_achieved,
-                               g_goals_interim->last->sym,
-                               g_goals_interim->last->src_text_left_ind,
-                               g_goals_interim->last->rules_saved_ind,
+    target_achieved_t goal = plcmp_target_add_achieved(
+                               g_targets_achieved,
+                               g_targets_interim->last->sym,
+                               g_targets_interim->last->src_text_left_ind,
+                               g_targets_interim->last->rules_saved_ind,
                                g_csrc_ind,
                                g_s_crl_ind);
     if (SYM_PRO == goal.sym)
@@ -423,6 +423,6 @@ void plcmp_parser_sm_clear_params(void)
     g_csrc_ind = -1;
     g_s_crl_ind = -1;
     g_src_indmax = -1;
-    g_goals_interim = NULL;
-    g_goals_achieved = NULL;
+    g_targets_interim = NULL;
+    g_targets_achieved = NULL;
 }

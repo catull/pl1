@@ -77,7 +77,7 @@ static long int long_int_str_to_long_int(char const *str_long_value)
     return long_value;
 }
 
-static void FORM(goal_achieved_t achieved_goal)
+static void FORM(target_achieved_t achieved_goal)
 {
     int i, j;
 
@@ -131,9 +131,9 @@ static void FORM(goal_achieved_t achieved_goal)
 enum plcmp_sem_calc_error_code_e SAVI(void const *param)
 {
     unsigned int i = 0;
-    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
+    target_achieved_t target_achieved = *((target_achieved_t*)param);
 
-    FORM(goal_achieved);
+    FORM(target_achieved);
 
     if (1 == IFORMT)
     {
@@ -191,7 +191,7 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                 {
                     case 'B':
                         clear_assembler_card();
-                        switch (g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len])
+                        switch (g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len])
                         {
                             case '+':
                                 if (SYM[i].capacity <= 15)
@@ -216,7 +216,7 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                                 break;
 
                             case '!':
-                                switch (g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len - 1])
+                                switch (g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len - 1])
                                 {
                                     case '!':
                                         break;
@@ -239,10 +239,10 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
 
                     case 'C':
 
-                        switch (g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len])
+                        switch (g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len])
                         {
                             case '!':
-                                switch (g_p_compact_pl1_src_text[goal_achieved.src_text_end_ind - formt_len - 1])
+                                switch (g_p_compact_pl1_src_text[target_achieved.src_text_end_ind - formt_len - 1])
                                 {
                                     case '!':
                                         p_char_syms[char_syms_size] = &SYM[i];
@@ -324,11 +324,11 @@ enum plcmp_sem_calc_error_code_e SODC(void const *param)
 
 enum plcmp_sem_calc_error_code_e SOEN(void const *param)
 {
-    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
+    target_achieved_t target_achieved = *((target_achieved_t*)param);
     char RAB[20] = { '\0' };
     unsigned int i = 0;
     
-    FORM(goal_achieved);
+    FORM(target_achieved);
 
     /* Formation of the mnemonic machine operation 'BCR'
      * for returning to the caller */
@@ -417,9 +417,9 @@ enum plcmp_sem_calc_error_code_e SOEN(void const *param)
 enum plcmp_sem_calc_error_code_e SOPA(void const *param)
 {
     int i = 0;
-    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
+    target_achieved_t target_achieved = *((target_achieved_t*)param);
 
-    FORM(goal_achieved);
+    FORM(target_achieved);
 
     for (i = 0; i < ISYM; i++)
     {
@@ -523,8 +523,8 @@ enum plcmp_sem_calc_error_code_e SOPA(void const *param)
 
 enum plcmp_sem_calc_error_code_e SOPR(void const *param)
 {
-    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
-    FORM(goal_achieved);
+    target_achieved_t target_achieved = *((target_achieved_t*)param);
+    FORM(target_achieved);
 
     /* Formation of pseudo operation 'START' */
     clear_assembler_card();

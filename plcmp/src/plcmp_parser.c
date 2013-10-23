@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "plcmp_goal.h"
+#include "plcmp_target.h"
 #include "plcmp_parser.h"
 #include "plcmp_parser_sm.h"
 #include "plcmp_tables.h"
@@ -70,7 +70,7 @@ char const* plcmp_parser_errmsg_by_errdata(
 
 struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(
     char const compact_pl1_src_text[],
-    goals_achieved_stack_t **p_goals_achieved)
+    targets_achieved_stack_t **p_targets_achieved)
 {
     plcmp_parser_error_data_t err_data = {
         .err_code = PLCMP_PARSER_SUCCESS
@@ -78,22 +78,23 @@ struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(
     plcmp_parser_sm_error_code_t sm_err_code = PLCMP_PARSER_SM_SUCCESS;
 
     /* External variables of parser's state machine */
-    extern goals_interim_stack_t *g_goals_interim;
-    extern goals_achieved_stack_t *g_goals_achieved;
+    extern targets_interim_stack_t *g_targets_interim;
+    extern targets_achieved_stack_t *g_targets_achieved;
     extern char const *g_p_src_text;
     extern int g_csrc_ind;
     extern int g_src_indmax;
 
-    PLCMP_UTILS_ASSERT(p_goals_achieved);
+    PLCMP_UTILS_ASSERT(p_targets_achieved);
 
     plcmp_tables_build_reach_mtrx();
     plcmp_tables_init_ascii_relation();
 
-    g_goals_interim = plcmp_goal_create_goals_interim_stack();
-    g_goals_achieved = plcmp_goal_create_goals_achieved_stack();
+    g_targets_interim = plcmp_target_create_targets_interim_stack();
+    g_targets_achieved = plcmp_target_create_targets_achieved_stack();
     g_p_src_text = compact_pl1_src_text;
     g_csrc_ind = 0;
 
+    /* Run state machine */
     sm_err_code = plcmp_parser_sm_run();
     if (PLCMP_PARSER_SM_SUCCESS != sm_err_code)
     {
@@ -105,12 +106,12 @@ struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(
                                               &g_p_src_text[g_src_indmax]);
     }
 
-    plcmp_goal_destroy_goals_interim_stack(&g_goals_interim);
+    plcmp_target_destroy_targets_interim_stack(&g_targets_interim);
     if (PLCMP_PARSER_SUCCESS != err_data.err_code)
     {
-        plcmp_goal_destroy_goals_achieved_stack(&g_goals_achieved);
+        plcmp_target_destroy_targets_achieved_stack(&g_targets_achieved);
     }
-    *p_goals_achieved = g_goals_achieved;
+    *p_targets_achieved = g_targets_achieved;
 
     plcmp_parser_sm_clear_params();
 

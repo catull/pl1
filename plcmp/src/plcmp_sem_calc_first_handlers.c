@@ -17,7 +17,7 @@ extern char FORMT[MAXFORMT][9];
 /* Formatted array index */
 extern int IFORMT;
 
-static void FORM(goal_achieved_t achieved_goal)
+static void FORM(target_achieved_t achieved_goal)
 {
     int i, j;
 
@@ -120,9 +120,9 @@ enum plcmp_sem_calc_error_code_e FODC(void const *param)
 {
     int i;
     int init_pos;
-    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
+    target_achieved_t target_achieved = *((target_achieved_t*)param);
 
-    FORM(goal_achieved);
+    FORM(target_achieved);
 
     for (i = 0; i < ISYM; i++)
     {
@@ -206,10 +206,10 @@ enum plcmp_sem_calc_error_code_e FODC(void const *param)
 
 enum plcmp_sem_calc_error_code_e FOEN(void const *param)
 {
-    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
+    target_achieved_t target_achieved = *((target_achieved_t*)param);
     unsigned int i = 0;
 
-    FORM(goal_achieved);
+    FORM(target_achieved);
 
     for (i = 0; i < ISYM; i++)
     {
@@ -230,9 +230,9 @@ enum plcmp_sem_calc_error_code_e FOPA(void const *param)
 
 enum plcmp_sem_calc_error_code_e FOPR(void const *param)
 {
-    goal_achieved_t goal_achieved = *((goal_achieved_t*)param);
+    target_achieved_t target_achieved = *((target_achieved_t*)param);
 
-    FORM(goal_achieved);
+    FORM(target_achieved);
 
     /* Save program name as identifier */
     strcpy(SYM[ISYM].name, FORMT[0]);

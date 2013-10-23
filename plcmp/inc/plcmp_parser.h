@@ -4,7 +4,7 @@
 #define PLCMP_PARSER_H
 
 #include <alloca.h>
-#include "plcmp_goal.h"
+#include "plcmp_target.h"
 
 #define PLCMP_PARSER_SRC_TEXT_PART_LEN 20
 #define PLCMP_PARSER_MAX_ERRMSG_LEN 100
@@ -36,6 +36,6 @@ char const* plcmp_parser_errmsg_by_errdata(
  * It constructs parse tree and returns error data if it will be */
 struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(
     char const compact_pl1_src_text[],
-    goals_achieved_stack_t **p_goals_achieved);
+    targets_achieved_stack_t **p_targets_achieved);
 
 #endif /* PLCMP_PARSER_H */
