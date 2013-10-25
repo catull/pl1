@@ -59,29 +59,31 @@ char const* plcmp_parser_errmsg_by_errdata(
     switch (err_data->err_code)
     {
         case PLCMP_PARSER_SUCCESS:
-            strcpy(errmsg, "No error occured");
+            (void)strcpy(errmsg, "No error occured");
             break;
         case PLCMP_PARSER_SYNTAX_ERROR:
-            strcpy(errmsg, "Error in syntax of the source text.");
+            (void)strcpy(errmsg, "Error in syntax of the source text.");
             break;
         case PLCMP_PARSER_INTERNAL_ERROR:
-            strcpy(errmsg, "Internal error of syntax analyzer occurred.");
+            (void)strcpy(errmsg, "Internal error of syntax analyzer occurred.");
             break;
         case PLCMP_PARSER_WRONG_ERROR_CODE_TRANSF_ERROR:
-            strcpy(errmsg, "Internal error of formatting data.");
+            (void)strcpy(errmsg, "Internal error of formatting data.");
             break;
         case PLCMP_PARSER_UNKNOWN_ERROR:
-            strcpy(errmsg, "Unknown error");
+            (void)strcpy(errmsg, "Unknown error");
             break;
         default:
-            strcpy(errmsg,
+            (void)strcpy(errmsg,
                    "Unknown error code in error data "
                    "for generating error message.");
             break;
     }
 
-    strcats(errmsg, " Part of source text: ", err_data->src_text_part, NULL);
-    return errmsg;
+    return strcats(errmsg,
+                   " Part of source text: ",
+                   err_data->src_text_part,
+                   NULL);
 }
 
 struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(

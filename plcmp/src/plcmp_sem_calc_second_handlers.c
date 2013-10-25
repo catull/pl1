@@ -157,7 +157,7 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                             memcpy(assembler_card.OPERAC, "L", 1);
                         }
 
-                        strcpy(assembler_card.OPERAND, "RRAB,");
+                        (void)strcpy(assembler_card.OPERAND, "RRAB,");
                         strcat(assembler_card.OPERAND, FORMT[0]);
                         assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                         memcpy(assembler_card.COMM, "Load variable into register", 27);
@@ -229,7 +229,7 @@ enum plcmp_sem_calc_error_code_e SAVI(void const *param)
                                 return PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR;
                         }
 
-                        strcpy(assembler_card.OPERAND, "RRAB,");
+                        (void)strcpy(assembler_card.OPERAND, "RRAB,");
                         strcat(assembler_card.OPERAND, FORMT[IFORMT - 1]);
                         assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                         memcpy(assembler_card.COMM, "Formation of intermediate value", 31);
@@ -350,7 +350,7 @@ enum plcmp_sem_calc_error_code_e SOEN(void const *param)
             int t_flag = 'P' != SYM[i].type;
             if (t_flag)
             {
-                strcpy(assembler_card.METKA, SYM[i].name);
+                (void)strcpy(assembler_card.METKA, SYM[i].name);
                 assembler_card.METKA[strlen(assembler_card.METKA)] = ' ';
                 memcpy(assembler_card.OPERAC, "DC", 2);
             }
@@ -358,13 +358,13 @@ enum plcmp_sem_calc_error_code_e SOEN(void const *param)
             switch(SYM[i].type)
             {
                 case 'B':
-                    strcpy(assembler_card.OPERAND, SYM[i].capacity <= 15 ? "H\'" : "F\'");
+                    (void)strcpy(assembler_card.OPERAND, SYM[i].capacity <= 15 ? "H\'" : "F\'");
                     strcat(assembler_card.OPERAND, gcvt(long_int_str_to_long_int(SYM[i].INIT), 10, &RAB[0]));
                     break;
                 case 'C':
                 {
                     char buffer[2];
-                    strcpy(assembler_card.OPERAND, "CL");
+                    (void)strcpy(assembler_card.OPERAND, "CL");
 
                     sprintf(buffer, "%lu", SYM[i].capacity);
                     strcat(assembler_card.OPERAND, buffer);
@@ -406,7 +406,7 @@ enum plcmp_sem_calc_error_code_e SOEN(void const *param)
     /* Formation of 'END' pseudo operation */
     clear_assembler_card();
     memcpy(assembler_card.OPERAC, "END", 3);
-    strcpy(assembler_card.OPERAND, FORMT[1]);
+    (void)strcpy(assembler_card.OPERAND, FORMT[1]);
     assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
     memcpy(assembler_card.COMM, "End of the program", 18);
     record_assembler_card();
@@ -439,7 +439,7 @@ enum plcmp_sem_calc_error_code_e SOPA(void const *param)
                         memcpy(assembler_card.OPERAC, "ST", 2);
                     }
 
-                    strcpy(assembler_card.OPERAND, "RRAB,");
+                    (void)strcpy(assembler_card.OPERAND, "RRAB,");
                     strcat(assembler_card.OPERAND, FORMT[0]);
                     assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                     memcpy(assembler_card.COMM, "Formation of value of the arithmetic expression", 47);
@@ -474,7 +474,7 @@ enum plcmp_sem_calc_error_code_e SOPA(void const *param)
                         {
                             /* Formation of 'LA' operation */
                             memcpy(assembler_card.OPERAC, "LA", 2);
-                            strcpy(assembler_card.OPERAND, "RRAB,");
+                            (void)strcpy(assembler_card.OPERAND, "RRAB,");
                             strcat(assembler_card.OPERAND, SYM[i].name);
                             assembler_card.OPERAND[strlen(assembler_card.OPERAND)] = ' ';
                             memcpy(assembler_card.COMM, "Load operand's address to register", 34);
@@ -491,7 +491,7 @@ enum plcmp_sem_calc_error_code_e SOPA(void const *param)
                         memcpy(assembler_card.OPERAC, "MVC", 3);
                         /* D1 */
                         sprintf(buffer, "%lu", offset);
-                        strcpy(assembler_card.OPERAND, buffer);
+                        (void)strcpy(assembler_card.OPERAND, buffer);
                         strcat(assembler_card.OPERAND, "(");
                         /* L */
                         str_len = p_char_syms[j]->char_init_len;
@@ -528,7 +528,7 @@ enum plcmp_sem_calc_error_code_e SOPR(void const *param)
 
     /* Formation of pseudo operation 'START' */
     clear_assembler_card();
-    strcpy(assembler_card.METKA, FORMT[0]);
+    (void)strcpy(assembler_card.METKA, FORMT[0]);
     assembler_card.METKA[strlen(assembler_card.METKA)] = ' ';
     memcpy(assembler_card.OPERAC, "START", 5);
     memcpy(assembler_card.OPERAND, "0", 1);

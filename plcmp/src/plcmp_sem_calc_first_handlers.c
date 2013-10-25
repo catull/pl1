@@ -133,7 +133,7 @@ enum plcmp_sem_calc_error_code_e FODC(void const *param)
         }
     }
 
-    strcpy(SYM[ISYM].name, FORMT[1]);
+    (void)strcpy(SYM[ISYM].name, FORMT[1]);
 
     if (!(strcmp(FORMT[2], "BIN") || strcmp(FORMT[3], "FIXED")))
     {
@@ -158,7 +158,7 @@ enum plcmp_sem_calc_error_code_e FODC(void const *param)
         switch(SYM[ISYM].type)
         {
             case 'B':
-                strcpy(SYM[ISYM].INIT, FORMT[init_pos + 1]);           
+                (void)strcpy(SYM[ISYM].INIT, FORMT[init_pos + 1]);           
                 break;
             case 'C':
             {
@@ -188,7 +188,7 @@ enum plcmp_sem_calc_error_code_e FODC(void const *param)
         switch(SYM[ISYM].type)
         {
             case 'B':
-                strcpy(SYM[ISYM].INIT, "0B");
+                (void)strcpy(SYM[ISYM].INIT, "0B");
                 break;
             case 'C':
                 memset(SYM[ISYM].INIT, ' ', SYM[ISYM].capacity);
@@ -235,7 +235,7 @@ enum plcmp_sem_calc_error_code_e FOPR(void const *param)
     FORM(target_achieved);
 
     /* Save program name as identifier */
-    strcpy(SYM[ISYM].name, FORMT[0]);
+    (void)strcpy(SYM[ISYM].name, FORMT[0]);
     /* Set type 'P' */
     SYM[ISYM].type = 'P';
     /* Capacity is 0 */

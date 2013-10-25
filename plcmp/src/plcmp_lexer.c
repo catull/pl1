@@ -57,15 +57,16 @@ char const* plcmp_lexer_errmsg_by_errdata(
     switch (err_data->err_code)
     {
         case PLCMP_LEXER_SUCCESS:
-            strcpy(errmsg, "No error occured");
+            (void)strcpy(errmsg, "No error occured");
             break;
         case PLCMP_LEXER_COMPACT_SRC_TEXT_BUFFER_OVERFLOW:
-            strcpy(errmsg,
-                   "Overflow of the compact text buffer "
-                   "while lexical analysis was processing");
+            (void)strcpy(errmsg,
+                         "Overflow of the compact text buffer "
+                         "while lexical analysis was processing");
             break;
         default:
-            strcpy(errmsg, "Unknown error code for generating error message");
+            (void)strcpy(errmsg,
+                         "Unknown error code for generating error message");
             break;
     }
     return errmsg;
