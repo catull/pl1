@@ -3,10 +3,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "plcmp_target.h"
 #include "plcmp_parser.h"
 #include "plcmp_parser_sm.h"
 #include "plcmp_tables.h"
+#include "plcmp_target.h"
 #include "plcmp_utils.h"
 
 static struct plcmp_parser_error_data_s plcmp_parser_form_err_data(
@@ -26,13 +26,28 @@ static struct plcmp_parser_error_data_s plcmp_parser_form_err_data(
             err_data.err_code = PLCMP_PARSER_INTERNAL_ERROR;
             break;
         case PLCMP_PARSER_SM_SUCCESS:
+            err_data.err_code = PLCMP_PARSER_WRONG_ERROR_CODE_TRANSF_ERROR;
+            break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            err_data.err_code = PLCMP_PARSER_UNKNOWN_ERROR;
             break;
     }
 
-    strncpy(err_data.src_text_part, p_src_text, PLCMP_PARSER_SRC_TEXT_PART_LEN);
-    err_data.src_text_part[PLCMP_PARSER_SRC_TEXT_PART_LEN] = '\0';
+    switch (sm_err_code)
+    {
+        case PLCMP_PARSER_SM_SUCCESS:
+        case PLCMP_PARSER_SM_UNITIALIZED_ESSENTIAL_PARAMS_ERROR:
+            err_data.src_text_part[0] = '\0';
+            break;
+        case PLCMP_PARSER_SM_SYNTAX_ERROR:
+        case PLCMP_PARSER_SM_WRONG_STATE_ERROR:
+        default:
+            strncpy(err_data.src_text_part,
+                    p_src_text,
+                    PLCMP_PARSER_SRC_TEXT_PART_LEN);
+            err_data.src_text_part[PLCMP_PARSER_SRC_TEXT_PART_LEN] = '\0';
+            break;
+    }
 
     return err_data;
 }
@@ -51,6 +66,12 @@ char const* plcmp_parser_errmsg_by_errdata(
             break;
         case PLCMP_PARSER_INTERNAL_ERROR:
             strcpy(errmsg, "Internal error of syntax analyzer occurred.");
+            break;
+        case PLCMP_PARSER_WRONG_ERROR_CODE_TRANSF_ERROR:
+            strcpy(errmsg, "Internal error of formatting data.");
+            break;
+        case PLCMP_PARSER_UNKNOWN_ERROR:
+            strcpy(errmsg, "Unknown error");
             break;
         default:
             strcpy(errmsg,

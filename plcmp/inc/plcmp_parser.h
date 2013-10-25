@@ -19,7 +19,9 @@
 typedef enum plcmp_parser_error_code_e {
     PLCMP_PARSER_SUCCESS = 0,
     PLCMP_PARSER_SYNTAX_ERROR,
-    PLCMP_PARSER_INTERNAL_ERROR
+    PLCMP_PARSER_INTERNAL_ERROR,
+    PLCMP_PARSER_WRONG_ERROR_CODE_TRANSF_ERROR,
+    PLCMP_PARSER_UNKNOWN_ERROR
 } plcmp_parser_error_code_t;
 
 /* Structure defines content of the error data of syntax analyzer module */

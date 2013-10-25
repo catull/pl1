@@ -258,7 +258,8 @@ static enum parser_sm_state_e go_get_out_from_last_interim_target(
     *err_code = PLCMP_PARSER_SM_SUCCESS;
 
     g_s_cur_rule_i =
-        plcmp_target_remove_last_interim(g_targets_interim).saved_location_of_entry_i;
+        plcmp_target_remove_last_interim(
+            g_targets_interim).saved_location_of_entry_i;
 
     return PARSER_STATE_GO_NEXT_RULE;
 }
