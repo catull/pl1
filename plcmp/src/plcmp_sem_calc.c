@@ -230,7 +230,7 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
     char const compact_pl1_src_text[],
     targets_achieved_stack_t const *p_targets_achieved)
 {
-    int sem_calc_phase = 0;
+    int phase = 0;
     plcmp_sem_calc_error_data_t err_data;
 
     /* Set global pointer to compact text for easier working with */
@@ -262,7 +262,9 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
     };
 
     /* First and second phases of semantic calculation */
-    for (sem_calc_phase = 1; sem_calc_phase < 3; sem_calc_phase++)
+    for (phase = SEM_CALC_FIRST_PHASE;
+         phase < SEM_CALC_COUNT_PHASES;
+         phase = SEM_CALC_NEXT_PHASE(phase))
     {
         unsigned int dst_index = 0;
         for (dst_index = 0; dst_index < p_targets_achieved->count; dst_index++)
@@ -272,12 +274,16 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
             {
                 /* PRO */
                 case 13:
-                    err_data.err_code = handler[hand_num](sem_calc_phase, p_asm_fp_name);
+                    err_data.err_code = 
+                        handler[hand_num](phase, p_asm_fp_name);
                     break;
                 /* other */
                 default:
-                    err_data.err_code = handler[hand_num](sem_calc_phase, &p_targets_achieved->stack[dst_index]);
-                    break;    
+                    err_data.err_code =
+                        handler[hand_num](
+                            phase,
+                            &p_targets_achieved->stack[dst_index]);
+                    break;
             }
             
             if (PLCMP_SEM_CALCULATOR_SUCCESS != err_data.err_code)
