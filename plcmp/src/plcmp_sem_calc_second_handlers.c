@@ -3,9 +3,9 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "plcmp_utils.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_sem_calc_second_handlers.h"
+#include "plcmp_utils.h"
 
 extern struct sym_s SYM[NSYM];
 extern int ISYM;

@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 #include "plcmp_common.h"
-#include "plcmp_utils.h"
 #include "plcmp_tables.h"
+#include "plcmp_utils.h"
 
 typedef uint32_t stack_counter_t;
 

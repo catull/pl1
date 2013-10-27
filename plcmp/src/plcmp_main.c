@@ -6,8 +6,8 @@
 #include "plcmp_common.h"
 #include "plcmp_lexer.h"
 #include "plcmp_main.h"
-#include "plcmp_sem_calc.h"
 #include "plcmp_parser.h"
+#include "plcmp_sem_calc.h"
 #include "plcmp_target.h"
 #include "plcmp_utils.h"
 

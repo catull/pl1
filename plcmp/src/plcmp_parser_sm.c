@@ -2,9 +2,9 @@
 
 #include <stddef.h>
 
-#include "plcmp_target.h"
 #include "plcmp_parser_sm.h"
 #include "plcmp_tables.h"
+#include "plcmp_target.h"
 
 typedef enum parser_sm_state_e {
     PARSER_STATE_SUCCESSFUL_FINISH,

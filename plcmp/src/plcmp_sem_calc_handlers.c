@@ -1,10 +1,10 @@
 /* encoding: UTF-8 */
 
-#include "plcmp_utils.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_sem_calc_first_handlers.h"
 #include "plcmp_sem_calc_handlers.h"
 #include "plcmp_sem_calc_second_handlers.h"
+#include "plcmp_utils.h"
 
 /* Subroutine is for semantic calculation 
  * non-terminal "AVI" on the first and
