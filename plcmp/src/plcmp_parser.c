@@ -7,7 +7,7 @@
 #include "plcmp_parser_sm.h"
 #include "plcmp_tables.h"
 #include "plcmp_target.h"
-#include "plcmp_utils.h"
+#include "utils.h"
 
 static struct plcmp_parser_error_data_s plcmp_parser_form_err_data(
     plcmp_parser_sm_error_code_t sm_err_code,
@@ -80,7 +80,7 @@ char const* plcmp_parser_errmsg_by_errdata(
             break;
     }
 
-    return strcats(errmsg,
+    return utils_strcats(errmsg,
                    " Part of source text: ",
                    err_data->src_text_part,
                    NULL);
@@ -102,7 +102,7 @@ struct plcmp_parser_error_data_s plcmp_parser_syntax_analysis(
     extern int g_cur_src_i;
     extern int g_src_indmax;
 
-    PLCMP_UTILS_ASSERT(p_targets_achieved);
+    UTILS_ASSERT(p_targets_achieved);
 
     plcmp_tables_build_reach_mtrx();
     plcmp_tables_init_ascii_relation();

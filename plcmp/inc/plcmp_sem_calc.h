@@ -6,7 +6,7 @@
 #include <alloca.h>
 
 #include "plcmp_target.h"
-#include "plcmp_utils.h"
+#include "utils.h"
 
 #define PLCMP_SEM_CALCULATOR_SRC_TEXT_PART_LEN 20
 #define PLCMP_SEM_CALC_MAX_ERRMSG_LEN 100

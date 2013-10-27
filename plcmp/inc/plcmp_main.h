@@ -8,7 +8,7 @@
 #include "plcmp_lexer.h"
 #include "plcmp_parser.h"
 #include "plcmp_sem_calc.h"
-#include "plcmp_utils.h"
+#include "utils.h"
 
 /* Enumerate defines error codes of main module */
 typedef enum plcmp_main_error_code_e {

@@ -10,6 +10,7 @@
 #include "asmcmp_pseudo_oper.h"
 #include "asmcmp_machine_oper.h"
 #include "asmcmp_global.h"
+#include "utils.h"
 
 extern assembler_card_t g_current_asm_card;
 
@@ -241,7 +242,7 @@ static struct asmcmp_main_error_data_s process_src_text(char asm_src_text[][LINE
                 err_data.machine_oper_err_code = T_MOP[I3].BXPROG(1);
                 if (ASMCMP_MACHINE_OPER_SUCCESS != err_data.machine_oper_err_code)
                 {
-                    ASMCMP_COMMON_ASSERT(0);
+                    UTILS_ASSERT(0);
                 }
 
                 PRNMET = 'N';
@@ -360,7 +361,7 @@ int main(int const argc, char const *argv[])
     }
 
     /* Copy name of translated program from input argument */
-    ASMCMP_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_asm_fp_name, argv[1]);
+    p_asm_fp_name = strdup(argv[1]);
 
     asm_fp_len = strlen(p_asm_fp_name);
     if (asm_fp_len < 4)
@@ -370,7 +371,7 @@ int main(int const argc, char const *argv[])
     }
 
     /* Input file for translation must be with 'ass' extension */
-    if (!streq(&p_asm_fp_name[asm_fp_len - 4], ".ass"))
+    if (!utils_streq(&p_asm_fp_name[asm_fp_len - 4], ".ass"))
     {
         err_data.main_err_data.main_err_code = ASMCMP_MAIN_WRONG_INPUT_ASM_FILE_EXTENSION;
         goto error;
@@ -382,16 +383,17 @@ int main(int const argc, char const *argv[])
     if (ASMCMP_MAIN_SUCCESS != err_data.main_err_data.main_err_code)
     {
         /* Error occured while reading file */
-        ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
+        UTILS_RELEASE_MEM(p_asm_fp_name);
         goto error;
     }
 
     /* After successfully reading file proceed to translation of the source text */
     init_cards();
-    ASMCMP_MAIN_MAKE_TEX_FILE_PATH_BY_ASM_FILE_PATH(p_tex_fp_name, p_asm_fp_name);
-    ASMCMP_COMMON_RELEASE_MEM(p_asm_fp_name);
+    p_tex_fp_name = utils_copy_file_path_and_change_extension(p_asm_fp_name,
+                                                              "tex");
+    UTILS_RELEASE_MEM(p_asm_fp_name);
     err_data = process_src_text(asm_src_text, asm_src_text_len, p_tex_fp_name);
-    ASMCMP_COMMON_RELEASE_MEM(p_tex_fp_name);
+    UTILS_RELEASE_MEM(p_tex_fp_name);
 
     if (ASMCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data.main_err_data.main_err_code)
     {

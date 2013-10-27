@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "plcmp_utils.h"
+#include "utils.h"
 #include "plcmp_target.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_sem_calc_handlers.h"
@@ -126,7 +126,7 @@ char const* plcmp_sem_calc_errmsg_by_errdata(
     plcmp_sem_calc_error_data_t const *err_data,
     char errmsg[])
 {
-    PLCMP_UTILS_ASSERT(err_data && errmsg);
+    UTILS_ASSERT(err_data && errmsg);
 
     switch (err_data->err_code)
     {
@@ -144,7 +144,7 @@ char const* plcmp_sem_calc_errmsg_by_errdata(
         break;
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_DCL_ERROR:
         {
-            (void)strcats(errmsg,
+            (void)utils_strcats(errmsg,
                     "Not allowed identifier type '",
                     err_data->data.identifier_type,
                     "' in the source text '",
@@ -155,7 +155,7 @@ char const* plcmp_sem_calc_errmsg_by_errdata(
         break;
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_IDENT_TYPE_EXPR_ERROR:
         {
-            (void)strcats(errmsg,
+            (void)utils_strcats(errmsg,
                     "Not allowed identifier type '",
                     err_data->data.identifier_type,
                     "' in the source text '",
@@ -166,7 +166,7 @@ char const* plcmp_sem_calc_errmsg_by_errdata(
         break;
         case PLCMP_SEM_CALCULATOR_NOT_DETERNINED_IDENT_ERROR:
         {
-            (void)strcats(errmsg,
+            (void)utils_strcats(errmsg,
                     "Not determined identifier '",
                     err_data->data.identifier,
                     "' in the source text '",
@@ -177,7 +177,7 @@ char const* plcmp_sem_calc_errmsg_by_errdata(
         break;
         case PLCMP_SEM_CALCULATOR_NOT_ALLOWED_OPERATION_ERROR:
         {
-            (void)strcats(errmsg,
+            (void)utils_strcats(errmsg,
                     "Not allowed operation '",
                     err_data->data.operation,
                     "' in the source text '",
@@ -188,7 +188,7 @@ char const* plcmp_sem_calc_errmsg_by_errdata(
         break;
         case PLCMP_SEM_CALCULATOR_REPEATED_DCL_IDENT_ERROR:
         {
-            (void)strcats(errmsg,
+            (void)utils_strcats(errmsg,
                     "Repeated declaration of the identifier '",
                     err_data->data.identifier,
                     "' in the source text '",

@@ -8,7 +8,7 @@
 
 #include "plcmp_common.h"
 #include "plcmp_tables.h"
-#include "plcmp_utils.h"
+#include "utils.h"
 
 typedef uint32_t stack_counter_t;
 
@@ -47,19 +47,17 @@ typedef struct targets_achieved_stack_s {
 static inline targets_achieved_stack_t*
     plcmp_target_create_targets_achieved_stack(void)
 {
-    targets_achieved_stack_t *targets_achieved = NULL;
-    return PLCMP_UTILS_CALLOC_MEM(
-        targets_achieved,
-        1,
-        sizeof(targets_achieved_stack_t) + NDST * sizeof(target_achieved_t));
+    return UTILS_CALLOC_MEM(1,
+                            sizeof(targets_achieved_stack_t) +
+                                NDST * sizeof(target_achieved_t));
 }
 
 /* Subroutine destroys stack of targets achieved */
 static inline void plcmp_target_destroy_targets_achieved_stack(
     targets_achieved_stack_t **targets_achieved)
 {
-    PLCMP_UTILS_ASSERT(NULL != targets_achieved && NULL != *targets_achieved);
-    PLCMP_UTILS_RELEASE_MEM(*targets_achieved);
+    UTILS_ASSERT(NULL != targets_achieved && NULL != *targets_achieved);
+    UTILS_RELEASE_MEM(*targets_achieved);
 }
 
 /* Subroutine creates stack for targets for using 
@@ -67,19 +65,17 @@ static inline void plcmp_target_destroy_targets_achieved_stack(
 static inline targets_interim_stack_t*
     plcmp_target_create_targets_interim_stack(void)
 {
-    targets_interim_stack_t *targets = NULL;
-    return PLCMP_UTILS_CALLOC_MEM(
-        targets,
-        1,
-        sizeof(targets_interim_stack_t) + NCEL * sizeof(target_interim_t));
+    return UTILS_CALLOC_MEM(1,
+                            sizeof(targets_interim_stack_t) +
+                                NCEL * sizeof(target_interim_t));
 }
 
 /* Subroutine destroys stack of targets */
 static inline void plcmp_target_destroy_targets_interim_stack(
     targets_interim_stack_t **targets)
 {
-    PLCMP_UTILS_ASSERT(NULL != targets && NULL != *targets);
-    PLCMP_UTILS_RELEASE_MEM(*targets);
+    UTILS_ASSERT(NULL != targets && NULL != *targets);
+    UTILS_RELEASE_MEM(*targets);
 }
 
 /* Subroutine adds a new target into stack of targets */

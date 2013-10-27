@@ -4,7 +4,7 @@
 
 #include "plcmp_sem_calc.h"
 #include "plcmp_sem_calc_first_handlers.h"
-#include "plcmp_utils.h"
+#include "utils.h"
 
 extern char const *g_p_compact_pl1_src_text;
 

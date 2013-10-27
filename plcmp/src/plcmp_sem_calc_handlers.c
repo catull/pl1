@@ -4,7 +4,7 @@
 #include "plcmp_sem_calc_first_handlers.h"
 #include "plcmp_sem_calc_handlers.h"
 #include "plcmp_sem_calc_second_handlers.h"
-#include "plcmp_utils.h"
+#include "utils.h"
 
 /* Subroutine is for semantic calculation 
  * non-terminal "AVI" on the first and
@@ -25,7 +25,7 @@ enum plcmp_sem_calc_error_code_e AVI(plcmp_sem_calc_phase_t phase,
             errcode = SAVI(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -51,7 +51,7 @@ enum plcmp_sem_calc_error_code_e BUK(plcmp_sem_calc_phase_t phase,
             errcode = SBUK(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -77,7 +77,7 @@ enum plcmp_sem_calc_error_code_e CIF(plcmp_sem_calc_phase_t phase,
             errcode = SCIF(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -103,7 +103,7 @@ enum plcmp_sem_calc_error_code_e IDE(plcmp_sem_calc_phase_t phase,
             errcode = SIDE(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -128,7 +128,7 @@ enum plcmp_sem_calc_error_code_e IPE(plcmp_sem_calc_phase_t phase,
             errcode = SIPE(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -154,7 +154,7 @@ enum plcmp_sem_calc_error_code_e IPR(plcmp_sem_calc_phase_t phase,
             errcode = SIPR(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -180,7 +180,7 @@ enum plcmp_sem_calc_error_code_e LIT(plcmp_sem_calc_phase_t phase,
             errcode = SLIT(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -206,7 +206,7 @@ enum plcmp_sem_calc_error_code_e MAN(plcmp_sem_calc_phase_t phase,
             errcode = SMAN(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -232,7 +232,7 @@ enum plcmp_sem_calc_error_code_e ODC(plcmp_sem_calc_phase_t phase,
             errcode = SODC(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -258,7 +258,7 @@ enum plcmp_sem_calc_error_code_e OEN(plcmp_sem_calc_phase_t phase,
             errcode = SOEN(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -284,7 +284,7 @@ enum plcmp_sem_calc_error_code_e OPA(plcmp_sem_calc_phase_t phase,
             errcode = SOPA(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -310,7 +310,7 @@ enum plcmp_sem_calc_error_code_e OPR(plcmp_sem_calc_phase_t phase,
             errcode = SOPR(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -336,7 +336,7 @@ enum plcmp_sem_calc_error_code_e PRO(plcmp_sem_calc_phase_t phase,
             errcode = SPRO(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -362,7 +362,7 @@ enum plcmp_sem_calc_error_code_e RZR(plcmp_sem_calc_phase_t phase,
             errcode = SRZR(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -389,7 +389,7 @@ enum plcmp_sem_calc_error_code_e TEL(plcmp_sem_calc_phase_t phase,
             errcode = STEL(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -415,7 +415,7 @@ enum plcmp_sem_calc_error_code_e ZNK(plcmp_sem_calc_phase_t phase,
             errcode = SZNK(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -441,7 +441,7 @@ enum plcmp_sem_calc_error_code_e STC(plcmp_sem_calc_phase_t phase,
             errcode = SSTC(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -467,7 +467,7 @@ enum plcmp_sem_calc_error_code_e CON(plcmp_sem_calc_phase_t phase,
             errcode = SCON(param);
             break;
         default:
-            PLCMP_UTILS_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 

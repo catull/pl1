@@ -1,0 +1,4 @@
+# encoding: UTF-8
+
+PROJECT_ROOT=$PWD
+export PL1_UTILS_DIR=$PROJECT_ROOT/utils

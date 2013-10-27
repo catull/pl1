@@ -4,7 +4,7 @@
 
 #include "plcmp_tables.h"
 #include "plcmp_target.h"
-#include "plcmp_utils.h"
+#include "utils.h"
 
 target_interim_t plcmp_target_add_interim(
     targets_interim_stack_t *stack,
@@ -33,7 +33,7 @@ target_interim_t plcmp_target_remove_last_interim(
     }
     else
     {
-        PLCMP_UTILS_ASSERT_MSG(
+        UTILS_ASSERT_MSG(
             0,
             "Trying to remove last interim target from the "
             "empty stack of interim targets");
@@ -71,7 +71,7 @@ target_achieved_t plcmp_target_remove_last_achieved(
     }
     else
     {
-        PLCMP_UTILS_ASSERT_MSG(
+        UTILS_ASSERT_MSG(
             0,
             "Trying to remove last achieved target from the "
             "empty stack of achieved targets");

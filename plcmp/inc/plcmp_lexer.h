@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <alloca.h>
 
-#include "plcmp_utils.h"
+#include "utils.h"
 
 #define PLCMP_LEXER_MAX_ERRMSG_LEN 100
 

@@ -16,6 +16,7 @@
 #include "absload_common.h"
 #include "absload_main.h"
 #include "absload_machine_oper.h"
+#include "utils.h"
 
 extern machine_operations_table_t T_MOP[NOP];
 
@@ -394,7 +395,7 @@ static enum absload_main_error_code_e sys(void)
             P_MVC();
             break;
         default:
-            ABSLOAD_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
    
@@ -531,7 +532,7 @@ int main(int const argc, char const *argv[])
     }
 
     /* Copy name of '.mod'-file from input argument */
-    ABSLOAD_COMMON_ALLOC_MEM_AND_COPY_FP_STR(p_mod_fp_name, argv[1]);
+    p_mod_fp_name = strdup(argv[1]);
 
     mod_fp_len = strlen(p_mod_fp_name);
     if (mod_fp_len < 4)
@@ -549,7 +550,7 @@ int main(int const argc, char const *argv[])
     else
     {
         err_data.main_err_code = absload_main_read_mod_file(p_mod_fp_name);
-        ABSLOAD_COMMON_RELEASE_MEM(p_mod_fp_name);
+        UTILS_RELEASE_MEM(p_mod_fp_name);
         if (ABSLOAD_MAIN_SUCCESS == err_data.main_err_code)
         {
             for (I = 0; I < ISPIS; I++)

@@ -9,7 +9,7 @@
 #include "plcmp_parser.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_target.h"
-#include "plcmp_utils.h"
+#include "utils.h"
 
 /* Subroutine constructs error message by error code of main module */
 static inline char const* plcmp_main_messages_errmsg_by_errcode(
@@ -47,7 +47,7 @@ static inline char const* plcmp_main_messages_errmsg_by_errcode(
 static void plcmp_main_messages_print_translation_result(
     plcmp_main_error_data_t const *err_data)
 {
-    PLCMP_UTILS_ASSERT(err_data);
+    UTILS_ASSERT(err_data);
 
     if (PLCMP_MAIN_SUCCESSFUL_TRANSLATION == err_data->main_err_code)
     {
@@ -257,7 +257,7 @@ int main(int const argc, char const *argv[])
     }
 
     /* Input file for translation must be with 'pli' extension */
-    if (!streq(&p_pl1_fp_name[pl1_fp_len - 4], ".pli"))
+    if (!utils_streq(&p_pl1_fp_name[pl1_fp_len - 4], ".pli"))
     {
         err_data.main_err_code =
             PLCMP_MAIN_WRONG_INPUT_PL1_FILE_EXTENSION_ERROR;
@@ -270,19 +270,19 @@ int main(int const argc, char const *argv[])
     if (PLCMP_MAIN_SUCCESS != err_data.main_err_code)
     {
         /* Error occured while reading file */
-        PLCMP_UTILS_RELEASE_MEM(p_pl1_fp_name); 
+        UTILS_RELEASE_MEM(p_pl1_fp_name); 
         goto error;
     }
 
     /* After successfully reading file proceed to compression and 
      * translation of the source text */
-    PLCMP_UTILS_MAKE_ASM_FILE_PATH_BY_PL1_FILE_PATH(p_asm_fp_name,
-                                                    p_pl1_fp_name);
-    PLCMP_UTILS_RELEASE_MEM(p_pl1_fp_name);
+    p_asm_fp_name = utils_copy_file_path_and_change_extension(p_pl1_fp_name,
+                                                              "ass");
+    UTILS_RELEASE_MEM(p_pl1_fp_name);
     err_data = plcmp_main_process_src_text(pl1_src_text,
                                            pl1_src_text_len,
                                            p_asm_fp_name);
-    PLCMP_UTILS_RELEASE_MEM(p_asm_fp_name);
+    UTILS_RELEASE_MEM(p_asm_fp_name);
 
     error:
 

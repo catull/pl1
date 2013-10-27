@@ -9,6 +9,7 @@
 #include "asmcmp_common.h"
 #include "asmcmp_pseudo_oper.h"
 #include "asmcmp_global.h"
+#include "utils.h"
 
 extern assembler_card_t g_current_asm_card;
 
@@ -60,7 +61,7 @@ static void save_data_tex_card(data_t data)
             break;
         }
         default:
-            ASMCMP_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -147,7 +148,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
                     data.data.fixed_bin = atoi((char*)RAB);
 
                     RAB = (uint8_t*)&data.data.fixed_bin;
-                    asmcmp_common_swap_bytes(RAB, RAB, 4);
+                    utils_swap_bytes(RAB, RAB, 4);
 
                     save_data_tex_card(data);
                     break;
@@ -183,7 +184,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
 
                     save_data_tex_card(data);
 
-                    ASMCMP_COMMON_RELEASE_MEM(data.data.string_data.p_string);
+                    UTILS_RELEASE_MEM(data.data.string_data.p_string);
 
                     break;
                 }
@@ -193,7 +194,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDC(int entry)
             break;
         }
         default:
-            ASMCMP_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
    
@@ -273,7 +274,7 @@ static enum asmcmp_pseudo_oper_error_code_e FDS(int entry)
             break;
         }
         default:
-            ASMCMP_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -294,7 +295,7 @@ static enum asmcmp_pseudo_oper_error_code_e FEND(int entry)
             ++ITCARD;
             break;
         default:
-            ASMCMP_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
     return ASMCMP_PSEUDO_OPER_PHASE_PROCESSING_END;
@@ -324,7 +325,7 @@ static enum asmcmp_pseudo_oper_error_code_e FEQU(int entry)
         case 2:
             break;
         default:
-            ASMCMP_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -367,7 +368,7 @@ static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
                 {
                     RAB = CHADR - T_SYM[J].sym_value;
                     PTR = (uint8_t*)&RAB;
-                    asmcmp_common_swap_bytes(PTR, PTR, 2);
+                    utils_swap_bytes(PTR, PTR, 2);
 
                     ESD.DLPRG[0] = 0;
                     ESD.DLPRG[1] = *PTR;
@@ -391,7 +392,7 @@ static enum asmcmp_pseudo_oper_error_code_e FSTART(int entry)
             return ASMCMP_PSEUDO_OPER_NOT_DECLARED_IDENT_ERROR; 
         }
         default:
-            ASMCMP_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
     return ASMCMP_PSEUDO_OPER_SUCCESS;
@@ -472,7 +473,7 @@ static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
             break;
         }
         default:
-            ASMCMP_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
     return ASMCMP_PSEUDO_OPER_SUCCESS;

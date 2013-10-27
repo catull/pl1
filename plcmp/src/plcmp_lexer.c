@@ -5,7 +5,7 @@
 
 #include "plcmp_common.h"
 #include "plcmp_lexer.h"
-#include "plcmp_utils.h"
+#include "utils.h"
 
 static char const list_1[] = {
     ' ',

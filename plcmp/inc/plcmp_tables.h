@@ -5,7 +5,7 @@
 
 #include "plcmp_common.h"
 #include "plcmp_symbols.h"
-#include "plcmp_utils.h"
+#include "utils.h"
 
 #define ASCII_SYMBOLS_COUNT 256
 

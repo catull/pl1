@@ -9,6 +9,7 @@
 #include "asmcmp_common.h"
 #include "asmcmp_machine_oper.h"
 #include "asmcmp_global.h"
+#include "utils.h"
 
 extern assembler_card_t g_current_asm_card;
 
@@ -44,7 +45,7 @@ static void save_oper_tex_card(oper_t oper)
     {
         case OPER_RR:
         {
-            ASMCMP_COMMON_ASSERT(OPER_RR_LEN == sizeof(oper_rr_t));
+            UTILS_ASSERT(OPER_RR_LEN == sizeof(oper_rr_t));
 
             memset(TXT.OPER, 0x40, 56);
             memcpy(TXT.OPER, &oper.oper.rr, OPER_RR_LEN);
@@ -54,7 +55,7 @@ static void save_oper_tex_card(oper_t oper)
         }
         case OPER_RX:
         {
-            ASMCMP_COMMON_ASSERT(OPER_RX_LEN == sizeof(oper_rx_t));
+            UTILS_ASSERT(OPER_RX_LEN == sizeof(oper_rx_t));
 
             memset(TXT.OPER, 0x40, 56);
             memcpy(TXT.OPER, &oper.oper.rx, OPER_RX_LEN);
@@ -64,7 +65,7 @@ static void save_oper_tex_card(oper_t oper)
         }
         case OPER_SS:
         {
-            ASMCMP_COMMON_ASSERT(OPER_SS_LEN == sizeof(oper_ss_t));
+            UTILS_ASSERT(OPER_SS_LEN == sizeof(oper_ss_t));
 
             memset(TXT.OPER, 0x40, 56);
             memcpy(TXT.OPER, &oper.oper.ss, OPER_SS_LEN);
@@ -73,7 +74,7 @@ static void save_oper_tex_card(oper_t oper)
             break;
         }
         default:
-            ASMCMP_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -102,7 +103,7 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
         }
         case 2:
         {
-            ASMCMP_COMMON_ASSERT(OPER_RR_LEN == sizeof(oper_rr_t));
+            UTILS_ASSERT(OPER_RR_LEN == sizeof(oper_rr_t));
 
             char *REG_str[2];
             int i;
@@ -158,7 +159,7 @@ static enum asmcmp_machine_oper_error_code_e FRR(int entry)
             break;
         }
         default:
-            ASMCMP_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -183,7 +184,7 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
         }
         case 2:
         {
-            ASMCMP_COMMON_ASSERT(OPER_RX_LEN == sizeof(oper_rx_t));
+            UTILS_ASSERT(OPER_RX_LEN == sizeof(oper_rx_t));
 
             char *symbol;
             char *REG_str;
@@ -258,7 +259,7 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
                             B2D2 = B2D2 + DELTA;
                             PTR = (uint8_t*)&B2D2;
 
-                            asmcmp_common_swap_bytes(PTR, PTR, 2);
+                            utils_swap_bytes(PTR, PTR, 2);
 
                             oper_rx.oper.rx.B2D2 = B2D2;
                         }
@@ -288,7 +289,7 @@ static enum asmcmp_machine_oper_error_code_e FRX(int entry)
             break;
         }
         default:
-            ASMCMP_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
 
@@ -313,7 +314,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
         }
         case 2:
         {
-            ASMCMP_COMMON_ASSERT(OPER_SS_LEN == sizeof(oper_ss_t));
+            UTILS_ASSERT(OPER_SS_LEN == sizeof(oper_ss_t));
 
             uint8_t *PTR;
             int NBASRG;
@@ -384,7 +385,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
                             B1D1 += NBASRG << 12;
                             PTR = (uint8_t*)&B1D1;
 
-                            asmcmp_common_swap_bytes(PTR, PTR, 2);
+                            utils_swap_bytes(PTR, PTR, 2);
 
                             oper_ss.oper.ss.B1D1 = B1D1;
                         }
@@ -436,7 +437,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
                             B2D2 += DELTA;
                             PTR = (uint8_t*)&B2D2;
 
-                            asmcmp_common_swap_bytes(PTR, PTR, 2);
+                            utils_swap_bytes(PTR, PTR, 2);
 
                             oper_ss.oper.ss.B2D2 = B2D2;
                         }
@@ -467,7 +468,7 @@ static enum asmcmp_machine_oper_error_code_e FSS(int entry)
             break;
         }
         default:
-            ASMCMP_COMMON_ASSERT(0);
+            UTILS_ASSERT(0);
             break;
     }
     return ASMCMP_MACHINE_OPER_SUCCESS;
