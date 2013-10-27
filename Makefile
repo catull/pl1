@@ -7,7 +7,8 @@ ABSLOAD_DIR := absload
 MAKE_FLAGS := -j 5
 GLOBAL_CC_FLAGS :=
 
-.PHONY: all plcmp asmcmp absload clean clean_plcmp clean_asmcmp clean_absload
+.PHONY: all clean clean_all plcmp clean_plcmp asmcmp clean_asmcmp absload \
+	clean_absload
 
 all: plcmp asmcmp absload
 clean: clean_all
