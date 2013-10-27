@@ -5,7 +5,7 @@ ASMCMP_DIR := asmcmp
 ABSLOAD_DIR := absload
 
 MAKE_FLAGS := -j 5
-GLOBAL_CC_FLAGS := 
+GLOBAL_CC_FLAGS :=
 
 .PHONY: all plcmp asmcmp absload clean clean_plcmp clean_asmcmp clean_absload
 
