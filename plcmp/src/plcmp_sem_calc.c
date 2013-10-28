@@ -230,7 +230,7 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
     char const compact_pl1_src_text[],
     targets_achieved_stack_t const *p_targets_achieved)
 {
-    int phase = 0;
+    plcmp_sem_calc_phase_t phase = SEM_CALC_FIRST_PHASE;
     plcmp_sem_calc_error_data_t err_data;
 
     /* Set global pointer to compact text for easier working with */
