@@ -5,8 +5,8 @@
 
 #include <assert.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 /* Check equality of two strings */
