@@ -1,7 +1,7 @@
 /* encoding: UTF-8 */
 
-#ifndef PLCMP_UTILS_H
-#define PLCMP_UTILS_H
+#ifndef UTILS_H
+#define UTILS_H
 
 #include <assert.h>
 #include <stddef.h>
@@ -82,4 +82,4 @@ char* utils_copy_file_path_and_change_extension(char const *fp,
 
 #define ARRAY_SIZE(array) sizeof((array)) / sizeof((array)[0])
 
-#endif /* PLCMP_UTILS_H */
+#endif /* UTILS_H */
