@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 
 /* Check equality of two strings */
 int utils_streq(char const *restrict str_1, char const *restrict str_2);
