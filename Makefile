@@ -17,7 +17,8 @@ clean_all: clean_libutils clean_plcmp clean_asmcmp clean_absload
 
 check_utils_dir:
 ifndef PL1_UTILS_DIR
-	$(error PL1_UTILS_DIR isn't defined)
+	$(error PL1_UTILS_DIR isn't defined. To fix it use 'source env.sh' \
+		from the root of the project)
 endif
 
 libutils:

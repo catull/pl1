@@ -7,6 +7,8 @@
 #include "plcmp_lexer.h"
 #include "utils.h"
 
+#define NUL '\0'
+
 static char const list_1[] = {
     ' ',
     ';',
@@ -18,7 +20,8 @@ static char const list_1[] = {
     '=',
     '*',
     '!',
-    '\''
+    '\'',
+    NUL
 };
 
 static char const list_2[] = {
@@ -29,18 +32,14 @@ static char const list_2[] = {
     '=',
     '*',
     '!',
-    '\''
+    '\'',
+    NUL
 };
-
-#define LIST_ARRAY_SIZE(p_list) (\
-    ((p_list) == (list_1)) ? ARRAY_SIZE(list_1) :   \
-    ((p_list) == (list_2)) ? ARRAY_SIZE(list_2) : 0 \
-)
 
 static int symbol_into_list(char const list[], char sym)
 {
     unsigned int i = 0;
-    for (i = 0; i < LIST_ARRAY_SIZE(list); i++)
+    for (i = 0; NUL != list[i]; i++)
     {
         if (list[i] == sym)
         {
