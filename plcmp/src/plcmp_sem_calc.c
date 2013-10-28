@@ -241,24 +241,24 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
     err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS;
 
     plcmp_sem_calc_handler_t *handler[SYM_NTERMS_COUNT] = {
-        AVI,
-        BUK,
-        CIF,
-        IDE,
-        IPE,
-        IPR,
-        LIT,
-        MAN,
-        ODC,
-        OEN,
-        OPA,
-        OPR,
-        PRO,
-        RZR,
-        TEL,
-        ZNK,
-        STC,
-        CON
+        [SYM_AVI] = AVI,
+        [SYM_BUK] = BUK,
+        [SYM_CIF] = CIF,
+        [SYM_IDE] = IDE,
+        [SYM_IPE] = IPE,
+        [SYM_IPR] = IPR,
+        [SYM_LIT] = LIT,
+        [SYM_MAN] = MAN,
+        [SYM_ODC] = ODC,
+        [SYM_OEN] = OEN,
+        [SYM_OPA] = OPA,
+        [SYM_OPR] = OPR,
+        [SYM_PRO] = PRO,
+        [SYM_RZR] = RZR,
+        [SYM_TEL] = TEL,
+        [SYM_ZNK] = ZNK,
+        [SYM_STC] = STC,
+        [SYM_CON] = CON
     };
 
     /* First and second phases of semantic calculation */
@@ -266,23 +266,20 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
          phase < SEM_CALC_COUNT_PHASES;
          phase = SEM_CALC_NEXT_PHASE(phase))
     {
-        unsigned int dst_index = 0;
+        stack_counter_t dst_index = 0;
         for (dst_index = 0; dst_index < p_targets_achieved->count; dst_index++)
         {
-            index_t hand_num = p_targets_achieved->stack[dst_index].sym;
-            switch (hand_num + 1)
+            sym_t sym = p_targets_achieved->stack[dst_index].sym;
+            switch (sym)
             {
-                /* PRO */
-                case 13:
+                case SYM_PRO:
                     err_data.err_code = 
-                        handler[hand_num](phase, p_asm_fp_name);
+                        handler[sym](phase, p_asm_fp_name);
                     break;
-                /* other */
                 default:
                     err_data.err_code =
-                        handler[hand_num](
-                            phase,
-                            &p_targets_achieved->stack[dst_index]);
+                        handler[sym](phase,
+                                     &p_targets_achieved->stack[dst_index]);
                     break;
             }
             
