@@ -5,12 +5,12 @@
 
 /* The limited size of the source text */
 #define MAXNISXTXT 50
-/* The limited size of the stack of the targets */
-#define NCEL 20
+/* The limited size of the stack of the interim targets */
+#define INTERIM_TARGETS_STACK_SIZE 20
 /* The limited size of the stack of the targets achieved */
-#define NDST 500
+#define ACHIEVED_TARGETS_STACK_SIZE 500
 /* The limited size of the string of compact text */
-#define NSTROKA 200
+#define COMPACT_TEXT_MAX_SIZE 200
 /* The limited size of the output text */
 #define MAXLTXT 50
 /* The limited size of formatted interpreted fragment of the source text */

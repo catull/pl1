@@ -49,7 +49,8 @@ static inline targets_achieved_stack_t*
 {
     return UTILS_CALLOC_MEM(1,
                             sizeof(targets_achieved_stack_t) +
-                                NDST * sizeof(target_achieved_t));
+                                ACHIEVED_TARGETS_STACK_SIZE *
+                                    sizeof(target_achieved_t));
 }
 
 /* Subroutine destroys stack of targets achieved */
@@ -67,7 +68,8 @@ static inline targets_interim_stack_t*
 {
     return UTILS_CALLOC_MEM(1,
                             sizeof(targets_interim_stack_t) +
-                                NCEL * sizeof(target_interim_t));
+                                INTERIM_TARGETS_STACK_SIZE *
+                                    sizeof(target_interim_t));
 }
 
 /* Subroutine destroys stack of targets */

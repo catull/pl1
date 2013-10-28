@@ -154,7 +154,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     char const p_asm_fp_name[])
 {
     /* Compact source text */
-    char compact_pl1_src_text[NSTROKA] = { '\0' };
+    char compact_pl1_src_text[COMPACT_TEXT_MAX_SIZE] = { '\0' };
     /* Stack of targets achieved */
     targets_achieved_stack_t *targets_achieved = NULL;
     plcmp_main_error_data_t err_data = plcmp_main_set_default_err_data();
@@ -162,7 +162,7 @@ static struct plcmp_main_error_data_s plcmp_main_process_src_text(
     /* Lexical analysis of the source text */
     err_data.err_data.lexer =
         plcmp_lexer_compress_src_text(compact_pl1_src_text,
-                                      NSTROKA,
+                                      COMPACT_TEXT_MAX_SIZE,
                                       pl1_src_text,
                                       pl1_src_text_len);
     if (PLCMP_LEXER_SUCCESS != err_data.err_data.lexer.err_code)
