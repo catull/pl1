@@ -241,24 +241,24 @@ struct plcmp_sem_calc_error_data_s  plcmp_sem_calc_gen_asm_code(
     err_data.err_code = PLCMP_SEM_CALCULATOR_SUCCESS;
 
     plcmp_sem_calc_handler_t *handler[SYM_NTERMS_COUNT] = {
-        /*    1  */ AVI,
-        /*    2  */ BUK,
-        /*    3  */ CIF,
-        /*    4  */ IDE,
-        /*    5  */ IPE,
-        /*    6  */ IPR,
-        /*    7  */ LIT,
-        /*    8  */ MAN,
-        /*    9  */ ODC,
-        /*   10  */ OEN,
-        /*   11  */ OPA,
-        /*   12  */ OPR,
-        /*   13  */ PRO,
-        /*   14  */ RZR,
-        /*   15  */ TEL,
-        /*   16  */ ZNK,
-        /*   17  */ STC,
-        /*   18  */ CON
+        AVI,
+        BUK,
+        CIF,
+        IDE,
+        IPE,
+        IPR,
+        LIT,
+        MAN,
+        ODC,
+        OEN,
+        OPA,
+        OPR,
+        PRO,
+        RZR,
+        TEL,
+        ZNK,
+        STC,
+        CON
     };
 
     /* First and second phases of semantic calculation */
