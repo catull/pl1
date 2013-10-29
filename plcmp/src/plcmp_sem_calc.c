@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "utils.h"
-#include "plcmp_target.h"
 #include "plcmp_sem_calc.h"
 #include "plcmp_sem_calc_handlers.h"
 #include "plcmp_symbols.h"
 #include "plcmp_tables.h"
+#include "plcmp_target.h"
+#include "utils.h"
 
 /* This array of structures is the table of labels' names of variables
  * which is being filled on the first process of semantic calculation
