@@ -56,6 +56,7 @@ char* utils_copy_file_path_and_change_extension(char const *fp,
     char *p_new_fp = NULL;
 
     UTILS_ASSERT(fp);
+    UTILS_ASSERT(new_ext);
 
     p_new_fp_name = strdup((fp));
     p_new_fp = UTILS_MALLOC_MEM(strlen(p_new_fp_name));
