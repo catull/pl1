@@ -43,8 +43,9 @@ clean:
 	-$(RM) $(ASMCMP_OBJS) $(ASMCMP_DEPS) $(ASMCMP_BIN)
 
 $(ASMCMP_OBJ_DIR)/%.o: $(ASMCMP_SRC_DIR)/%.c
-	@$(CC) -c $< $(CC_FLAGS) $(ASMCMP_INCLUDES) -MT $@ -MM -MF \
-$(addprefix $(ASMCMP_DEP_DIR)/, $(patsubst $(ASMCMP_OBJ_DIR)/%.o, %.d, $@))
+	@$(CC) -E $< $(CC_FLAGS) $(ASMCMP_INCLUDES) -MT $@ -MM -MF \
+$(addprefix $(ASMCMP_DEP_DIR)/, $(patsubst $(ASMCMP_OBJ_DIR)/%.o, %.d, $@)) \
+1> /dev/null
 	$(CC) -c $< $(CC_FLAGS) $(ASMCMP_INCLUDES) -o $@
 
 -include $(ASMCMP_DEPS)
