@@ -43,7 +43,7 @@ clean:
 	-$(RM) $(ABSLOAD_OBJS) $(ABSLOAD_DEPS) $(ABSLOAD_BIN)
 
 $(ABSLOAD_OBJ_DIR)/%.o: $(ABSLOAD_SRC_DIR)/%.c
-	@$(CC) -c $< $(CC_FLAGS) $(ABSLOAD_INCLUDES) -MM -MT $@ -MF \
+	@$(CC) -c $< $(CC_FLAGS) $(ABSLOAD_INCLUDES) -MT $@ -MM -MF \
 $(addprefix $(ABSLOAD_DEP_DIR)/, $(patsubst $(ABSLOAD_OBJ_DIR)/%.o, %.d, $@))
 	$(CC) -c $< $(CC_FLAGS) $(ABSLOAD_INCLUDES) -o $@
 

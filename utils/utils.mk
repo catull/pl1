@@ -22,7 +22,7 @@ clean:
 	-$(RM) $(UTILS_OBJS) $(UTILS_DEPS) $(UTILS_LIB)
 
 %.o: %.c
-	@$(CC) -c $< $(CC_FLAGS) -MM -MD
+	@$(CC) -c $< $(CC_FLAGS) -MMD
 	$(CC) -c $< $(CC_FLAGS) -o $@
 
 $(UTILS_LIB): $(UTILS_OBJS)

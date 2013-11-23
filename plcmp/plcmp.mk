@@ -43,7 +43,7 @@ clean:
 	-$(RM) $(PLCMP_OBJS) $(PLCMP_DEPS) $(PLCMP_BIN)
 
 $(PLCMP_OBJ_DIR)/%.o: $(PLCMP_SRC_DIR)/%.c
-	@$(CC) -c $< $(CC_FLAGS) $(PLCMP_INCLUDES) -MM -MT $@ -MF \
+	@$(CC) -c $< $(CC_FLAGS) $(PLCMP_INCLUDES) -MT $@ -MM -MF \
 $(addprefix $(PLCMP_DEP_DIR)/, $(patsubst $(PLCMP_OBJ_DIR)/%.o, %.d, $@))
 	$(CC) -c $< $(CC_FLAGS) $(PLCMP_INCLUDES) -o $@
 
