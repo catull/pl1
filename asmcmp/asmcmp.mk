@@ -8,7 +8,6 @@ CC_FLAGS += $(GLOBAL_CC_FLAGS)
 
 ASMCMP_BIN := bin/asmcmp
 
-ASMCMP_INC_DIR := inc
 ASMCMP_SRC_DIR := src
 ASMCMP_OBJ_DIR := obj
 ASMCMP_DEP_DIR := dep
