@@ -411,7 +411,7 @@ static enum asmcmp_pseudo_oper_error_code_e FUSING(int entry)
             char *METKA;
             char *METKA1;
             char *METKA2;
-            int J;
+            int J = 0;
             int NBASRG;
 
             METKA1 = strtok(g_current_asm_card.OPERAND, ",");
