@@ -37,12 +37,12 @@ PLCMP_OBJS := $(patsubst %.c, $(PLCMP_OBJ_DIR)/%.o, $(PLCMP_SRCS_NOTDIR))
 PLCMP_DEPS := $(patsubst %.c, $(PLCMP_OBJ_DIR)/%.d, $(PLCMP_SRCS_NOTDIR))
 
 init:
-	mkdir -p $(PLCMP_OBJ_DIR)
+	mkdir -p bin $(PLCMP_OBJ_DIR)
 
 build:	init $(PLCMP_BIN)
 
 clean:
-	-$(RM) $(PLCMP_OBJ_DIR) $(PLCMP_DEPS) $(PLCMP_BIN)
+	-$(RM) -fr bin $(PLCMP_OBJ_DIR) $(PLCMP_DEPS)
 
 $(PLCMP_BIN):	$(PLCMP_OBJS)
 	$(CC) $^ $(PLCMP_LIB_DIRS) $(PLCMP_STAT_LIBS) -o $@

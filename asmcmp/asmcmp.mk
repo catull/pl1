@@ -37,12 +37,12 @@ ASMCMP_OBJS := $(patsubst %.c, $(ASMCMP_OBJ_DIR)/%.o, $(ASMCMP_SRCS_NOTDIR))
 ASMCMP_DEPS := $(patsubst %.c, $(ASMCMP_OBJ_DIR)/%.d, $(ASMCMP_SRCS_NOTDIR))
 
 init:
-	mkdir -p $(ASMCMP_OBJ_DIR)
+	mkdir -p bin $(ASMCMP_OBJ_DIR)
 
 build:	init $(ASMCMP_BIN)
 
 clean:
-	-$(RM) $(ASMCMP_OBJ_DIR) $(ASMCMP_DEPS) $(ASMCMP_BIN)
+	-$(RM) -fr bin $(ASMCMP_OBJ_DIR) $(ASMCMP_DEPS)
 
 $(ASMCMP_OBJ_DIR)/%.o:	$(ASMCMP_SRC_DIR)/%.c
 	$(CC) -c $< $(CC_FLAGS) $(ASMCMP_INCLUDES) -MMD -o $@

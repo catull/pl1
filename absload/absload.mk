@@ -37,18 +37,18 @@ ABSLOAD_OBJS := $(patsubst %.c, $(ABSLOAD_OBJ_DIR)/%.o, $(ABSLOAD_SRCS_NOTDIR))
 ABSLOAD_DEPS := $(patsubst %.c, $(ABSLOAD_DEP_DIR)/%.d, $(ABSLOAD_SRCS_NOTDIR))
 
 init:
-	mkdir -p $(ABSLOAD_OBJ_DIR)
+	mkdir -p bin $(ABSLOAD_OBJ_DIR)
 
 build:	init $(ABSLOAD_BIN)
 
 clean:
-	-$(RM) $(ABSLOAD_OBJ_DIR) $(ABSLOAD_DEPS) $(ABSLOAD_BIN)
+	-$(RM) -fr bin $(ABSLOAD_OBJ_DIR) $(ABSLOAD_DEPS)
 
 $(ABSLOAD_OBJ_DIR)/%.o:	$(ABSLOAD_SRC_DIR)/%.c
 	$(CC) -c $< $(CC_FLAGS) $(ABSLOAD_INCLUDES) -MMD -o $@
 
 $(ABSLOAD_BIN):	$(ABSLOAD_OBJS)
-	$(CC) $^ $(ABSLOAD_LIB_DIRS) $(ABSLOAD_STAT_LIBS) -o $(ABSLOAD_BIN)
+	$(CC) $^ $(ABSLOAD_LIB_DIRS) $(ABSLOAD_STAT_LIBS) -o $@
 
 -include $(ABSLOAD_DEPS)
 
