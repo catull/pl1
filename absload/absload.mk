@@ -36,14 +36,20 @@ ABSLOAD_OBJS := $(patsubst %.c, $(ABSLOAD_OBJ_DIR)/%.o, $(ABSLOAD_SRCS_NOTDIR))
 # ABSLOAD DEPENDENCIES
 ABSLOAD_DEPS := $(patsubst %.c, $(ABSLOAD_DEP_DIR)/%.d, $(ABSLOAD_SRCS_NOTDIR))
 
-build: $(ABSLOAD_OBJS)
-	$(CC) $^ $(ABSLOAD_LIB_DIRS) $(ABSLOAD_STAT_LIBS) -o $(ABSLOAD_BIN)
-clean:
-	-$(RM) $(ABSLOAD_OBJS) $(ABSLOAD_DEPS) $(ABSLOAD_BIN)
+init:
+	mkdir -p $(ABSLOAD_OBJ_DIR)
 
-$(ABSLOAD_OBJ_DIR)/%.o: $(ABSLOAD_SRC_DIR)/%.c
+build:	init $(ABSLOAD_BIN)
+
+clean:
+	-$(RM) $(ABSLOAD_OBJ_DIR) $(ABSLOAD_DEPS) $(ABSLOAD_BIN)
+
+$(ABSLOAD_OBJ_DIR)/%.o:	$(ABSLOAD_SRC_DIR)/%.c
 	$(CC) -c $< $(CC_FLAGS) $(ABSLOAD_INCLUDES) -MMD -o $@
+
+$(ABSLOAD_BIN):	$(ABSLOAD_OBJS)
+	$(CC) $^ $(ABSLOAD_LIB_DIRS) $(ABSLOAD_STAT_LIBS) -o $(ABSLOAD_BIN)
 
 -include $(ABSLOAD_DEPS)
 
-.PHONY: build clean
+.PHONY:	build clean init

@@ -36,14 +36,20 @@ ASMCMP_OBJS := $(patsubst %.c, $(ASMCMP_OBJ_DIR)/%.o, $(ASMCMP_SRCS_NOTDIR))
 # ASSEMBLER COMPILER DEPENDENCIES
 ASMCMP_DEPS := $(patsubst %.c, $(ASMCMP_OBJ_DIR)/%.d, $(ASMCMP_SRCS_NOTDIR))
 
-build: $(ASMCMP_OBJS)
-	$(CC) $^ $(ASMCMP_LIB_DIRS) $(ASMCMP_STAT_LIBS) -o $(ASMCMP_BIN)
-clean:
-	-$(RM) $(ASMCMP_OBJS) $(ASMCMP_DEPS) $(ASMCMP_BIN)
+init:
+	mkdir -p $(ASMCMP_OBJ_DIR)
 
-$(ASMCMP_OBJ_DIR)/%.o: $(ASMCMP_SRC_DIR)/%.c
+build:	init $(ASMCMP_BIN)
+
+clean:
+	-$(RM) $(ASMCMP_OBJ_DIR) $(ASMCMP_DEPS) $(ASMCMP_BIN)
+
+$(ASMCMP_OBJ_DIR)/%.o:	$(ASMCMP_SRC_DIR)/%.c
 	$(CC) -c $< $(CC_FLAGS) $(ASMCMP_INCLUDES) -MMD -o $@
+
+$(ASMCMP_BIN):	$(ASMCMP_OBJS)
+	$(CC) $^ $(ASMCMP_LIB_DIRS) $(ASMCMP_STAT_LIBS) -o $@
 
 -include $(ASMCMP_DEPS)
 
-.PHONY: build clean
+.PHONY:	build clean init

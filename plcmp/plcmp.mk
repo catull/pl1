@@ -36,14 +36,20 @@ PLCMP_OBJS := $(patsubst %.c, $(PLCMP_OBJ_DIR)/%.o, $(PLCMP_SRCS_NOTDIR))
 # PL COMPILER DEPENDENCIES
 PLCMP_DEPS := $(patsubst %.c, $(PLCMP_OBJ_DIR)/%.d, $(PLCMP_SRCS_NOTDIR))
 
-build: $(PLCMP_OBJS)
-	$(CC) $^ $(PLCMP_LIB_DIRS) $(PLCMP_STAT_LIBS) -o $(PLCMP_BIN)
-clean:
-	-$(RM) $(PLCMP_OBJS) $(PLCMP_DEPS) $(PLCMP_BIN)
+init:
+	mkdir -p $(PLCMP_OBJ_DIR)
 
-$(PLCMP_OBJ_DIR)/%.o: $(PLCMP_SRC_DIR)/%.c
+build:	init $(PLCMP_BIN)
+
+clean:
+	-$(RM) $(PLCMP_OBJ_DIR) $(PLCMP_DEPS) $(PLCMP_BIN)
+
+$(PLCMP_BIN):	$(PLCMP_OBJS)
+	$(CC) $^ $(PLCMP_LIB_DIRS) $(PLCMP_STAT_LIBS) -o $@
+
+$(PLCMP_OBJ_DIR)/%.o:	$(PLCMP_SRC_DIR)/%.c
 	$(CC) -c $< $(CC_FLAGS) $(PLCMP_INCLUDES) -MMD -o $@
 
 -include $(PLCMP_DEPS)
 
-.PHONY: build clean
+.PHONY:	build clean init
